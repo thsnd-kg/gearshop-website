@@ -8,14 +8,17 @@
         </v-scroll-x-transition>
       </div>
     </v-main>
+    <app-notification />
   </v-app>
 </template>
 
 <script>
 import VHeader from '../components/VHeader.vue';
+import AppNotification from '../components/notification';
 export default {
   components: {
     VHeader,
+    AppNotification,
   },
 };
 </script>

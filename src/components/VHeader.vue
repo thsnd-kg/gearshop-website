@@ -33,7 +33,7 @@
       <v-col class="mx-6" cols="2">
         <v-row no-gutters>
           <v-col>
-            <v-btn elevation="0" fab small color="#f8fafc">
+            <v-btn elevation="0" fab small color="#f8fafc" @click="handleClick">
               <v-icon>mdi-cart-outline</v-icon>
             </v-btn>
           </v-col>
@@ -53,7 +53,15 @@
   </v-app-bar>
 </template>
 <script>
-export default {};
+export default {
+  methods: {
+    async handleClick() {
+      this.$notify.success('Đăng nhập thành công');
+      const response = await this.$http.get('products');
+      console.log(response);
+    },
+  },
+};
 </script>
 
 <style lang="scss" scoped>
