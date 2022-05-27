@@ -55,16 +55,13 @@
         <v-slide-group
           class="brand-slide"
           ref="slide_group"
-          @click:next="clickNext($event)"
         >
           <v-slide-item
             v-for="brand in brands"
             :key="brand.brandId"
-            v-slot="{ toggle }"
           >
             <div
               class="brand-item mx-2 d-flex align-center justify-center"
-              @click="toggle"
             >
               <v-img
                 contain

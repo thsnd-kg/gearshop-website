@@ -1,8 +1,10 @@
 <template>
   <v-app-bar class="padding-content" color="#ffff" elevate-on-scroll app>
     <v-row align="center" dense>
-      <v-col cols="2">
+      <v-col cols="2" >
         <v-img
+         class="logo-container"
+         @click="goHome"
           max-height="48"
           max-width="200"
           :src="`https://gearshop.vn/frontend/images/shop/logo.png`"
@@ -56,15 +58,23 @@
 export default {
   methods: {
     async handleClick() {
-      this.$notify.success('Đăng nhập thành công');
-      const response = await this.$http.get('products');
+      this.$notify.success("Đăng nhập thành công");
+      const response = await this.$http.get("products");
       console.log(response);
     },
-  },
+    goHome() {
+      this.$router.push("/");
+    }
+  }
 };
 </script>
 
 <style lang="scss" scoped>
+.logo-container{
+  &:hover {
+    cursor: pointer;
+  }
+}
 .padding-content {
   padding: 0 10%;
 }
