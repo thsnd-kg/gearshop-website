@@ -1,4 +1,6 @@
 <template>
+<div> 
+  <v-sub-header/>
   <div class="wrapper">
     <v-row>
       <v-col cols="3">
@@ -27,27 +29,27 @@
               </v-range-slider>
               <div class="text-price-container">
                 <div>
-              <v-text-field
-                :value="range[0]"
-                class="mt-0 pt-0"
-                hide-details
-                single-line
-                type="number"
-                style="width: 100px"
-                @change="$set(range, 0, $event)"
-              ></v-text-field>
-              </div>
-              <div>
-              <v-text-field
-                :value="range[1]"
-                class="mt-0 pt-0"
-                hide-details
-                single-line
-                type="number"
-                style="width: 100px"
-                @change="$set(range, 1, $event)"
-              ></v-text-field>
-               </div>
+                  <v-text-field
+                    :value="range[0]"
+                    class="mt-0 pt-0"
+                    hide-details
+                    single-line
+                    type="number"
+                    style="width: 100px"
+                    @change="$set(range, 0, $event)"
+                  ></v-text-field>
+                </div>
+                <div>
+                  <v-text-field
+                    :value="range[1]"
+                    class="mt-0 pt-0"
+                    hide-details
+                    single-line
+                    type="number"
+                    style="width: 100px"
+                    @change="$set(range, 1, $event)"
+                  ></v-text-field>
+                </div>
               </div>
             </div>
           </v-col>
@@ -110,29 +112,32 @@
       </v-col>
     </v-row>
   </div>
+  </div>
 </template>
 
 <script>
 import OptionFilter from "../components/homepages/OptionFilter.vue";
 import ProductCard from "../components/homepages/ProductCard.vue";
+import VSubHeader from "../components/VSubHeader.vue";
 import json from "../mock/data.json";
-import { mapActions } from 'vuex';
+import { mapActions } from "vuex";
 export default {
   components: {
     OptionFilter,
+    VSubHeader,
     ProductCard
   },
   methods: {
-     ...mapActions('categories', ['getCategories']),
-      ...mapActions('products', ['getProducts']),
-   async load() {
-    console.log('ccc')
-    this.getCategories()
-     this.products = await this.getProducts()
-  }
+    ...mapActions("categories", ["getCategories"]),
+    ...mapActions("products", ["getProducts"]),
+    async load() {
+      console.log("ccc");
+      this.getCategories();
+      this.products = await this.getProducts();
+    }
   },
   created() {
-   this.load()
+    this.load();
   },
   data() {
     return {
@@ -204,7 +209,7 @@ export default {
       margin-bottom: -2px;
       margin-left: 2px;
     }
-    .text-price-container{
+    .text-price-container {
       margin: 0px 10px 20px 5px;
       display: flex;
       justify-content: space-between;
