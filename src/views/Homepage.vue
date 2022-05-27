@@ -176,7 +176,7 @@ export default {
 <style lang="scss" scoped>
 .wrapper {
   overflow: hidden;
-  width: 1300px;
+   width: 1300px;
   margin: 0 auto;
 }
 .filter-container {
