@@ -1,5 +1,5 @@
 <template>
-  <div class="wrapper">
+  <div class="wrapper" @click="onClick">
     <v-row>
       <v-col cols="12">
         <v-img
@@ -8,17 +8,19 @@
           max-width="300"
           aspect-ratio="1.8"
           contain
-          :src="items.image"
+          :src="items.imgUrl"
         >
         </v-img>
       </v-col>
       <v-col cols="12">
         <div class="name-label">
-          {{ items.name }}
+          {{ items.productName }}
         </div>
         <div class="wrapper-price-variant">
-          <div class="price-label">12.000.000</div>
-          <div class="variant-label">3 phiên bản</div>
+          <div class="price-label">{{items.variants[0].price.toLocaleString()}}</div>
+          <div class="variant-label">
+            {{ `${items.variants.length} phiên bản` }}
+          </div>
         </div>
         <div class="attributes-label">
           <v-chip class="chip" label outlined> Celeron N4020 </v-chip>
@@ -34,7 +36,12 @@
 </template>
 <script>
 export default {
-  props: ["items"]
+  props: ["items"],
+  methods: {
+    onClick() {
+      this.$router.push("/product");
+    }
+  }
 };
 </script>
 <style lang="scss" scoped>

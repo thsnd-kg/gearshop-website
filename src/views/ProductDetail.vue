@@ -28,7 +28,7 @@
           <div class="label-price">18.490.000</div>
           <div class="variant-container">
             <v-container fluid>
-              <v-radio-group v-model="radios">
+              <v-radio-group v-model="radios" mandatory>
                 <template v-slot:label>
                   <div class="title-v">Phiên bản</div>
                 </template>
@@ -141,6 +141,7 @@
 export default {
   data() {
     return {
+      radios: null,
       imgs: [
         {
           src: "https://media-api-beta.thinkpro.vn/media/core/products/2022/4/6/%20Laptop%20Gaming%20Colorful%20X15.jpeg?w=700&h=700"

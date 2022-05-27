@@ -1,13 +1,17 @@
-import Vue from 'vue'
-import Vuex from 'vuex'
-import notice from './modules/notice'
+import Vue from "vue";
+import Vuex from "vuex";
+import notice from "./modules/notice";
+import categories from "./modules/categories";
+import products from "./modules/products";
 
+Vue.use(Vuex);
 
-
-Vue.use(Vuex)
-
-export default new Vuex.Store({
-    modules: {
-      notice
-    },
-});
+const storeData = {
+  modules: {
+    notice,
+    categories,
+    products
+  }
+};
+const store = new Vuex.Store(storeData);
+export default store;
