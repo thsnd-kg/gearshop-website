@@ -31,7 +31,6 @@ export default {
 
 .main-content-wrapper {
   margin-top: 10px;
-  padding: 0 10%;
 }
 
 .search-field {
