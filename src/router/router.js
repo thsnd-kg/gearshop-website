@@ -12,7 +12,7 @@ export default [
       import(/* webpackChunkName: "about" */ "../views/Homepage.vue")
   },
   {
-    path: "/product",
+    path: "/product/:link",
     name: "Product Detail",
     component: () =>
       import(/* webpackChunkName: "about" */ "../views/ProductDetail.vue")

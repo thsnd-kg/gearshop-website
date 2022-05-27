@@ -106,7 +106,7 @@
             :key="data.id"
             cols="5"
           >
-            <ProductCard :items="data" />
+            <ProductCard :item="data" />
           </v-col>
         </v-row>
       </v-col>

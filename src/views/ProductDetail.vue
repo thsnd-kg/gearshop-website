@@ -11,7 +11,7 @@
             <v-carousel-item
               v-for="(item, i) in imgs"
               :key="i"
-              :src="item.src"
+              :src="item"
             ></v-carousel-item>
           </v-carousel>
         </div>
@@ -22,48 +22,27 @@
             Lưu <v-icon>mdi-bookmark-outline</v-icon>
           </div>
           <div class="label-name">
-            Asus Vivobook 15 A515 OLED (A515EA-L12033W)
+            {{ product.productName }}
           </div>
-          <div class="label-sku">SKU:Vivobooka515O03CF</div>
-          <div class="label-price">18.490.000</div>
+          <div class="label-sku">
+            {{ radios != null ? `SKU: ${radios.sku}` : "" }}
+          </div>
+          <div class="label-price">
+            {{ radios != null ? radios.price.toLocaleString() : "" }}
+          </div>
           <div class="variant-container">
             <v-container fluid>
               <v-radio-group v-model="radios" mandatory>
                 <template v-slot:label>
                   <div class="title-v">Phiên bản</div>
                 </template>
-                <v-radio value="Google">
+                <v-radio
+                  v-for="n in product.variants"
+                  :key="n.variantId"
+                  :value="n"
+                >
                   <template v-slot:label>
-                    <div class="item-variant-container">
-                      <div class="variant-name-label">
-                        15.6, 1920x1080 px, 60 Hz • Pin 42 WHr
-                      </div>
-                      <div class="variant-price-label">12.000.000</div>
-                      <div class="variant-attributes-label">
-                        <v-chip class="chip" label outlined>
-                          Celeron N4020
-                        </v-chip>
-                        <v-chip class="chip" label outlined> RAM 4GB </v-chip>
-                        <v-chip class="chip" label outlined> SSD 256GB </v-chip>
-                      </div>
-                    </div>
-                  </template>
-                </v-radio>
-                <v-radio value="Duckduckgo">
-                  <template v-slot:label>
-                    <div class="item-variant-container">
-                      <div class="variant-name-label">
-                        15.6, 1920x1080 px, 60 Hz • Pin 42 WHr
-                      </div>
-                      <div class="variant-price-label">12.000.000</div>
-                      <div class="variant-attributes-label">
-                        <v-chip class="chip" label outlined>
-                          Celeron N4020
-                        </v-chip>
-                        <v-chip class="chip" label outlined> RAM 4GB </v-chip>
-                        <v-chip class="chip" label outlined> SSD 256GB </v-chip>
-                      </div>
-                    </div>
+                    <variant-radio :item="n" />
                   </template>
                 </v-radio>
               </v-radio-group>
@@ -88,6 +67,24 @@
               <v-icon class="icon-title" color="black"
                 >mdi-gamepad-circle-left</v-icon
               >Cấu hình & đặc điểm
+            </div>
+            <div>
+              <v-row v-if="radios !== null">
+                <v-col
+                  class="product-attribute-container"
+                  v-for="data in radios.attributes"
+                  :key="data.attributeId"
+                  cols="5"
+                >
+                  <div class="font-weight-bold">
+                    <v-icon class="icon-title" color="black"
+                      >{{ data.attributeIcon }}
+                    </v-icon>
+                    {{ data.attributeName }}
+                  </div>
+                  <div class="pl-6 pt-2">{{ data.value }}</div>
+                </v-col>
+              </v-row>
             </div>
           </div>
           <div class="discount">
@@ -138,25 +135,35 @@
   </div>
 </template>
 <script>
+import VariantRadio from "../components/productdetail/VariantRadio.vue";
 export default {
+  components: {
+    VariantRadio
+  },
   data() {
     return {
+      product: {},
       radios: null,
-      imgs: [
-        {
-          src: "https://media-api-beta.thinkpro.vn/media/core/products/2022/4/6/%20Laptop%20Gaming%20Colorful%20X15.jpeg?w=700&h=700"
-        },
-        {
-          src: "https://media-api-beta.thinkpro.vn/media/core/products/2022/4/6/%20Laptop%20Gaming%20Colorful%20X15%207.jpeg?w=700&h=700"
-        },
-        {
-          src: "https://media-api-beta.thinkpro.vn/media/core/products/2022/4/6/%20Laptop%20Gaming%20Colorful%20X15%202.jpeg?w=700&h=700"
-        },
-        {
-          src: "https://media-api-beta.thinkpro.vn/media/core/products/2022/4/6/%20Laptop%20Gaming%20Colorful%20X15%204.jpeg?w=700&h=700"
-        }
-      ]
+      imgs: []
     };
+  },
+  created() {
+    this.getProduct();
+  },
+  computed: {},
+  methods: {
+    async getProduct() {
+      let link = this.$route.params.link;
+      const response = await this.$http.get(`website/products/link/${link}`);
+      this.product = response.content;
+      let lstImg = [];
+      lstImg.push(this.product.imgUrl);
+      this.product.variants.forEach((element) => {
+        lstImg.push(element.imgUrl);
+      });
+      this.imgs = lstImg;
+      console.log(this.product);
+    }
   }
 };
 </script>
@@ -166,18 +173,21 @@ export default {
   width: 1200px;
   margin: 0 auto;
   .product-detail {
-    margin-top: -20px;
     width: 600px;
     padding: 0px 0px 20px 20px;
     border-radius: 20px;
     background-color: white;
     .title {
       padding-top: 10px;
+      margin-bottom: 20px;
       font-weight: bold;
       padding-left: 10px;
       .icon-title {
         margin-right: 10px;
       }
+    }
+    .product-attribute-container {
+      margin-left: 10px;
     }
     .discount {
       background-color: #fff8f2;
@@ -232,32 +242,6 @@ export default {
         font-size: 13px;
         font-weight: bolder;
         color: black;
-      }
-      .item-variant-container {
-        margin-bottom: 10px;
-        padding: 7px 0px 5px 5px;
-        height: 100px;
-        width: 370px;
-        border-radius: 10px;
-        box-shadow: 1px 1px 1px 1px #d8d9db;
-        &:hover {
-          background-color: #d8d9db;
-        }
-        .variant-name-label {
-          font-weight: bold;
-        }
-        .variant-price-label {
-          font-weight: bold;
-          color: #f43688;
-        }
-        .variant-attributes-label {
-          .chip {
-            font-size: 12px;
-            height: 25px;
-            margin-left: 4px;
-            padding: 0 6px;
-          }
-        }
       }
     }
     .add-card-container {

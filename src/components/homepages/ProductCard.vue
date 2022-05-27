@@ -8,18 +8,18 @@
           max-width="300"
           aspect-ratio="1.8"
           contain
-          :src="items.imgUrl"
+          :src="item.imgUrl"
         >
         </v-img>
       </v-col>
       <v-col cols="12">
         <div class="name-label">
-          {{ items.productName }}
+          {{ item.productName }}
         </div>
         <div class="wrapper-price-variant">
-          <div class="price-label">{{items.variants[0].price.toLocaleString()}}</div>
+          <div class="price-label">{{item.variants[0].price.toLocaleString()}}</div>
           <div class="variant-label">
-            {{ `${items.variants.length} phiên bản` }}
+            {{ `${item.variants.length} phiên bản` }}
           </div>
         </div>
         <div class="attributes-label">
@@ -36,10 +36,13 @@
 </template>
 <script>
 export default {
-  props: ["items"],
+  props: ["item"],
   methods: {
     onClick() {
-      this.$router.push("/product");
+      this.$router.push(
+          { name: 'Product Detail', 
+          params: { link: this.item.productLink } }
+      );
     }
   }
 };
