@@ -8,14 +8,17 @@
         </v-scroll-x-transition>
       </div>
     </v-main>
+    <app-notification />
   </v-app>
 </template>
 
 <script>
 import VHeader from '../components/VHeader.vue';
+import AppNotification from '../components/notification';
 export default {
   components: {
     VHeader,
+    AppNotification,
   },
 };
 </script>
@@ -28,7 +31,6 @@ export default {
 
 .main-content-wrapper {
   margin-top: 10px;
-  padding: 0 10%;
 }
 
 .search-field {
