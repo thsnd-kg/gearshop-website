@@ -9,16 +9,16 @@
     <transition name="slide-fade">
       <div class="sub-menu" v-if="isOpen">
         <v-row no-gutters>
-          <v-col v-for="item in options" :key="item.id" class="shrink">
+          <v-col v-for="item in options" :key="item.tagId" class="shrink">
             <v-chip
               class="chip"
               :class="item.isSelected ? 'chipSelect' : ''"
               color="gray"
               label
               outlined
-              @click="removeItem(item.id)"
+              @click="removeItem(item.tagId)"
             >
-              {{ item.title}}
+              {{ item.tagName}}
             </v-chip>
           </v-col>
         </v-row>
@@ -33,15 +33,27 @@ export default {
   props: ["title", "items"],
   data() {
     return {
-      options: this.items,
+      options: [],
       isOpen: false
     };
   },
+  created() {
+    this.load();
+  },
   methods: {
+    load() {
+      let initOptions = this.items;
+      initOptions.map(element => {
+        element['isSelected'] = false;
+        return element;
+      });
+      this.options = initOptions;
+      console.log(initOptions);
+    },
     removeItem(itemId) {
       console.log(itemId)
       let newoption = this.options.map((obj) => {
-        if (obj.id === itemId) obj.isSelected = !obj.isSelected;
+        if (obj.tagId === itemId) obj.isSelected = !obj.isSelected;
         return obj;
       });
       this.options = newoption

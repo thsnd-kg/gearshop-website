@@ -1,117 +1,112 @@
 <template>
-<div> 
-  <v-sub-header/>
-  <div class="wrapper">
-    <v-row>
-      <v-col cols="3">
-        <v-row no-gutters class="filter-container">
-          <v-col cols="12">
-            <div class="title">
-              <div class="title-text">Tất cả laptop</div>
-              <div class="title-filter">
-                <v-icon class="icon-title" color="gray"
-                  >mdi-filter-menu-outline</v-icon
+  <div>
+    <v-sub-header />
+    <div class="wrapper">
+      <v-row>
+        <v-col cols="3">
+          <v-row no-gutters class="filter-container">
+            <v-col cols="12">
+              <div class="title">
+                <div class="title-text">{{ category.categoryName != undefined ? `Tất cả ${category.categoryName}` : ``}}</div>
+                <div class="title-filter">
+                  <v-icon class="icon-title" color="gray"
+                    >mdi-filter-menu-outline</v-icon
+                  >
+                  Bộ lọc
+                </div>
+              </div>
+            </v-col>
+            <v-col cols="12">
+              <div class="price-container">
+                <div class="title">Khoảng giá (1 triệu vnd)</div>
+                <v-range-slider
+                  v-model="range"
+                  :max="max"
+                  :min="min"
+                  hide-details
+                  class="align-center"
                 >
-                Bộ lọc
+                </v-range-slider>
+                <div class="text-price-container">
+                  <div>
+                    <v-text-field
+                      :value="range[0]"
+                      class="mt-0 pt-0"
+                      hide-details
+                      single-line
+                      type="number"
+                      style="width: 100px"
+                      @change="$set(range, 0, $event)"
+                    ></v-text-field>
+                  </div>
+                  <div>
+                    <v-text-field
+                      :value="range[1]"
+                      class="mt-0 pt-0"
+                      hide-details
+                      single-line
+                      type="number"
+                      style="width: 100px"
+                      @change="$set(range, 1, $event)"
+                    ></v-text-field>
+                  </div>
+                </div>
               </div>
-            </div>
-          </v-col>
-          <v-col cols="12">
-            <div class="price-container">
-              <div class="title">Khoảng giá (1 triệu vnd)</div>
-              <v-range-slider
-                v-model="range"
-                :max="max"
-                :min="min"
+            </v-col>
+             <v-col
+                  class="product-attribute-container"
+                  v-for="data in category.attributes"
+                  :key="data.attributeId"
+                  cols="12"
+                >
+                <template v-if="data.tags.length > 0">
+                <OptionFilter :title="data.attributeName" :items="data.tags" />
+               </template>
+                </v-col>
+          </v-row>
+        </v-col>
+        <v-col cols="9">
+          <v-row>
+            <v-col cols="12">
+              <v-text-field
+                class="search-input"
+                prepend-inner-icon="mdi-magnify"
+                outlined
                 hide-details
-                class="align-center"
+                solo
+                placeholder="Tìm kiếm sản phẩm"
+                dense
+                flat
+                height="20px"
               >
-              </v-range-slider>
-              <div class="text-price-container">
-                <div>
-                  <v-text-field
-                    :value="range[0]"
-                    class="mt-0 pt-0"
-                    hide-details
-                    single-line
-                    type="number"
-                    style="width: 100px"
-                    @change="$set(range, 0, $event)"
-                  ></v-text-field>
+              </v-text-field>
+            </v-col>
+            <v-col cols="12" >
+              <div class="sort-container">
+                <div class="sort-title">
+                  <v-icon> mdi-swap-vertical </v-icon>
+                  Sắp xếp theo
                 </div>
-                <div>
-                  <v-text-field
-                    :value="range[1]"
-                    class="mt-0 pt-0"
-                    hide-details
-                    single-line
-                    type="number"
-                    style="width: 100px"
-                    @change="$set(range, 1, $event)"
-                  ></v-text-field>
-                </div>
+                <v-radio-group @change="changeSort" class="radio-container" v-model="radios" row>
+                  <v-radio label="Hàng mới về" value="1"></v-radio>
+                  <v-radio label="Giá thấp → cao" value="2"></v-radio>
+                  <v-radio label="Giá cao → thấp" value="3"></v-radio>
+                </v-radio-group>
+                <div class="quantity-product-label">{{`${products.length} sản phẩm`}}</div>
               </div>
-            </div>
-          </v-col>
-          <v-col cols="12">
-            <v-card class="options">
-              <OptionFilter title="Nhu Cầu" :items="services" />
-            </v-card>
-          </v-col>
-          <v-col cols="12">
-            <v-card class="options">
-              <OptionFilter title="CPU" :items="services" />
-            </v-card>
-          </v-col>
-          <v-col cols="12">
-            <v-card class="options">
-              <OptionFilter title="CPU" :items="services" />
-            </v-card>
-          </v-col>
-        </v-row>
-      </v-col>
-      <v-col cols="9">
-        <v-row>
-          <v-col cols="12">
-            <v-text-field
-              class="search-input"
-              prepend-inner-icon="mdi-magnify"
-              outlined
-              hide-details
-              solo
-              placeholder="Tìm kiếm sản phẩm"
-              dense
-              flat
-              height="20px"
+            </v-col>
+            <v-col
+              class="product-card-container"
+              v-for="data in products"
+              :key="data.id"
+              cols="5"
             >
-            </v-text-field>
-          </v-col>
-          <v-col cols="12">
-            <div class="sort-container">
-              <div class="sort-title">
-                <v-icon> mdi-swap-vertical </v-icon>
-                Sắp xếp theo
-              </div>
-              <v-radio-group class="radio-container" v-model="radios" row>
-                <v-radio label="Hàng mới về" value="radio-1"></v-radio>
-                <v-radio label="Giá thấp → cao" value="radio-2"></v-radio>
-                <v-radio label="Giá cao → thấp" value="radio-3"></v-radio>
-              </v-radio-group>
-              <div class="quantity-product-label">386 sản phẩm</div>
-            </div>
-          </v-col>
-          <v-col
-            class="product-card-container"
-            v-for="data in products"
-            :key="data.id"
-            cols="5"
-          >
-            <ProductCard :item="data" />
-          </v-col>
-        </v-row>
-      </v-col>
-    </v-row>
-  </div>
+              <ProductCard :item="data" />
+            </v-col>
+          </v-row>
+        </v-col>
+      </v-row>
+    </div>
   </div>
 </template>
 
@@ -119,8 +114,6 @@
 import OptionFilter from "../components/homepages/OptionFilter.vue";
 import ProductCard from "../components/homepages/ProductCard.vue";
 import VSubHeader from "../components/VSubHeader.vue";
-import json from "../mock/data.json";
-import { mapActions } from "vuex";
 export default {
   components: {
     OptionFilter,
@@ -128,12 +121,32 @@ export default {
     ProductCard
   },
   methods: {
-    ...mapActions("categories", ["getCategories"]),
-    ...mapActions("products", ["getProducts"]),
     async load() {
-      console.log("ccc");
-      this.getCategories();
-      this.products = await this.getProducts();
+      let link = this.$route.params.link;
+        const productRes =  await this.$http.get(`products?onlyActive=true`);
+        this.products = productRes.content;
+        console.log(productRes.content);
+      if (!link) {
+        const response = await this.$http.get(`website/categories/link/laptop`);
+        this.category = response.content;
+      } else {
+        const response = await this.$http.get(`website/categories/link/${link}`);
+        this.category = response.content;
+      }
+      //const response = await this.$http.get(`website/products/link/${link}`);
+      // this.product = response.content;
+    },
+    changeSort() {
+        console.log(this.radios);
+        if(this.radios == '1') {
+         this.products = this.products.sort((a,b) => b.productId - a.productId);
+        }
+         if(this.radios == '2') {
+         this.products = this.products.sort((a,b) => a.variants[0].price - b.variants[0].price);
+        }
+         if(this.radios == '3') {
+         this.products = this.products.sort((a,b) => b.variants[0].price - a.variants[0].price);
+        }
     }
   },
   created() {
@@ -145,29 +158,30 @@ export default {
       max: 100,
       range: [0, 30],
       radios: null,
+      category: {},
       services: [
         {
-          title: "Web",
+          tagName: "Web",
           isSelected: true,
-          id: 1
+          tagId: 1
         },
         {
-          title: "Design",
+          tagName: "Design",
           isSelected: false,
-          id: 2
+          tagId: 2
         },
         {
-          title: "Videos",
+          tagName: "Videos",
           isSelected: false,
-          id: 3
+          tagId: 3
         },
         {
-          title: "Videos",
+          tagName: "Videos",
           isSelected: false,
-          id: 4
+          tagId: 4
         }
       ],
-      products: json.products
+      products: [],
     };
   }
 };
@@ -176,11 +190,11 @@ export default {
 <style lang="scss" scoped>
 .wrapper {
   overflow: hidden;
-   width: 1300px;
+  width: 1300px;
   margin: 0 auto;
 }
 .filter-container {
-  margin-top: 130px;
+  margin-top: 30px;
   background-color: #ffff;
   border-radius: 10px;
   padding: 15px 5px 15px 5px;
@@ -226,10 +240,12 @@ export default {
   opacity: 1;
 }
 .search-input {
+   margin-top: 30px;
   width: 300px;
   border-radius: 20px;
 }
 .sort-container {
+  height: 10px;
   display: flex;
   justify-content: start;
   .sort-title {
