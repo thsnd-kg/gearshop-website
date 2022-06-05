@@ -1,5 +1,10 @@
 <template>
   <div class="wrapper">
+    <v-breadcrumbs :items="breadcrumb">
+      <template v-slot:divider>
+        <v-icon>mdi-chevron-right</v-icon>
+      </template>
+    </v-breadcrumbs>
     <v-row>
       <v-col cols="7">
         <div class="product-image-container">
@@ -54,7 +59,7 @@
               <div class="counter">{{quantity}}</div>
               <v-icon class="plus" @click="clickQty(1)">mdi-plus</v-icon>
             </div>
-            <div class="add-btn">THÊM VÀO GIỎ HÀNG</div>
+            <div class="add-btn" @click="addToCart">THÊM VÀO GIỎ HÀNG</div>
           </div>
         </div>
       </v-col>
@@ -149,10 +154,23 @@ export default {
   },
   data() {
     return {
+      breadcrumb:[
+        {
+          text: 'Trang chủ',
+          disabled: false,
+          href: '/laptop',
+        },
+        {
+          text: 'Xem chi tiết',
+          disabled: false,
+          href: '',
+        },
+      ],
       product: {},
       radios: null,
       imgs: [],
       quantity: 1,
+      clicked: false,
     };
   },
   created() {
@@ -180,6 +198,18 @@ export default {
          this.quantity = this.quantity+i;
       }
 
+    },
+    async addToCart() {
+      if(!this.clicked) {
+      const response = await this.$http.post(`orders/add-item`,{quantity: this.quantity, variantId: this.radios.variantId});
+      if(response.status != 200) {
+        this.$notify.error("Không thể thêm sản phẩm vào giỏ hàng")
+      }
+      if(response.status == 200) {
+        this.$notify.success("Đã thêm sản phẩm vào giỏ hàng")
+      }
+      this.clicked = true;
+      }
     }
   }
 };
@@ -254,7 +284,7 @@ export default {
   .product-infor-container {
     width: 470px;
     position: fixed;
-    top: 90px;
+    top: 145px;
     padding: 10px 0px 20px 20px;
     margin-left: -70px;
     border-radius: 20px;

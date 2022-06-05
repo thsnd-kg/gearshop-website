@@ -1,5 +1,10 @@
 <template>
   <div class="wrapper">
+    <v-breadcrumbs :items="breadcrumb">
+      <template v-slot:divider>
+        <v-icon>mdi-chevron-right</v-icon>
+      </template>
+    </v-breadcrumbs>
     <v-row>
       <v-col cols="8">
         <v-row>
@@ -141,7 +146,29 @@
   </div>
 </template>
 <script>
-export default {};
+export default {
+  data() {
+    return {
+      breadcrumb: [
+        {
+          text: "Trang chủ",
+          disabled: false,
+          href: "/laptop"
+        },
+        {
+          text: "Giỏ hàng",
+          disabled: false,
+          href: "/cart"
+        },
+        {
+          text: "Check out",
+          disabled: false,
+          href: ""
+        }
+      ]
+    };
+  }
+};
 </script>
 <style lang="scss" scoped>
 .wrapper {

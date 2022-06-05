@@ -2,25 +2,25 @@
   <div class="container">
     <v-row>
       <v-col cols="2">
-        <v-img class="image" :src="item.imgUrl"> </v-img>
+        <v-img class="image" :src="item.variant.imgUrl" height="98" width="98"> </v-img>
       </v-col>
       <v-col cols="6">
         <div class="product-name">
-          {{ item.productName }}
+          {{ item.variant.variantId }}
         </div>
         <div class="variant-name">
           <v-icon class="icon">mdi-alert-circle-outline</v-icon>
-          {{ item.variants[0].variantName }}
+          {{ item.variant.variantName }}
         </div>
         <div class="variant-price">
           <v-icon class="icon">mdi-currency-usd</v-icon>
-          {{ item.variants[0].price.toLocaleString() }}
+          {{ item.variant.price.toLocaleString() }}
         </div>
       </v-col>
       <v-col cols="2">
         <div class="quantity">
           <v-icon class="minus" @click="minus">mdi-minus</v-icon>
-          <div class="counter">{{ item.variants[0].quantity }}</div>
+          <div class="counter">{{ item.quantity }}</div>
           <v-icon class="plus" @click="plus">mdi-plus</v-icon>
         </div>
       </v-col>
@@ -29,7 +29,7 @@
           {{ item.total.toLocaleString() }}
         </div>
         <div class="delete-icon-container">
-          <v-icon class="delete-icon">mdi-close-circle-outline</v-icon>
+          <v-icon class="delete-icon" @click="del">mdi-close-circle-outline</v-icon>
         </div>
       </v-col>
     </v-row>
@@ -37,49 +37,36 @@
 </template>
 <script>
 export default {
+  props: ["items"],
   data() {
     return {
-      item: {
-        productName: "Asus Vivobook 15 A515 OLED (A515EA-L12033W)",
-        productDesc: "",
-        imgUrl:
-          "https://media-api-beta.thinkpro.vn/media/core/products/2022/2/27/A515-OLED-thinkpro-01.png?w=700&h=700",
-        productLink: "asus-vivobook-15-a515-oled",
-        totalVariant: 1,
-        variants: [
-          {
-            variantId: 1,
-            sku: "Vivobooka515O03CF",
-            variantName: "15.6, 1920x1080 px, 60 Hz • Pin 42 WHR",
-            variantDesc: "",
-            price: 18490000,
-            imgUrl:
-              "https://media-api-beta.thinkpro.vn/media/core/products/2022/2/27/A515-OLED-thinkpro-02.png?w=700&h=700",
-            quantity: 1
-          }
-        ],
-        total: 0
-      }
+      item: {}
     };
   },
   methods: {
     plus() {
-      this.item.variants[0].quantity++;
+      this.$emit('edit-qty',this.item.variant.variantId,1);
+      this.item.quantity++;
       this.item.total =
-        this.item.variants[0].quantity * this.item.variants[0].price;
+        this.item.quantity * this.item.variant.price;
     },
     minus() {
-      if (this.item.variants[0].quantity > 1) {
-        this.item.variants[0].quantity--;
+      if (this.item.quantity > 1) {
+         this.$emit('edit-qty',this.item.variant.variantId,-1);
+        this.item.quantity--;
         this.item.total =
-          this.item.variants[0].quantity * this.item.variants[0].price;
+          this.item.quantity * this.item.variant.price;
       }
     },
+    del() {
+      this.$emit('delete',this.item.variant.variantId)
+    },
     async setTotal() {
-      this.item.total = parseInt(
-        this.item.variants[0].quantity * this.item.variants[0].price
+      this.item = JSON.parse(JSON.stringify(this.items));
+      this.item['total'] = parseInt(
+        this.item.quantity * this.item.variant.price
       );
-    }
+    },
   },
   created() {
     this.setTotal();
@@ -88,7 +75,6 @@ export default {
 </script>
 <style lang="scss" scoped>
 .container {
-  margin: 10px 0px 10px 0px;
   padding-top: 20px;
   width: 700px;
   background-color: white;

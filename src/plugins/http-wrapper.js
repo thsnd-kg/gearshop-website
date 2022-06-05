@@ -5,7 +5,9 @@ const DEFAULT_HEADERS = {
 };
 
 const DEFAULT_REQ_OPTS = {
-    headers: {}, 
+    headers: {
+        Authorization: 'Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJodXlidWkiLCJpYXQiOjE2NTQ0NTYzNzcsImV4cCI6MTY1NDU0Mjc3N30._C4WSLjm62S_iZT8ScDCDHqAbxDRPreMx9WOs58Q9VtlHxfXbynFx-7p6PTA9AjScWC1W4qj4-5DzrOeD_ml2g'
+    }, 
     ignoreInterceptor: false
 };
 

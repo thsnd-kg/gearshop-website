@@ -1,13 +1,18 @@
 <template>
   <div class="wrapper">
+    <v-breadcrumbs :items="breadcrumb">
+      <template v-slot:divider>
+        <v-icon>mdi-chevron-right</v-icon>
+      </template>
+    </v-breadcrumbs>
     <v-row>
       <v-col cols="8">
         <v-row>
-          <v-col cols="12">
-            <CartItem />
-            <CartItem />
-            <CartItem />
-            <CartItem />
+          <v-col 
+          v-for="data in items.orderDetails"
+          :key="data.variant.variantId"
+          cols="12">
+            <CartItem :items="data" @delete="delItem" @edit-qty="editQty"/>
           </v-col>
         </v-row>
       </v-col>
@@ -42,7 +47,7 @@
               <div class="detail">
                 <div class="tamtinh">
                   <div>Tạm tính:</div>
-                  <div>0</div>
+                  <div>{{items.totalPrice != undefined ?  items.totalPrice.toLocaleString() : 0}}</div>
                 </div>
                 <div class="tamtinh">
                   <div>Khuyến mãi:</div>
@@ -53,7 +58,7 @@
                 <div>Tổng cộng:</div>
                 <div>0</div>
               </div>
-              <div class="checkout-btn" @click="handleClickCk" >Đặt hàng<v-icon color="white">mdi-chevron-right</v-icon></div>
+              <div class="checkout-btn" @click="handleClickCk" >Check out<v-icon color="white">mdi-chevron-right</v-icon></div>
             </div>
           </v-col>
         </v-row>
@@ -67,11 +72,61 @@ export default {
   components: {
     CartItem
   },
+  data() {
+    return {
+      breadcrumb:[
+        {
+          text: 'Trang chủ',
+          disabled: false,
+          href: '/laptop',
+        },
+        {
+          text: 'Giỏ hàng',
+          disabled: false,
+          href: '',
+        },
+      ],
+      items: {}
+    }
+  },
   methods: {
+    async getCart() {
+      const response = await this.$http.get(`orders/cart`);
+      if(response.status == 200) {
+        this.items = response.content
+      }
+    },
      async handleClickCk()  {
       this.$router.push("/checkout");
     },
+    async delItem(id) {
+     this.items.orderDetails = this.items.orderDetails.filter(item => item.variant.variantId !== id);
+      await this.$http.post(`orders/remove-item`,id);
+     this.caculateTotal();
+    },
+    async editQty(id, i) {
+      let qty = 0;
+       this.items.orderDetails =  this.items.orderDetails.map(item => {
+         if(item.variant.variantId == id) {
+           item.quantity += i;
+           qty = item.quantity;
+         }
+        return item
+       })
+       await this.$http.post(`orders/add-item`,{quantity: qty, variantId: id});
+       this.caculateTotal();
+    },
+    caculateTotal() {
+      let total = 0;
+      this.items.orderDetails.forEach(item => {
+        total += item.quantity*item.variant.price;
+      });
+      this.items.totalPrice = total;
+    }
   },
+  created() {
+    this.getCart();
+  }
 };
 </script>
 
