@@ -1,5 +1,10 @@
 <template>
   <div class="wrapper">
+    <v-breadcrumbs :items="breadcrumb">
+      <template v-slot:divider>
+        <v-icon>mdi-chevron-right</v-icon>
+      </template>
+    </v-breadcrumbs>
     <v-row>
       <v-col cols="7">
         <div class="product-image-container">
@@ -19,7 +24,7 @@
       <v-col cols="4">
         <div class="product-infor-container">
           <div class="bookmark-save">
-            Lưu <v-icon>mdi-bookmark-outline</v-icon>
+            Lưu <v-icon >mdi-bookmark-outline</v-icon>
           </div>
           <div class="label-name">
             {{ product.productName }}
@@ -50,13 +55,11 @@
           </div>
           <div class="add-card-container">
             <div class="quantity">
-              <v-icon class="minus">mdi-minus</v-icon>
-              <div class="counter">1</div>
-              <v-icon class="plus">mdi-plus</v-icon>
+              <v-icon class="minus" @click="clickQty(-1)">mdi-minus</v-icon>
+              <div class="counter">{{quantity}}</div>
+              <v-icon class="plus" @click="clickQty(1)">mdi-plus</v-icon>
             </div>
-            <v-btn class="add-btn" depressed elevation="2" plain x-large
-              >Thêm vào giỏ hàng</v-btn
-            >
+            <div class="add-btn" @click="addToCart">THÊM VÀO GIỎ HÀNG</div>
           </div>
         </div>
       </v-col>
@@ -99,12 +102,21 @@
                 >mdi-shield-check-outline</v-icon
               >Bảo hành, đổi trả
             </div>
+            <div class="content">
+              <ul>
+                <li>Bảo hành 12 tháng tại <strong>Gear Shop</strong></li>
+                 <li>Một đổi một trong vòng một tháng đầu tiên</li>
+              </ul>
+            </div>
           </div>
           <div class="description">
             <div class="title">
               <v-icon class="icon-title" color="black"
                 >mdi-clipboard-text-outline</v-icon
               >Mô tả sản phẩm
+            </div>
+            <div class="pr-2"> 
+              {{product.productDesc}}
             </div>
           </div>
           <div class="thanking">
@@ -115,9 +127,9 @@
                   Cảm ơn bạn đã xem sản phẩm của chúng tôi, hãy liên hệ để được
                   trải nghiệm và tư vấn miễn phí bạn nhé!
                 </div>
-                <v-btn class="btn-hotline" depressed raised x-large>
-                  Liên hệ hotline</v-btn
-                >
+                <div class="btn-hotline">
+                  LIÊN HỆ HOTLINE
+                </div>
               </v-col>
               <v-col cols="5">
                 <v-img
@@ -142,9 +154,23 @@ export default {
   },
   data() {
     return {
+      breadcrumb:[
+        {
+          text: 'Trang chủ',
+          disabled: false,
+          href: '/laptop',
+        },
+        {
+          text: 'Xem chi tiết',
+          disabled: false,
+          href: '',
+        },
+      ],
       product: {},
       radios: null,
-      imgs: []
+      imgs: [],
+      quantity: 1,
+      clicked: false,
     };
   },
   created() {
@@ -163,6 +189,27 @@ export default {
       });
       this.imgs = lstImg;
       console.log(this.product);
+    },
+    clickQty(i) {
+      if(this.quantity > 1 && i == -1) {
+        this.quantity = this.quantity+i;
+      }
+      if(this.quantity < 10 && i == 1) {
+         this.quantity = this.quantity+i;
+      }
+
+    },
+    async addToCart() {
+      if(!this.clicked) {
+      const response = await this.$http.post(`orders/add-item`,{quantity: this.quantity, variantId: this.radios.variantId});
+      if(response.status != 200) {
+        this.$notify.error("Không thể thêm sản phẩm vào giỏ hàng")
+      }
+      if(response.status == 200) {
+        this.$notify.success("Đã thêm sản phẩm vào giỏ hàng")
+      }
+      this.clicked = true;
+      }
     }
   }
 };
@@ -194,6 +241,15 @@ export default {
       height: 500px;
       margin-right: 15px;
     }
+    .insurance{
+      .content {
+        background-color: #f1f1f1;
+        margin-right: 20px;
+        height: 70px;
+        align-items: center;
+        border-radius: 10px;
+      }
+    }
     .thanking {
       background-color: rgba(248, 250, 252);
       border-radius: 10px;
@@ -202,20 +258,33 @@ export default {
         padding-left: 20px;
       }
       .btn-hotline {
-        margin: 20px 0px 0px 60px;
-        color: #f43688;
-        background-color: rgba(248, 250, 252);
+        margin: 40px 0px 0px 20px;
+        padding: 12px 0px 0px 70px;
+        height: 50px;
+        width: 300px;
+        border-radius: 10px;
+        background-color: #f43688;
+        font-weight: bold;
+         color: white !important;
+         &:hover {
+           cursor: pointer;
+            background-color: #c32b6c;
+         }
       }
     }
   }
 
   .product-image-container {
+    margin-top: 16px;
     height: 550px;
     width: 600px;
     border-radius: 20px;
     background-color: white;
   }
   .product-infor-container {
+    width: 470px;
+    position: fixed;
+    top: 145px;
     padding: 10px 0px 20px 20px;
     margin-left: -70px;
     border-radius: 20px;
@@ -276,10 +345,17 @@ export default {
         }
       }
       .add-btn {
+        padding: 12px 0px 0px 55px;
+        height: 50px;
+        width: 300px;
         border-radius: 10px;
         background-color: #f43688;
-        color: white !important;
         font-weight: bold;
+         color: white !important;
+         &:hover {
+           cursor: pointer;
+            background-color: #c32b6c;
+         }
       }
     }
   }
