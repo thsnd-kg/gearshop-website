@@ -50,9 +50,9 @@
           </div>
           <div class="add-card-container">
             <div class="quantity">
-              <v-icon class="minus">mdi-minus</v-icon>
-              <div class="counter">1</div>
-              <v-icon class="plus">mdi-plus</v-icon>
+              <v-icon class="minus" @click="clickQty(-1)">mdi-minus</v-icon>
+              <div class="counter">{{quantity}}</div>
+              <v-icon class="plus" @click="clickQty(1)">mdi-plus</v-icon>
             </div>
             <div class="add-btn">THÊM VÀO GIỎ HÀNG</div>
           </div>
@@ -122,9 +122,9 @@
                   Cảm ơn bạn đã xem sản phẩm của chúng tôi, hãy liên hệ để được
                   trải nghiệm và tư vấn miễn phí bạn nhé!
                 </div>
-                <v-btn class="btn-hotline" depressed raised x-large>
-                  Liên hệ hotline</v-btn
-                >
+                <div class="btn-hotline">
+                  LIÊN HỆ HOTLINE
+                </div>
               </v-col>
               <v-col cols="5">
                 <v-img
@@ -151,7 +151,8 @@ export default {
     return {
       product: {},
       radios: null,
-      imgs: []
+      imgs: [],
+      quantity: 1,
     };
   },
   created() {
@@ -170,6 +171,15 @@ export default {
       });
       this.imgs = lstImg;
       console.log(this.product);
+    },
+    clickQty(i) {
+      if(this.quantity > 1 && i == -1) {
+        this.quantity = this.quantity+i;
+      }
+      if(this.quantity < 10 && i == 1) {
+         this.quantity = this.quantity+i;
+      }
+
     }
   }
 };
@@ -218,14 +228,24 @@ export default {
         padding-left: 20px;
       }
       .btn-hotline {
-        margin: 20px 0px 0px 60px;
-        color: #f43688;
-        background-color: rgba(248, 250, 252);
+        margin: 40px 0px 0px 20px;
+        padding: 12px 0px 0px 70px;
+        height: 50px;
+        width: 300px;
+        border-radius: 10px;
+        background-color: #f43688;
+        font-weight: bold;
+         color: white !important;
+         &:hover {
+           cursor: pointer;
+            background-color: #c32b6c;
+         }
       }
     }
   }
 
   .product-image-container {
+    margin-top: 16px;
     height: 550px;
     width: 600px;
     border-radius: 20px;
@@ -304,6 +324,7 @@ export default {
          color: white !important;
          &:hover {
            cursor: pointer;
+            background-color: #c32b6c;
          }
       }
     }

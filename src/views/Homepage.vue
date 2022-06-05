@@ -7,12 +7,18 @@
           <v-row no-gutters class="filter-container">
             <v-col cols="12">
               <div class="title">
-                <div class="title-text">{{ category.categoryName != undefined ? `Tất cả ${category.categoryName}` : ``}}</div>
+                <div class="title-text">
+                  {{
+                    category.categoryName != undefined
+                      ? `Tất cả ${category.categoryName}`
+                      : ``
+                  }}
+                </div>
                 <div class="title-filter" @click="isFilter = !isFilter">
                   Bộ lọc
-                  <v-icon class="icon-title" color="gray"
-                    >{{isFilter ? "mdi-filter-outline" : "mdi-filter-off"}}</v-icon
-                  >
+                  <v-icon class="icon-title" color="gray">{{
+                    isFilter ? "mdi-filter-outline" : "mdi-filter-off"
+                  }}</v-icon>
                 </div>
               </div>
             </v-col>
@@ -53,16 +59,16 @@
                 </div>
               </div>
             </v-col>
-             <v-col
-                  class="product-attribute-container"
-                  v-for="data in category.attributes"
-                  :key="data.attributeId"
-                  cols="12"
-                >
-                <template v-if="data.tags.length > 0">
+            <v-col
+              class="product-attribute-container"
+              v-for="data in category.attributes"
+              :key="data.attributeId"
+              cols="12"
+            >
+              <template v-if="data.tags.length > 0">
                 <OptionFilter :title="data.attributeName" :items="data.tags" />
-               </template>
-                </v-col>
+              </template>
+            </v-col>
           </v-row>
         </v-col>
         <v-col cols="9">
@@ -86,27 +92,56 @@
               >
               </v-text-field>
             </v-col>
-            <v-col cols="12" >
+            <v-col cols="12">
               <div class="sort-container">
                 <div class="sort-title">
                   <v-icon> mdi-swap-vertical </v-icon>
                   Sắp xếp theo
                 </div>
-                <v-radio-group @change="changeSort" class="radio-container" v-model="radios" row>
+                <v-radio-group
+                  @change="changeSort"
+                  class="radio-container"
+                  v-model="radios"
+                  row
+                >
                   <v-radio label="Hàng mới về" value="1"></v-radio>
                   <v-radio label="Giá thấp → cao" value="2"></v-radio>
                   <v-radio label="Giá cao → thấp" value="3"></v-radio>
                 </v-radio-group>
-                <div class="quantity-product-label">{{`${products.length} sản phẩm`}}</div>
+                <div class="quantity-product-label">
+                  {{ `${products.length} sản phẩm` }}
+                </div>
               </div>
             </v-col>
             <v-col
               class="product-card-container"
-              v-for="data in productsFilter"
+              v-for="data in getListProductWithIndex"
               :key="data.id"
               cols="5"
             >
               <ProductCard :item="data" />
+            </v-col>
+            <v-col cols="12">
+              <div class="paging-container">
+                <div class="button-paging" @click="movingPage(+1)">
+                  Trang tiếp <v-icon color="white">mdi-chevron-right</v-icon>
+                </div>
+                <div class="display-paging">
+                  <v-icon class="icon" color="black" @click="movingPage(-1)"
+                    >mdi-chevron-left</v-icon
+                  >
+                  <div class="number">
+                    {{
+                      `${this.pageIndex}/${Math.ceil(
+                        this.productsFilter.length / 4
+                      )}`
+                    }}
+                  </div>
+                  <v-icon class="icon" color="black" @click="movingPage(+1)"
+                    >mdi-chevron-right</v-icon
+                  >
+                </div>
+              </div>
             </v-col>
           </v-row>
         </v-col>
@@ -128,14 +163,19 @@ export default {
   methods: {
     async load() {
       let link = this.$route.params.link;
+      let index = this.$route.query.p;
+      if (index == undefined) this.pageIndex = 1;
+      else this.pageIndex = index;
       if (!link) {
         const response = await this.$http.get(`website/categories/link/laptop`);
         this.products = response.content;
-      console.log(response.content)
+        this.link = "laptop";
       } else {
-        const response = await this.$http.get(`website/categories/link/${link}`);
+        const response = await this.$http.get(
+          `website/categories/link/${link}`
+        );
         this.products = response.content;
-         console.log(response.content)
+        this.link = link;
       }
       this.category = this.products[0].category;
       this.productsFilter = this.products;
@@ -143,23 +183,50 @@ export default {
       // this.product = response.content;
     },
     changeSort() {
-        console.log(this.radios);
-        if(this.radios == '1') {
-         this.productsFilter = this.productsFilter.sort((a,b) => b.productId - a.productId);
-        }
-         if(this.radios == '2') {
-         this.productsFilter = this.productsFilter.sort((a,b) => a.variants[0].price - b.variants[0].price);
-        }
-         if(this.radios == '3') {
-         this.productsFilter = this.productsFilter.sort((a,b) => b.variants[0].price - a.variants[0].price);
-        }
+      console.log(this.radios);
+      if (this.radios == "1") {
+        this.productsFilter = this.productsFilter.sort(
+          (a, b) => b.productId - a.productId
+        );
+      }
+      if (this.radios == "2") {
+        this.productsFilter = this.productsFilter.sort(
+          (a, b) => a.variants[0].price - b.variants[0].price
+        );
+      }
+      if (this.radios == "3") {
+        this.productsFilter = this.productsFilter.sort(
+          (a, b) => b.variants[0].price - a.variants[0].price
+        );
+      }
     },
     searchProduct() {
-      this.productsFilter = this.products.filter(item => item.productName.toUpperCase().includes(this.searchText.toUpperCase()));
+      this.productsFilter = this.products.filter((item) =>
+        item.productName.toUpperCase().includes(this.searchText.toUpperCase())
+      );
+      this.$router.push({ path: `/${this.link}`, query: { p: 1 } });
+      this.pageIndex = 1;
     },
     clearSearchText() {
-         this.productsFilter = this.products
-         this.changeSort();
+      this.productsFilter = this.products;
+      this.changeSort();
+    },
+    movingPage(i) {
+      console.log(typeof i);
+      console.log(typeof this.pageIndex);
+      if (this.pageIndex == 1 && i == -1) {
+        this.$router.push({ path: `/${this.link}`, query: { p: 1 } });
+      } else {
+        if (this.pageIndex == Math.ceil(this.productsFilter.length / 4) && i ==1) {
+          return;
+        } else {
+          this.$router.push({
+            path: `/${this.link}`,
+            query: { p: parseInt(this.pageIndex) + i }
+          });
+          this.pageIndex = parseInt(this.pageIndex) + i;
+        }
+      }
     }
   },
   created() {
@@ -175,8 +242,20 @@ export default {
       products: [],
       productsFilter: [],
       isFilter: false,
-      searchText: '',
+      searchText: "",
+      link: "",
+      pageIndex: null
     };
+  },
+  computed: {
+    getListProductWithIndex() {
+      let index = this.$route.query.p;
+      if (index === undefined || index == 1) {
+        return this.productsFilter.slice(0, 4);
+      } else {
+        return this.productsFilter.slice((index - 1) * 4, (index - 1) * 4 + 4);
+      }
+    }
   }
 };
 </script>
@@ -239,7 +318,7 @@ export default {
   opacity: 1;
 }
 .search-input {
-   margin-top: 30px;
+  margin-top: 30px;
   width: 300px;
   border-radius: 20px;
 }
@@ -268,6 +347,53 @@ export default {
     width: 400px !important;
     height: 360px !important;
     margin: 0px 10px -5px 10px;
+  }
+}
+.paging-container {
+  padding: 0px 20px 0px 10px;
+  margin-bottom: 100px;
+  width: 820px;
+  display: flex;
+  justify-content: space-between;
+
+  .button-paging {
+    background-color: #f43688;
+    padding: 12px 0px 0px 260px;
+    border-radius: 7px;
+    color: white;
+    font-size: 16px;
+    font-weight: bold;
+    height: 50px;
+    width: 600px;
+    &:hover {
+      cursor: pointer;
+      background-color: #c32b6c;
+    }
+  }
+  .display-paging {
+    margin-top: 7px;
+    width: 120px;
+    display: flex;
+    justify-content: space-between;
+    .number {
+      text-align: center;
+      background-color: white;
+      font-weight: bold;
+      width: 50px;
+      height: 30px;
+      margin: 2px 0px 0px 0px;
+      padding-top: 2px;
+      border-radius: 7px;
+    }
+    .icon {
+      height: 30px;
+      width: 30px;
+      &:hover {
+        border-radius: 7px;
+        cursor: pointer;
+        background-color: #e1e1e1;
+      }
+    }
   }
 }
 </style>

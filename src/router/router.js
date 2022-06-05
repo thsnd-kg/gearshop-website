@@ -6,6 +6,12 @@ export default [
       import(/* webpackChunkName: "about" */ "../views/Cart.vue")
   },
   {
+    path: "/checkout",
+    name: "CheckOut",
+    component: () =>
+      import(/* webpackChunkName: "about" */ "../views/CheckOut.vue")
+  },
+  {
     path: "/:link",
     name: "Home",
     component: () =>

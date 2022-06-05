@@ -40,7 +40,7 @@
             </v-btn>
           </v-col>
           <v-col>
-            <v-btn elevation="0" fab small color="#f8fafc">
+            <v-btn elevation="0" fab small color="#f8fafc" @click="handleClickCk">
               <v-icon>mdi-truck-fast-outline</v-icon>
             </v-btn>
           </v-col>
@@ -58,10 +58,13 @@
 export default {
   methods: {
     async handleClick() {
-      this.$notify.success("Đăng nhập thành công");
+     // this.$notify.success("Đăng nhập thành công");
       const response = await this.$http.get("products");
       console.log(response);
        this.$router.push("/cart");
+    },
+    async handleClickCk()  {
+      this.$router.push("/checkout");
     },
     goHome() {
       this.$router.push("/");
