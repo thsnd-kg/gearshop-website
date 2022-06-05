@@ -61,6 +61,7 @@ export default {
       this.$notify.success("Đăng nhập thành công");
       const response = await this.$http.get("products");
       console.log(response);
+       this.$router.push("/cart");
     },
     goHome() {
       this.$router.push("/");

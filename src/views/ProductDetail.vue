@@ -19,7 +19,7 @@
       <v-col cols="4">
         <div class="product-infor-container">
           <div class="bookmark-save">
-            Lưu <v-icon>mdi-bookmark-outline</v-icon>
+            Lưu <v-icon >mdi-bookmark-outline</v-icon>
           </div>
           <div class="label-name">
             {{ product.productName }}
@@ -54,9 +54,7 @@
               <div class="counter">1</div>
               <v-icon class="plus">mdi-plus</v-icon>
             </div>
-            <v-btn class="add-btn" depressed elevation="2" plain x-large
-              >Thêm vào giỏ hàng</v-btn
-            >
+            <div class="add-btn">THÊM VÀO GIỎ HÀNG</div>
           </div>
         </div>
       </v-col>
@@ -99,12 +97,21 @@
                 >mdi-shield-check-outline</v-icon
               >Bảo hành, đổi trả
             </div>
+            <div class="content">
+              <ul>
+                <li>Bảo hành 12 tháng tại <strong>Gear Shop</strong></li>
+                 <li>Một đổi một trong vòng một tháng đầu tiên</li>
+              </ul>
+            </div>
           </div>
           <div class="description">
             <div class="title">
               <v-icon class="icon-title" color="black"
                 >mdi-clipboard-text-outline</v-icon
               >Mô tả sản phẩm
+            </div>
+            <div class="pr-2"> 
+              {{product.productDesc}}
             </div>
           </div>
           <div class="thanking">
@@ -194,6 +201,15 @@ export default {
       height: 500px;
       margin-right: 15px;
     }
+    .insurance{
+      .content {
+        background-color: #f1f1f1;
+        margin-right: 20px;
+        height: 70px;
+        align-items: center;
+        border-radius: 10px;
+      }
+    }
     .thanking {
       background-color: rgba(248, 250, 252);
       border-radius: 10px;
@@ -216,6 +232,9 @@ export default {
     background-color: white;
   }
   .product-infor-container {
+    width: 470px;
+    position: fixed;
+    top: 90px;
     padding: 10px 0px 20px 20px;
     margin-left: -70px;
     border-radius: 20px;
@@ -276,10 +295,16 @@ export default {
         }
       }
       .add-btn {
+        padding: 12px 0px 0px 55px;
+        height: 50px;
+        width: 300px;
         border-radius: 10px;
         background-color: #f43688;
-        color: white !important;
         font-weight: bold;
+         color: white !important;
+         &:hover {
+           cursor: pointer;
+         }
       }
     }
   }

@@ -8,11 +8,11 @@
             <v-col cols="12">
               <div class="title">
                 <div class="title-text">{{ category.categoryName != undefined ? `Tất cả ${category.categoryName}` : ``}}</div>
-                <div class="title-filter">
-                  <v-icon class="icon-title" color="gray"
-                    >mdi-filter-menu-outline</v-icon
-                  >
+                <div class="title-filter" @click="isFilter = !isFilter">
                   Bộ lọc
+                  <v-icon class="icon-title" color="gray"
+                    >{{isFilter ? "mdi-filter-outline" : "mdi-filter-off"}}</v-icon
+                  >
                 </div>
               </div>
             </v-col>
@@ -78,6 +78,11 @@
                 dense
                 flat
                 height="20px"
+                clearable
+                v-model="searchText"
+                @blur="searchProduct"
+                @keydown.enter="searchProduct"
+                @click:clear="clearSearchText"
               >
               </v-text-field>
             </v-col>
@@ -97,7 +102,7 @@
             </v-col>
             <v-col
               class="product-card-container"
-              v-for="data in products"
+              v-for="data in productsFilter"
               :key="data.id"
               cols="5"
             >
@@ -123,30 +128,38 @@ export default {
   methods: {
     async load() {
       let link = this.$route.params.link;
-        const productRes =  await this.$http.get(`products?onlyActive=true`);
-        this.products = productRes.content;
-        console.log(productRes.content);
       if (!link) {
         const response = await this.$http.get(`website/categories/link/laptop`);
-        this.category = response.content;
+        this.products = response.content;
+      console.log(response.content)
       } else {
         const response = await this.$http.get(`website/categories/link/${link}`);
-        this.category = response.content;
+        this.products = response.content;
+         console.log(response.content)
       }
+      this.category = this.products[0].category;
+      this.productsFilter = this.products;
       //const response = await this.$http.get(`website/products/link/${link}`);
       // this.product = response.content;
     },
     changeSort() {
         console.log(this.radios);
         if(this.radios == '1') {
-         this.products = this.products.sort((a,b) => b.productId - a.productId);
+         this.productsFilter = this.productsFilter.sort((a,b) => b.productId - a.productId);
         }
          if(this.radios == '2') {
-         this.products = this.products.sort((a,b) => a.variants[0].price - b.variants[0].price);
+         this.productsFilter = this.productsFilter.sort((a,b) => a.variants[0].price - b.variants[0].price);
         }
          if(this.radios == '3') {
-         this.products = this.products.sort((a,b) => b.variants[0].price - a.variants[0].price);
+         this.productsFilter = this.productsFilter.sort((a,b) => b.variants[0].price - a.variants[0].price);
         }
+    },
+    searchProduct() {
+      this.productsFilter = this.products.filter(item => item.productName.toUpperCase().includes(this.searchText.toUpperCase()));
+    },
+    clearSearchText() {
+         this.productsFilter = this.products
+         this.changeSort();
     }
   },
   created() {
@@ -159,29 +172,10 @@ export default {
       range: [0, 30],
       radios: null,
       category: {},
-      services: [
-        {
-          tagName: "Web",
-          isSelected: true,
-          tagId: 1
-        },
-        {
-          tagName: "Design",
-          isSelected: false,
-          tagId: 2
-        },
-        {
-          tagName: "Videos",
-          isSelected: false,
-          tagId: 3
-        },
-        {
-          tagName: "Videos",
-          isSelected: false,
-          tagId: 4
-        }
-      ],
       products: [],
+      productsFilter: [],
+      isFilter: false,
+      searchText: '',
     };
   }
 };
@@ -206,13 +200,18 @@ export default {
       font-weight: bold;
     }
     .title-filter {
+      padding-left: 180px;
       margin-top: 10px;
       font-size: 16px;
       color: gray;
       .icon-title {
+        margin-left: 15px;
         font-size: 18px;
         color: gray;
         margin-right: 10px;
+      }
+      &:hover {
+        cursor: pointer;
       }
     }
   }

@@ -1,5 +1,11 @@
 export default [
   {
+    path: "/cart",
+    name: "Cart",
+    component: () =>
+      import(/* webpackChunkName: "about" */ "../views/Cart.vue")
+  },
+  {
     path: "/:link",
     name: "Home",
     component: () =>
@@ -12,5 +18,6 @@ export default [
     name: "Product Detail",
     component: () =>
       import(/* webpackChunkName: "about" */ "../views/ProductDetail.vue")
-  }
+  },
+  
 ];

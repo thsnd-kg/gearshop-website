@@ -1,6 +1,6 @@
 <template>
   <div class="menu-item">
-    <div class="title-container" @click="isOpen = !isOpen">
+    <div class="title-container" @click="changeStatusOpen">
       <span class="title">
         {{ title }}
       </span>
@@ -49,6 +49,19 @@ export default {
       });
       this.options = initOptions;
       console.log(initOptions);
+    },
+    changeStatusOpen() {
+      if(!this.isOpen) {
+        this.isOpen = true;
+        return;
+      }
+      let change = false;
+      this.options.forEach(element => {
+        if(element.isSelected) {
+          change = true;
+        }
+      });
+      if(!change) this.isOpen = ! this.isOpen;
     },
     removeItem(itemId) {
       console.log(itemId)
