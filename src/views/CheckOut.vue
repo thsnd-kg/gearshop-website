@@ -116,11 +116,19 @@
               </div>
               <div class="detail">
                 <div class="tamtinh">
+                  <div>Số lượng:</div>
+                  <div>{{num}}</div>
+                </div>
+                <div class="tamtinh">
                   <div>Tạm tính:</div>
-                  <div>0</div>
+                  <div>{{items.totalPrice != undefined ?  items.totalPrice.toLocaleString() : 0}}</div>
                 </div>
                 <div class="tamtinh">
                   <div>Khuyến mãi:</div>
+                  <div>0</div>
+                </div>
+                <div class="tamtinh">
+                  <div>Phí vận chuyển:</div>
                   <div>0</div>
                 </div>
               </div>
@@ -165,8 +173,29 @@ export default {
           disabled: false,
           href: ""
         }
-      ]
+      ],
+      item: {},
+      num: 0,
     };
+  },
+   methods: {
+    async getCart() {
+      const response = await this.$http.get(`orders/cart`);
+      if(response.status == 200) {
+        this.items = response.content
+      }
+      this.caculateQty();
+    },
+    caculateQty() {
+      let total = 0;
+      this.items.orderDetails.forEach(item => {
+        total += item.quantity;
+      });
+      this.num = total;
+    }
+   },
+   created() {
+    this.getCart();
   }
 };
 </script>

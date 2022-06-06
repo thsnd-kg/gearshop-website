@@ -46,6 +46,10 @@
 
               <div class="detail">
                 <div class="tamtinh">
+                  <div>Số lượng:</div>
+                  <div>{{num}}</div>
+                </div>
+                <div class="tamtinh">
                   <div>Tạm tính:</div>
                   <div>{{items.totalPrice != undefined ?  items.totalPrice.toLocaleString() : 0}}</div>
                 </div>
@@ -86,7 +90,8 @@ export default {
           href: '',
         },
       ],
-      items: {}
+      items: {},
+      num: 0,
     }
   },
   methods: {
@@ -95,6 +100,7 @@ export default {
       if(response.status == 200) {
         this.items = response.content
       }
+      this.caculateQty();
     },
      async handleClickCk()  {
       this.$router.push("/checkout");
@@ -122,6 +128,14 @@ export default {
         total += item.quantity*item.variant.price;
       });
       this.items.totalPrice = total;
+      this.caculateQty();
+    },
+    caculateQty() {
+      let total = 0;
+      this.items.orderDetails.forEach(item => {
+        total += item.quantity;
+      });
+      this.num = total;
     }
   },
   created() {
