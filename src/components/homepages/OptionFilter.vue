@@ -1,6 +1,6 @@
 <template>
   <div class="menu-item">
-    <div class="title-container" @click="isOpen = !isOpen">
+    <div class="title-container" @click="changeStatusOpen">
       <span class="title">
         {{ title }}
       </span>
@@ -9,16 +9,16 @@
     <transition name="slide-fade">
       <div class="sub-menu" v-if="isOpen">
         <v-row no-gutters>
-          <v-col v-for="item in options" :key="item.id" class="shrink">
+          <v-col v-for="item in options" :key="item.tagId" class="shrink">
             <v-chip
               class="chip"
               :class="item.isSelected ? 'chipSelect' : ''"
               color="gray"
               label
               outlined
-              @click="removeItem(item.id)"
+              @click="removeItem(item.tagId)"
             >
-              {{ item.title}}
+              {{ item.tagName}}
             </v-chip>
           </v-col>
         </v-row>
@@ -33,15 +33,40 @@ export default {
   props: ["title", "items"],
   data() {
     return {
-      options: this.items,
+      options: [],
       isOpen: false
     };
   },
+  created() {
+    this.load();
+  },
   methods: {
+    load() {
+      let initOptions = this.items;
+      initOptions.map(element => {
+        element['isSelected'] = false;
+        return element;
+      });
+      this.options = initOptions;
+      console.log(initOptions);
+    },
+    changeStatusOpen() {
+      if(!this.isOpen) {
+        this.isOpen = true;
+        return;
+      }
+      let change = false;
+      this.options.forEach(element => {
+        if(element.isSelected) {
+          change = true;
+        }
+      });
+      if(!change) this.isOpen = ! this.isOpen;
+    },
     removeItem(itemId) {
       console.log(itemId)
       let newoption = this.options.map((obj) => {
-        if (obj.id === itemId) obj.isSelected = !obj.isSelected;
+        if (obj.tagId === itemId) obj.isSelected = !obj.isSelected;
         return obj;
       });
       this.options = newoption

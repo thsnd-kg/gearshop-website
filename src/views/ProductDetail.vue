@@ -1,5 +1,10 @@
 <template>
   <div class="wrapper">
+    <v-breadcrumbs :items="breadcrumb">
+      <template v-slot:divider>
+        <v-icon>mdi-chevron-right</v-icon>
+      </template>
+    </v-breadcrumbs>
     <v-row>
       <v-col cols="7">
         <div class="product-image-container">
@@ -11,7 +16,7 @@
             <v-carousel-item
               v-for="(item, i) in imgs"
               :key="i"
-              :src="item.src"
+              :src="item"
             ></v-carousel-item>
           </v-carousel>
         </div>
@@ -19,51 +24,30 @@
       <v-col cols="4">
         <div class="product-infor-container">
           <div class="bookmark-save">
-            Lưu <v-icon>mdi-bookmark-outline</v-icon>
+            Lưu <v-icon >mdi-bookmark-outline</v-icon>
           </div>
           <div class="label-name">
-            Asus Vivobook 15 A515 OLED (A515EA-L12033W)
+            {{ product.productName }}
           </div>
-          <div class="label-sku">SKU:Vivobooka515O03CF</div>
-          <div class="label-price">18.490.000</div>
+          <div class="label-sku">
+            {{ radios != null ? `SKU: ${radios.sku}` : "" }}
+          </div>
+          <div class="label-price">
+            {{ radios != null ? radios.price.toLocaleString() : "" }}
+          </div>
           <div class="variant-container">
             <v-container fluid>
               <v-radio-group v-model="radios" mandatory>
                 <template v-slot:label>
                   <div class="title-v">Phiên bản</div>
                 </template>
-                <v-radio value="Google">
+                <v-radio
+                  v-for="n in product.variants"
+                  :key="n.variantId"
+                  :value="n"
+                >
                   <template v-slot:label>
-                    <div class="item-variant-container">
-                      <div class="variant-name-label">
-                        15.6, 1920x1080 px, 60 Hz • Pin 42 WHr
-                      </div>
-                      <div class="variant-price-label">12.000.000</div>
-                      <div class="variant-attributes-label">
-                        <v-chip class="chip" label outlined>
-                          Celeron N4020
-                        </v-chip>
-                        <v-chip class="chip" label outlined> RAM 4GB </v-chip>
-                        <v-chip class="chip" label outlined> SSD 256GB </v-chip>
-                      </div>
-                    </div>
-                  </template>
-                </v-radio>
-                <v-radio value="Duckduckgo">
-                  <template v-slot:label>
-                    <div class="item-variant-container">
-                      <div class="variant-name-label">
-                        15.6, 1920x1080 px, 60 Hz • Pin 42 WHr
-                      </div>
-                      <div class="variant-price-label">12.000.000</div>
-                      <div class="variant-attributes-label">
-                        <v-chip class="chip" label outlined>
-                          Celeron N4020
-                        </v-chip>
-                        <v-chip class="chip" label outlined> RAM 4GB </v-chip>
-                        <v-chip class="chip" label outlined> SSD 256GB </v-chip>
-                      </div>
-                    </div>
+                    <variant-radio :item="n" />
                   </template>
                 </v-radio>
               </v-radio-group>
@@ -71,13 +55,11 @@
           </div>
           <div class="add-card-container">
             <div class="quantity">
-              <v-icon class="minus">mdi-minus</v-icon>
-              <div class="counter">1</div>
-              <v-icon class="plus">mdi-plus</v-icon>
+              <v-icon class="minus" @click="clickQty(-1)">mdi-minus</v-icon>
+              <div class="counter">{{quantity}}</div>
+              <v-icon class="plus" @click="clickQty(1)">mdi-plus</v-icon>
             </div>
-            <v-btn class="add-btn" depressed elevation="2" plain x-large
-              >Thêm vào giỏ hàng</v-btn
-            >
+            <div class="add-btn" @click="addToCart">THÊM VÀO GIỎ HÀNG</div>
           </div>
         </div>
       </v-col>
@@ -88,6 +70,24 @@
               <v-icon class="icon-title" color="black"
                 >mdi-gamepad-circle-left</v-icon
               >Cấu hình & đặc điểm
+            </div>
+            <div>
+              <v-row v-if="radios !== null">
+                <v-col
+                  class="product-attribute-container"
+                  v-for="data in radios.attributes"
+                  :key="data.attributeId"
+                  cols="5"
+                >
+                  <div class="font-weight-bold">
+                    <v-icon class="icon-title" color="black"
+                      >{{ data.attributeIcon }}
+                    </v-icon>
+                    {{ data.attributeName }}
+                  </div>
+                  <div class="pl-6 pt-2">{{ data.value }}</div>
+                </v-col>
+              </v-row>
             </div>
           </div>
           <div class="discount">
@@ -102,12 +102,21 @@
                 >mdi-shield-check-outline</v-icon
               >Bảo hành, đổi trả
             </div>
+            <div class="content">
+              <ul>
+                <li>Bảo hành 12 tháng tại <strong>Gear Shop</strong></li>
+                 <li>Một đổi một trong vòng một tháng đầu tiên</li>
+              </ul>
+            </div>
           </div>
           <div class="description">
             <div class="title">
               <v-icon class="icon-title" color="black"
                 >mdi-clipboard-text-outline</v-icon
               >Mô tả sản phẩm
+            </div>
+            <div class="pr-2"> 
+              {{product.productDesc}}
             </div>
           </div>
           <div class="thanking">
@@ -118,9 +127,9 @@
                   Cảm ơn bạn đã xem sản phẩm của chúng tôi, hãy liên hệ để được
                   trải nghiệm và tư vấn miễn phí bạn nhé!
                 </div>
-                <v-btn class="btn-hotline" depressed raised x-large>
-                  Liên hệ hotline</v-btn
-                >
+                <div class="btn-hotline">
+                  LIÊN HỆ HOTLINE
+                </div>
               </v-col>
               <v-col cols="5">
                 <v-img
@@ -138,25 +147,70 @@
   </div>
 </template>
 <script>
+import VariantRadio from "../components/productdetail/VariantRadio.vue";
 export default {
+  components: {
+    VariantRadio
+  },
   data() {
     return {
+      breadcrumb:[
+        {
+          text: 'Trang chủ',
+          disabled: false,
+          href: '/laptop',
+        },
+        {
+          text: 'Xem chi tiết',
+          disabled: false,
+          href: '',
+        },
+      ],
+      product: {},
       radios: null,
-      imgs: [
-        {
-          src: "https://media-api-beta.thinkpro.vn/media/core/products/2022/4/6/%20Laptop%20Gaming%20Colorful%20X15.jpeg?w=700&h=700"
-        },
-        {
-          src: "https://media-api-beta.thinkpro.vn/media/core/products/2022/4/6/%20Laptop%20Gaming%20Colorful%20X15%207.jpeg?w=700&h=700"
-        },
-        {
-          src: "https://media-api-beta.thinkpro.vn/media/core/products/2022/4/6/%20Laptop%20Gaming%20Colorful%20X15%202.jpeg?w=700&h=700"
-        },
-        {
-          src: "https://media-api-beta.thinkpro.vn/media/core/products/2022/4/6/%20Laptop%20Gaming%20Colorful%20X15%204.jpeg?w=700&h=700"
-        }
-      ]
+      imgs: [],
+      quantity: 1,
+      clicked: false,
     };
+  },
+  created() {
+    this.getProduct();
+  },
+  computed: {},
+  methods: {
+    async getProduct() {
+      let link = this.$route.params.link;
+      const response = await this.$http.get(`website/products/link/${link}`);
+      this.product = response.content;
+      let lstImg = [];
+      lstImg.push(this.product.imgUrl);
+      this.product.variants.forEach((element) => {
+        lstImg.push(element.imgUrl);
+      });
+      this.imgs = lstImg;
+      console.log(this.product);
+    },
+    clickQty(i) {
+      if(this.quantity > 1 && i == -1) {
+        this.quantity = this.quantity+i;
+      }
+      if(this.quantity < 10 && i == 1) {
+         this.quantity = this.quantity+i;
+      }
+
+    },
+    async addToCart() {
+      if(!this.clicked) {
+      const response = await this.$http.post(`orders/add-item`,{quantity: this.quantity, variantId: this.radios.variantId});
+      if(response.status != 200) {
+        this.$notify.error("Không thể thêm sản phẩm vào giỏ hàng")
+      }
+      if(response.status == 200) {
+        this.$notify.success("Đã thêm sản phẩm vào giỏ hàng")
+      }
+      this.clicked = true;
+      }
+    }
   }
 };
 </script>
@@ -166,23 +220,35 @@ export default {
   width: 1200px;
   margin: 0 auto;
   .product-detail {
-    margin-top: -20px;
     width: 600px;
     padding: 0px 0px 20px 20px;
     border-radius: 20px;
     background-color: white;
     .title {
       padding-top: 10px;
+      margin-bottom: 20px;
       font-weight: bold;
       padding-left: 10px;
       .icon-title {
         margin-right: 10px;
       }
     }
+    .product-attribute-container {
+      margin-left: 10px;
+    }
     .discount {
       background-color: #fff8f2;
       height: 500px;
       margin-right: 15px;
+    }
+    .insurance{
+      .content {
+        background-color: #f1f1f1;
+        margin-right: 20px;
+        height: 70px;
+        align-items: center;
+        border-radius: 10px;
+      }
     }
     .thanking {
       background-color: rgba(248, 250, 252);
@@ -192,20 +258,33 @@ export default {
         padding-left: 20px;
       }
       .btn-hotline {
-        margin: 20px 0px 0px 60px;
-        color: #f43688;
-        background-color: rgba(248, 250, 252);
+        margin: 40px 0px 0px 20px;
+        padding: 12px 0px 0px 70px;
+        height: 50px;
+        width: 300px;
+        border-radius: 10px;
+        background-color: #f43688;
+        font-weight: bold;
+         color: white !important;
+         &:hover {
+           cursor: pointer;
+            background-color: #c32b6c;
+         }
       }
     }
   }
 
   .product-image-container {
+    margin-top: 16px;
     height: 550px;
     width: 600px;
     border-radius: 20px;
     background-color: white;
   }
   .product-infor-container {
+    width: 470px;
+    position: fixed;
+    top: 145px;
     padding: 10px 0px 20px 20px;
     margin-left: -70px;
     border-radius: 20px;
@@ -232,32 +311,6 @@ export default {
         font-size: 13px;
         font-weight: bolder;
         color: black;
-      }
-      .item-variant-container {
-        margin-bottom: 10px;
-        padding: 7px 0px 5px 5px;
-        height: 100px;
-        width: 370px;
-        border-radius: 10px;
-        box-shadow: 1px 1px 1px 1px #d8d9db;
-        &:hover {
-          background-color: #d8d9db;
-        }
-        .variant-name-label {
-          font-weight: bold;
-        }
-        .variant-price-label {
-          font-weight: bold;
-          color: #f43688;
-        }
-        .variant-attributes-label {
-          .chip {
-            font-size: 12px;
-            height: 25px;
-            margin-left: 4px;
-            padding: 0 6px;
-          }
-        }
       }
     }
     .add-card-container {
@@ -292,10 +345,17 @@ export default {
         }
       }
       .add-btn {
+        padding: 12px 0px 0px 55px;
+        height: 50px;
+        width: 300px;
         border-radius: 10px;
         background-color: #f43688;
-        color: white !important;
         font-weight: bold;
+         color: white !important;
+         &:hover {
+           cursor: pointer;
+            background-color: #c32b6c;
+         }
       }
     }
   }

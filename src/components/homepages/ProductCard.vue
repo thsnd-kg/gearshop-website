@@ -8,26 +8,32 @@
           max-width="300"
           aspect-ratio="1.8"
           contain
-          :src="items.imgUrl"
+          :src="item.imgUrl"
         >
         </v-img>
       </v-col>
       <v-col cols="12">
         <div class="name-label">
-          {{ items.productName }}
+          {{ item.productName }}
         </div>
         <div class="wrapper-price-variant">
-          <div class="price-label">{{items.variants[0].price.toLocaleString()}}</div>
+          <div class="price-label">
+            {{ item.variants[0].price.toLocaleString() }}
+          </div>
           <div class="variant-label">
-            {{ `${items.variants.length} phiên bản` }}
+            {{ `${item.variants.length} phiên bản` }}
           </div>
         </div>
         <div class="attributes-label">
-          <v-chip class="chip" label outlined> Celeron N4020 </v-chip>
-          <v-chip class="chip" label outlined> RAM 4GB </v-chip>
-          <v-chip class="chip" label outlined> SSD 256GB </v-chip>
-          <v-chip class="chip" label outlined> SSD 256GB </v-chip>
-          <v-chip class="chip" label outlined> SSD 256GB </v-chip>
+          <v-chip 
+          class="chip" 
+          label 
+          outlined
+          v-for="tag in getTags" 
+            :key="tag.tagId"
+          > 
+           {{`${tag.attributeName} ${tag.tagName}`}}
+          </v-chip>
         </div>
         <div class="footer"></div>
       </v-col>
@@ -36,12 +42,26 @@
 </template>
 <script>
 export default {
-  props: ["items"],
+  props: ["item"],
   methods: {
     onClick() {
-      this.$router.push("/product");
+      let routeData = this.$router.resolve({
+        name: "Product Detail",
+        params: { link: this.item.productLink }
+      });
+      window.open(routeData.href, "_blank");
     }
-  }
+  }, computed: {
+        getTags: function() {
+           
+            let lstTag = [];
+            this.item.variants[0].attributes.forEach(element => {
+                if(element.tagName !== null)
+                lstTag.push(element);
+            });
+            return lstTag.slice(0,4);
+        }
+    },
 };
 </script>
 <style lang="scss" scoped>
