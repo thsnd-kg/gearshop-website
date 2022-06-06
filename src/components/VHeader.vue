@@ -104,7 +104,7 @@ export default {
   },
 
   computed: {
-    ...mapState('auth', ['status']),
+    ...mapState('auth', ['isAuthendicated']),
   },
 
   methods: {
@@ -121,8 +121,7 @@ export default {
       this.$router.push('/');
     },
     handleClickAccount() {
-      console.log(this.status.loggedIn);
-      if (!this.status.loggedIn) {
+      if (!this.isAuthendicated) {
         this.showLogin = true;
         this.showModal = false;
       } else {

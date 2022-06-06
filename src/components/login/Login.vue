@@ -15,9 +15,10 @@
             <v-form ref="formLogin" lazy-validation>
               <v-text-field
                 validate-on-blur
-                label="Username"
-                ref="username"
-                v-model="user.username"
+                label="Email"
+                ref="email"
+                v-model="user.email"
+                :rules="emailRules"
                 outlined
               ></v-text-field>
               <v-text-field
@@ -70,9 +71,10 @@
             <v-form ref="formRegister" lazy-validation>
               <v-text-field
                 validate-on-blur
-                label="Username"
-                ref="username"
-                v-model="user.username"
+                label="Email"
+                ref="email"
+                v-model="user.email"
+                :rules="emailRules"
                 outlined
               ></v-text-field>
               <v-text-field
@@ -207,9 +209,9 @@ export default {
         return;
       }
       this.isLoading = true;
-      if (this.user.username && this.user.password) {
-        const isSuccess = await this.login(this.user);
-        if (isSuccess) {
+      if (this.user.email && this.user.password) {
+        const response = await this.login(this.user);
+        if (response.success) {
           this.$notify.success('Đăng nhập thành công');
           this.close();
         } else this.errorMessages = 'Email hoặc mật khẩu bạn nhập không đúng';
@@ -223,18 +225,13 @@ export default {
       }
 
       this.isLoading = true;
-      if (
-        this.user.username &&
-        this.user.password &&
-        this.user.confirmPassword
-      ) {
-        console.log('ok');
-        const isSuccess = await this.register(this.user);
-        if (isSuccess) {
+      if (this.user.email && this.user.password && this.user.confirmPassword) {
+        const response = await this.register(this.user);
+        if (response.success) {
           this.$notify.success('Đăng ký thành công');
           this.changeType();
-          this.$refs.formLogin.resetValidation();
-        } else this.errorMessages = 'Oops, Something went wrong!';
+          this.$refs.formRegister.resetValidation();
+        } else this.errorMessages = 'Đăng ký không thành công';
       }
       this.isLoading = false;
     },
