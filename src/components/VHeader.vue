@@ -1,10 +1,10 @@
 <template>
   <v-app-bar class="padding-content" color="#ffff" elevate-on-scroll app>
     <v-row align="center" dense>
-      <v-col cols="2" >
+      <v-col cols="2">
         <v-img
-         class="logo-container"
-         @click="goHome"
+          class="logo-container"
+          @click="goHome"
           max-height="48"
           max-width="200"
           :src="`https://gearshop.vn/frontend/images/shop/logo.png`"
@@ -40,41 +40,111 @@
             </v-btn>
           </v-col>
           <v-col>
-            <v-btn elevation="0" fab small color="#f8fafc" @click="handleClickCk">
+            <v-btn
+              elevation="0"
+              fab
+              small
+              color="#f8fafc"
+              @click="handleClickCk"
+            >
               <v-icon>mdi-truck-fast-outline</v-icon>
             </v-btn>
           </v-col>
           <v-col>
-            <v-btn elevation="0" fab small color="#f8fafc">
-              <v-icon>mdi-account-outline</v-icon>
-            </v-btn>
+            <v-menu
+              :close-on-click="closeModal"
+              :close-on-content-click="closeOnContentClick"
+              offset-y
+              nudge-bottom="6px"
+              nudge-left="3px"
+              left
+            >
+              <template v-slot:activator="{ on, attrs }">
+                <v-btn
+                  elevation="0"
+                  fab
+                  small
+                  color="#f8fafc"
+                  v-bind="attrs"
+                  v-on="on"
+                  @click="handleClickAccount"
+                >
+                  <v-icon>mdi-account-outline</v-icon>
+                </v-btn>
+              </template>
+              <ModalAccount
+                v-if="showModal"
+                @close="handleModalAccount"
+              ></ModalAccount>
+            </v-menu>
           </v-col>
         </v-row>
       </v-col>
     </v-row>
+    <Login :show="showLogin" @closeLogin="closeLogin"></Login>
   </v-app-bar>
 </template>
 <script>
+import Login from './login/Login.vue';
+import ModalAccount from './login/ModalAccount.vue';
+import { mapState } from 'vuex';
 export default {
+  components: {
+    Login,
+    ModalAccount,
+  },
+
+  data() {
+    return {
+      showModal: false,
+      showLogin: false,
+      closeModal: false,
+      closeOnContentClick: false,
+    };
+  },
+
+  computed: {
+    ...mapState('auth', ['status']),
+  },
+
   methods: {
     async handleClick() {
-     // this.$notify.success("Đăng nhập thành công");
-      const response = await this.$http.get("products");
+      // this.$notify.success("Đăng nhập thành công");
+      const response = await this.$http.get('products');
       console.log(response);
-       this.$router.push("/cart");
+      this.$router.push('/cart');
     },
-    async handleClickCk()  {
-      this.$router.push("/checkout");
+    async handleClickCk() {
+      this.$router.push('/checkout');
     },
     goHome() {
-      this.$router.push("/");
-    }
-  }
+      this.$router.push('/');
+    },
+    handleClickAccount() {
+      console.log(this.status.loggedIn);
+      if (!this.status.loggedIn) {
+        this.showLogin = true;
+        this.showModal = false;
+      } else {
+        this.showLogin = false;
+        this.showModal = true;
+        this.handleModalAccount();
+      }
+    },
+
+    closeLogin() {
+      this.showLogin = false;
+    },
+
+    handleModalAccount() {
+      this.closeOnContentClick = !this.closeOnContentClick;
+    },
+  },
 };
 </script>
 
 <style lang="scss" scoped>
-.logo-container{
+.logo-container {
   &:hover {
     cursor: pointer;
   }
