@@ -4,13 +4,16 @@ import * as type from './type'
 
 const state = {
   isAuthendicated : false,
-  token : null
+  token: null,
+  user: null
 }
 
 const mutations = {
-  [type.LOGIN_SUCCESS]: (state,  token ) => {
+  [type.LOGIN_SUCCESS]: (state, data ) => {
+
     state.isAuthendicated = true;
-    state.token = token;
+    state.token = data.token;
+    state.user = data.user
   },
   [type.LOGOUT]: state => {
     state.isAuthendicated = false;

@@ -9,7 +9,15 @@ export const login = async ({commit}, params) => {
     const { content } = response;
     if(content){
       $http.setAccessToken(content);
-      commit(type.LOGIN_SUCCESS, content );
+      const profile = await $http.get('/profile/me');
+      const user = profile.content;
+
+      const data = {
+        token: content,
+        user: user,
+      }
+      commit(type.LOGIN_SUCCESS, data);
+      
       return { success: true };
     }
     else{
