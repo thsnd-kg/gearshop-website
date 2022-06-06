@@ -52,7 +52,6 @@
           </v-col>
           <v-col>
             <v-menu
-              :close-on-click="closeModal"
               :close-on-content-click="closeOnContentClick"
               offset-y
               nudge-bottom="6px"
