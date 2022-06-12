@@ -110,8 +110,8 @@ export default {
   methods: {
     async handleClick() {
       // this.$notify.success("Đăng nhập thành công");
-      const response = await this.$http.get('products');
-      console.log(response);
+      //const response = await this.$http.get('products');
+      //console.log(response);
       this.$router.push('/cart');
     },
     async handleClickCk() {

@@ -166,7 +166,7 @@ export default {
       passwordRules: [
         (value) => !!value || 'Mật khẩu không được để trống.',
         (value) =>
-          (value && value.length >= 6) ||
+          (value && value.length >= 4) ||
           'Password must be at least 6 characters',
       ],
 

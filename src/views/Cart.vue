@@ -103,7 +103,12 @@ export default {
       this.caculateQty();
     },
      async handleClickCk()  {
+      if(this.items.orderDetails.lenght > 0) {
       this.$router.push("/checkout");
+      } 
+      else {
+          this.$notify.warning("Danh sách rỗng!")
+      }
     },
     async delItem(id) {
      this.items.orderDetails = this.items.orderDetails.filter(item => item.variant.variantId !== id);

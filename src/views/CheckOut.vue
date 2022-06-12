@@ -174,7 +174,7 @@ export default {
           href: ""
         }
       ],
-      item: {},
+      items: {},
       num: 0,
     };
   },
