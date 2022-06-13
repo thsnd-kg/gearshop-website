@@ -8,18 +8,20 @@
         </v-scroll-x-transition>
       </div>
     </v-main>
-    <!-- <VFooter class="background-main"></VFooter> -->
+    <Footer> </Footer>
     <app-notification />
   </v-app>
 </template>
 
 <script>
 import VHeader from '../components/VHeader.vue';
+import Footer from '../components/Footer.vue';
 import AppNotification from '../components/notification';
 
 export default {
   components: {
     VHeader,
+    Footer,
     AppNotification,
   },
 };

@@ -31,6 +31,7 @@
                   :min="min"
                   hide-details
                   class="align-center"
+                  @change="setFilter(true)"
                 >
                 </v-range-slider>
                 <div class="text-price-container">
@@ -252,7 +253,7 @@ export default {
       } else {
         this.isFilter = !this.isFilter;
       }
-      if (this.isFilter) {
+      if (this.isFilter && this.lstTagFilter.length > 0) {
         this.productsFilter = this.products.filter((item) => {
           let isSel = true;
           let sub = false;
@@ -270,6 +271,7 @@ export default {
             if(isSel) sub = true;
           });
           if (sub) {
+            if(item.variants[0].price > this.range[0]*1000000 && item.variants[0].price < this.range[1]*1000000)
             return item;
           } 
         });
