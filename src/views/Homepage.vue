@@ -14,7 +14,7 @@
                       : ``
                   }}
                 </div>
-                <div class="title-filter" @click="setFilter">
+                <div class="title-filter" @click="setFilter(false)">
                   Bộ lọc
                   <v-icon class="icon-title" color="gray">{{
                     isFilter ? "mdi-filter-outline" : "mdi-filter-off"
@@ -113,7 +113,7 @@
                   <v-radio label="Giá cao → thấp" value="3"></v-radio>
                 </v-radio-group>
                 <div class="quantity-product-label">
-                  {{ `${products.length} sản phẩm` }}
+                  {{ `${productsFilter.length} sản phẩm` }}
                 </div>
               </div>
             </v-col>
@@ -205,19 +205,22 @@ export default {
       }
     },
     searchProduct() {
-      this.productsFilter = this.products.filter((item) =>
+      if(this.isFisrtSearch) {
+         this.lstProductsBackupAfterSort = this.productsFilter;
+         this.isFisrtSearch = false;
+      }
+      this.productsFilter = this.lstProductsBackupAfterSort.filter((item) =>
         item.productName.toUpperCase().includes(this.searchText.toUpperCase())
       );
       this.$router.push({ path: `/${this.link}`, query: { p: 1 } });
       this.pageIndex = 1;
     },
     clearSearchText() {
-      this.productsFilter = this.products;
+      this.productsFilter = this.lstProductsBackupAfterSort;
+      this.isFisrtSearch = true;
       this.changeSort();
     },
     movingPage(i) {
-      console.log(typeof i);
-      console.log(typeof this.pageIndex);
       if (this.pageIndex == 1 && i == -1) {
         this.$router.push({ path: `/${this.link}`, query: { p: 1 } });
       } else {
@@ -236,14 +239,47 @@ export default {
       }
     },
     setTag(id) {
-      if (this.lstTagFilter.find(item => item == id) == undefined) {
+      if (this.lstTagFilter.find((item) => item == id) == undefined) {
         this.lstTagFilter.push(id);
       } else {
         this.lstTagFilter = this.lstTagFilter.filter((item) => item != id);
       }
+      if(this.isFilter) this.setFilter(true);
     },
-    setFilter() {
-      this.isFilter = !this.isFilter;
+    setFilter(isTrue) {
+      if (isTrue) {
+        this.isFilter = true;
+      } else {
+        this.isFilter = !this.isFilter;
+      }
+      if (this.isFilter) {
+        this.productsFilter = this.products.filter((item) => {
+          let isSel = true;
+          let sub = false;
+          item.variants.forEach((variant) => {
+            let variantTags = [];
+            variant.attributes.forEach((attr) => {
+              if(attr.tagId != null)
+              variantTags.push(attr.tagId)
+            });
+            this.lstTagFilter.forEach(tagId => {
+              if(!variantTags.includes(tagId)) {
+                isSel = false;
+              }
+            });
+            if(isSel) sub = true;
+          });
+          if (sub) {
+            return item;
+          } 
+        });
+      } else {
+        this.productsFilter = this.products;
+      }
+      this.$router.push({ path: `/${this.link}`, query: { p: 1 } });
+      this.pageIndex = 1;
+      console.log(this.productsFilter)
+      this.isFisrtSearch = true;
     }
   },
   created() {
@@ -257,6 +293,8 @@ export default {
       radios: null,
       category: {},
       products: [],
+      lstProductsBackupAfterSort: [],
+      isFisrtSearch: true,
       productsFilter: [],
       lstTagFilter: [],
       isFilter: false,
