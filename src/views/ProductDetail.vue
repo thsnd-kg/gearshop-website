@@ -322,8 +322,7 @@ export default {
   }
   .product-infor-container {
     width: 470px;
-    position: fixed;
-    top: 145px;
+    margin-top:20px;
     padding: 10px 0px 20px 20px;
     margin-left: -70px;
     border-radius: 20px;
