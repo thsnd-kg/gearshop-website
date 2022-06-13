@@ -148,6 +148,7 @@
 </template>
 <script>
 import VariantRadio from "../components/productdetail/VariantRadio.vue";
+import { mapState } from 'vuex';
 export default {
   components: {
     VariantRadio
@@ -170,13 +171,15 @@ export default {
       radios: null,
       imgs: [],
       quantity: 1,
-      clicked: false,
+      clicked: [],
     };
   },
   created() {
     this.getProduct();
   },
-  computed: {},
+  computed: {
+    ...mapState('auth', ['isAuthendicated']),
+  },
   methods: {
     async getProduct() {
       let link = this.$route.params.link;
@@ -200,7 +203,8 @@ export default {
 
     },
     async addToCart() {
-      if(!this.clicked) {
+      if (this.isAuthendicated) {
+      if(!this.clicked.includes(this.radios.variantId)) {
       const response = await this.$http.post(`orders/add-item`,{quantity: this.quantity, variantId: this.radios.variantId});
       if(response.status != 200) {
         this.$notify.error("Không thể thêm sản phẩm vào giỏ hàng")
@@ -208,7 +212,33 @@ export default {
       if(response.status == 200) {
         this.$notify.success("Đã thêm sản phẩm vào giỏ hàng")
       }
-      this.clicked = true;
+      this.clicked.push(this.radios.variantId);
+      } else {
+         this.$notify.warning("Đã sản phẩm vào giỏ hàng")
+      }
+      }
+      else {
+        let cart;
+        const lc = localStorage.getItem('cart');
+        if(!lc) {
+          cart = null;
+        }
+        else {
+          cart = JSON.parse(localStorage.getItem('cart'));
+        }
+        if(cart != null) {
+          if(cart.orderDetails.find(item => item.variant.variantId == this.radios.variantId) == undefined)
+          {
+           cart.orderDetails.push({quantity: this.quantity, variant: this.radios})
+          } else {
+             this.$notify.warning("Đã thêm sản phẩm vào giỏ hàng")
+          }
+        }
+        else {
+           cart = {};
+           cart['orderDetails'] = [{quantity: this.quantity, variant: this.radios}];
+        }
+        localStorage.setItem('cart', JSON.stringify(cart));
       }
     }
   }

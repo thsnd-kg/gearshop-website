@@ -14,7 +14,7 @@
                       : ``
                   }}
                 </div>
-                <div class="title-filter" @click="isFilter = !isFilter">
+                <div class="title-filter" @click="setFilter">
                   Bộ lọc
                   <v-icon class="icon-title" color="gray">{{
                     isFilter ? "mdi-filter-outline" : "mdi-filter-off"
@@ -66,7 +66,11 @@
               cols="12"
             >
               <template v-if="data.tags.length > 0">
-                <OptionFilter :title="data.attributeName" :items="data.tags" />
+                <OptionFilter
+                  :title="data.attributeName"
+                  :items="data.tags"
+                  @setTag="setTag"
+                />
               </template>
             </v-col>
           </v-row>
@@ -217,7 +221,10 @@ export default {
       if (this.pageIndex == 1 && i == -1) {
         this.$router.push({ path: `/${this.link}`, query: { p: 1 } });
       } else {
-        if (this.pageIndex == Math.ceil(this.productsFilter.length / 4) && i ==1) {
+        if (
+          this.pageIndex == Math.ceil(this.productsFilter.length / 4) &&
+          i == 1
+        ) {
           return;
         } else {
           this.$router.push({
@@ -227,6 +234,16 @@ export default {
           this.pageIndex = parseInt(this.pageIndex) + i;
         }
       }
+    },
+    setTag(id) {
+      if (this.lstTagFilter.find(item => item == id) == undefined) {
+        this.lstTagFilter.push(id);
+      } else {
+        this.lstTagFilter = this.lstTagFilter.filter((item) => item != id);
+      }
+    },
+    setFilter() {
+      this.isFilter = !this.isFilter;
     }
   },
   created() {
@@ -241,6 +258,7 @@ export default {
       category: {},
       products: [],
       productsFilter: [],
+      lstTagFilter: [],
       isFilter: false,
       searchText: "",
       link: "",

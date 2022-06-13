@@ -114,7 +114,7 @@ export default {
       this.$router.push('/cart');
     },
     async handleClickCk() {
-      this.$router.push('/checkout');
+      this.$router.push('/my-orders');
     },
     goHome() {
       this.$router.push('/');
