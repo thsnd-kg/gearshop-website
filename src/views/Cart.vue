@@ -7,7 +7,7 @@
     </v-breadcrumbs>
     <v-row>
       <v-col cols="8">
-        <v-row>
+        <v-row class="item-container">
           <v-col
             v-for="data in items.orderDetails"
             :key="data.variant.variantId"
@@ -160,7 +160,11 @@ export default {
       let qty = 0;
       this.items.orderDetails = this.items.orderDetails.map((item) => {
         if (item.variant.variantId == id) {
-          item.quantity += i;
+          if((item.quantity+i) <= item.variant.quantity)
+          { 
+            item.quantity += i;
+            console.log(item.quantity);
+          }
           qty = item.quantity;
         }
         return item;
@@ -207,6 +211,15 @@ export default {
 .wrapper {
   margin: auto;
   width: 1100px;
+}
+.item-container {
+  margin-bottom: 20px;
+  max-height: 800px;
+  border-radius: 15px;
+  overflow-y: scroll;
+}
+.item-container::-webkit-scrollbar {
+  display: none;
 }
 .discount-container {
   height: 150px;

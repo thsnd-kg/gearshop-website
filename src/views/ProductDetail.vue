@@ -37,7 +37,7 @@
           </div>
           <div class="variant-container">
             <v-container fluid>
-              <v-radio-group v-model="radios" mandatory>
+              <v-radio-group v-model="radios" mandatory @change="setQuantity">
                 <template v-slot:label>
                   <div class="title-v">Phiên bản</div>
                 </template>
@@ -197,10 +197,19 @@ export default {
       if(this.quantity > 1 && i == -1) {
         this.quantity = this.quantity+i;
       }
-      if(this.quantity < 10 && i == 1) {
+      if(this.quantity < this.radios.quantity && i == 1) {
          this.quantity = this.quantity+i;
       }
 
+    },
+    setQuantity() {
+      if(this.radios.quantity < 1)
+      {
+        this.quantity = 0;
+      }
+      else {
+       this.quantity = 1;
+      }
     },
     async addToCart() {
       if (this.isAuthendicated) {
