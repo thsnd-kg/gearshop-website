@@ -117,11 +117,17 @@
               <div class="detail">
                 <div class="tamtinh">
                   <div>Số lượng:</div>
-                  <div>{{num}}</div>
+                  <div>{{ num }}</div>
                 </div>
                 <div class="tamtinh">
                   <div>Tạm tính:</div>
-                  <div>{{items.totalPrice != undefined ?  items.totalPrice.toLocaleString() : 0}}</div>
+                  <div>
+                    {{
+                      items.totalPrice != undefined
+                        ? items.totalPrice.toLocaleString()
+                        : 0
+                    }}
+                  </div>
                 </div>
                 <div class="tamtinh">
                   <div>Khuyến mãi:</div>
@@ -136,7 +142,7 @@
                 <div>Tổng cộng:</div>
                 <div>0</div>
               </div>
-              <div class="checkout-btn">
+              <div class="checkout-btn" @click="handleClickCk">
                 Đặt hàng<v-icon color="white">mdi-chevron-right</v-icon>
               </div>
             </div>
@@ -154,6 +160,7 @@
   </div>
 </template>
 <script>
+import { mapState } from 'vuex';
 export default {
   data() {
     return {
@@ -174,27 +181,75 @@ export default {
           href: ""
         }
       ],
-      item: {},
-      num: 0,
+      items: {},
+      num: 0
     };
   },
-   methods: {
+  computed: {
+    ...mapState('auth', ['isAuthendicated']),
+  },
+  methods: {
     async getCart() {
-      const response = await this.$http.get(`orders/cart`);
-      if(response.status == 200) {
-        this.items = response.content
+      if (this.isAuthendicated) {
+        const response = await this.$http.get(`orders/cart`);
+        if (response.status == 200) {
+          this.items = response.content;
+        } else {
+          this.$notify.warning("Bạn chưa có sản phẩm nào trong giỏ hàng!");
+        }
+      } else {
+        // get cart from localStorage
+        let cart;
+        const lc = localStorage.getItem("cart");
+        if (!lc) {
+          cart = null;
+        } else {
+          cart = JSON.parse(localStorage.getItem("cart"));
+        }
+        //check null and set cart
+        if (cart != null) {
+          this.items = cart;
+        } else {
+          this.$notify.warning("Bạn chưa có sản phẩm nào trong giỏ hàng");
+        }
       }
+      this.caculateTotal();
+    },
+    caculateTotal() {
+      let total = 0;
+       if (this.items?.orderDetails !== undefined) {
+      this.items.orderDetails.forEach((item) => {
+        total += item.quantity * item.variant.price;
+      });
+      this.items.totalPrice = total;
+       }
       this.caculateQty();
     },
     caculateQty() {
       let total = 0;
-      this.items.orderDetails.forEach(item => {
+       if (this.items?.orderDetails !== undefined) {
+      this.items.orderDetails.forEach((item) => {
         total += item.quantity;
       });
+       }
       this.num = total;
+    },
+    async handleClickCk() {
+      if (this.isAuthendicated) {
+        if (this.items.orderDetails.length > 0) {
+          const response = await this.$http.get(`orders/user/checkout`);
+          if (response.status == 200) {
+            this.$notify.success("Đặt hàng thành công!");
+          } else {
+            this.$notify.error("Lỗi! Vui lòng thử lại sau.");
+          }
+        } else {
+          this.$notify.warning("Danh sách rỗng!");
+        }
+      }
     }
-   },
-   created() {
+  },
+  created() {
     this.getCart();
   }
 };

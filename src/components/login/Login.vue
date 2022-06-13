@@ -129,21 +129,21 @@
 </template>
 
 <script>
-import { mapActions } from 'vuex';
+import { mapActions } from "vuex";
 export default {
-  name: 'Login',
+  name: "Login",
 
   props: {
     show: {
       type: Boolean,
-      default: false,
-    },
+      default: false
+    }
   },
 
   watch: {
     show(isShow) {
       this.showDialog = isShow;
-    },
+    }
   },
 
   computed: {},
@@ -156,31 +156,31 @@ export default {
       isLogin: true,
       showDialog: false,
       user: {},
-      errorMessages: '',
+      errorMessages: "",
       emailRules: [
-        (v) => !!v || 'E-mail không được để trống',
+        (v) => !!v || "E-mail không được để trống",
         (v) =>
           /^(([^<>()[\]\\.,;:\s@']+(\.[^<>()\\[\]\\.,;:\s@']+)*)|('.+'))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/.test(
             v
-          ) || 'E-mail có định dạng không đúng',
+          ) || "E-mail có định dạng không đúng"
       ],
 
       passwordRules: [
-        (value) => !!value || 'Mật khẩu không được để trống.',
+        (value) => !!value || "Mật khẩu không được để trống.",
         (value) =>
-          (value && value.length >= 6) ||
-          'Password must be at least 6 characters',
+          (value && value.length >= 4) ||
+          "Password must be at least 6 characters"
       ],
 
       confirmPasswordRules: [
-        (value) => !!value || 'Nhập lại mật khẩu không đƯợc để trống',
-        (value) => value === this.user.password || 'Mật khẩu không trùng nhau',
-      ],
+        (value) => !!value || "Nhập lại mật khẩu không đƯợc để trống",
+        (value) => value === this.user.password || "Mật khẩu không trùng nhau"
+      ]
     };
   },
 
   methods: {
-    ...mapActions('auth', ['login', 'register']),
+    ...mapActions("auth", ["login", "register"]),
 
     close() {
       if (this.isLogin) this.$refs.formLogin.resetValidation();
@@ -188,8 +188,8 @@ export default {
       this.user = {};
       this.isLogin = true;
       this.isLoading = false;
-      this.errorMessages = '';
-      this.$emit('closeLogin');
+      this.errorMessages = "";
+      this.$emit("closeLogin");
     },
 
     changeType() {
@@ -212,9 +212,29 @@ export default {
       if (this.user.email && this.user.password) {
         const response = await this.login(this.user);
         if (response.success) {
-          this.$notify.success('Đăng nhập thành công');
+          this.$notify.success("Đăng nhập thành công");
+          //post cart item to BE
+          // get cart from localStorage
+          let cart;
+          const lc = localStorage.getItem("cart");
+          if (!lc) {
+            cart = null;
+          } else {
+            cart = JSON.parse(localStorage.getItem("cart"));
+            if (cart?.orderDetails !== undefined) {
+              cart.orderDetails.forEach((item) => {
+                this.$http.post(`orders/add-item`, {
+                  quantity: item.quantity,
+                  variantId: item.variant.variantId
+                });
+              });
+
+              localStorage.removeItem("cart");
+            }
+          }
           this.close();
-        } else this.errorMessages = 'Email hoặc mật khẩu bạn nhập không đúng';
+          window.location.reload();
+        } else this.errorMessages = "Email hoặc mật khẩu bạn nhập không đúng";
       }
       this.isLoading = false;
     },
@@ -228,17 +248,17 @@ export default {
       if (this.user.email && this.user.password && this.user.confirmPassword) {
         const response = await this.register(this.user);
         if (response.success) {
-          this.$notify.success('Đăng ký thành công');
+          this.$notify.success("Đăng ký thành công");
           this.changeType();
           this.$refs.formRegister.resetValidation();
-        } else this.errorMessages = 'Đăng ký không thành công';
+        } else this.errorMessages = "Đăng ký không thành công";
       }
       this.isLoading = false;
-    },
-  },
+    }
+  }
 };
 </script>
-<style lang ="scss" scoped>
+<style lang="scss" scoped>
 .content {
   width: 50%;
 }
@@ -266,6 +286,6 @@ export default {
 .check {
   background-size: 100% 100%;
   width: 50%;
-  background-image: url('https://img.rawpixel.com/s3fs-private/rawpixel_images/website_content/rm422-047-x.jpg?w=800&dpr=1&fit=default&crop=default&q=65&vib=3&con=3&usm=15&bg=F4F4F3&ixlib=js-2.2.1&s=16ea540dabc12e86960a8b74ab282c3f');
+  background-image: url("https://img.rawpixel.com/s3fs-private/rawpixel_images/website_content/rm422-047-x.jpg?w=800&dpr=1&fit=default&crop=default&q=65&vib=3&con=3&usm=15&bg=F4F4F3&ixlib=js-2.2.1&s=16ea540dabc12e86960a8b74ab282c3f");
 }
 </style>

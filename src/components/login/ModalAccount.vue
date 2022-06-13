@@ -109,6 +109,7 @@ export default {
     handleLogout() {
       this.logout();
       this.$emit('close');
+      window.location.reload();
     },
   },
 };
