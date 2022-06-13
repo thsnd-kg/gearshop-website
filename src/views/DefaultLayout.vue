@@ -8,6 +8,7 @@
         </v-scroll-x-transition>
       </div>
     </v-main>
+    <VFooter class="background-main"></VFooter>
     <app-notification />
   </v-app>
 </template>
@@ -15,10 +16,12 @@
 <script>
 import VHeader from '../components/VHeader.vue';
 import AppNotification from '../components/notification';
+import VFooter from '../components/VFooter.vue';
 export default {
   components: {
     VHeader,
     AppNotification,
+    VFooter,
   },
 };
 </script>

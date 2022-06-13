@@ -35,74 +35,82 @@
           <Category></Category>
         </v-menu>
 
-        <div class="text">Danh mục</div>
-      </v-col>
-      <v-col cols="4" class="d-flex align-center">
-        <v-text-field
-          class="search-field"
-          prepend-inner-icon="mdi-magnify"
-          hide-details
-          solo
-          background-color="#ecf0f4"
-          placeholder="Placeholder"
-          dense
-          flat
-          heigh="20px"
-        >
-          Seach</v-text-field
-        >
-      </v-col>
+          <div class="text">Danh mục</div>
+        </v-col>
+        <v-col cols="4" class="d-flex align-center">
+          <v-text-field
+            class="search-field"
+            prepend-inner-icon="mdi-magnify"
+            hide-details
+            solo
+            background-color="#ecf0f4"
+            placeholder="Placeholder"
+            dense
+            flat
+            heigh="20px"
+          >
+            Tìm kiếm sản phẩm</v-text-field
+          >
+        </v-col>
 
-      <v-col class="mx-6" cols="2">
-        <v-row no-gutters>
-          <v-col>
-            <v-btn elevation="0" fab small color="#f8fafc" @click="handleClick">
-              <v-icon>mdi-cart-outline</v-icon>
-            </v-btn>
-          </v-col>
-          <v-col>
-            <v-btn
-              elevation="0"
-              fab
-              small
-              color="#f8fafc"
-              @click="handleClickCk"
-            >
-              <v-icon>mdi-truck-fast-outline</v-icon>
-            </v-btn>
-          </v-col>
-          <v-col>
-            <v-menu
-              :close-on-content-click="closeOnContentClick"
-              offset-y
-              nudge-bottom="6px"
-              nudge-left="3px"
-              left
-            >
-              <template v-slot:activator="{ on, attrs }">
-                <v-btn
-                  elevation="0"
-                  fab
-                  small
-                  color="#f8fafc"
-                  v-bind="attrs"
-                  v-on="on"
-                  @click="handleClickAccount"
-                >
-                  <v-icon>mdi-account-outline</v-icon>
-                </v-btn>
-              </template>
-              <ModalAccount
-                v-if="showModal"
-                @close="handleModalAccount"
-              ></ModalAccount>
-            </v-menu>
-          </v-col>
-        </v-row>
-      </v-col>
-    </v-row>
-    <Login :show="showLogin" @closeLogin="closeLogin"></Login>
-  </v-app-bar>
+        <v-col class="mx-6" cols="2">
+          <v-row no-gutters>
+            <v-col>
+              <v-btn
+                elevation="0"
+                fab
+                small
+                color="#f8fafc"
+                @click="handleClick"
+              >
+                <v-icon>mdi-cart-outline</v-icon>
+              </v-btn>
+            </v-col>
+            <v-col>
+              <v-btn
+                elevation="0"
+                fab
+                small
+                color="#f8fafc"
+                @click="handleClickCk"
+              >
+                <v-icon>mdi-truck-fast-outline</v-icon>
+              </v-btn>
+            </v-col>
+            <v-col>
+              <v-menu
+                :close-on-content-click="closeOnContentClick"
+                offset-y
+                nudge-bottom="6px"
+                nudge-left="3px"
+                left
+              >
+                <template v-slot:activator="{ on, attrs }">
+                  <v-btn
+                    elevation="0"
+                    fab
+                    small
+                    color="#f8fafc"
+                    v-bind="attrs"
+                    v-on="on"
+                    @click="handleClickAccount"
+                  >
+                    <v-icon>mdi-account-outline</v-icon>
+                  </v-btn>
+                </template>
+                <ModalAccount
+                  v-if="showModal"
+                  @close="handleModalAccount"
+                ></ModalAccount>
+              </v-menu>
+            </v-col>
+          </v-row>
+        </v-col>
+      </v-row>
+
+      <Login :show="showLogin" @closeLogin="closeLogin"></Login>
+    </v-app-bar>
+  </div>
 </template>
 <script>
 import Login from './login/Login.vue';

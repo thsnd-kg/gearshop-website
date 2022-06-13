@@ -59,6 +59,10 @@ export class HttpWrapper  {
     async post(url, requestParams = {}, options = DEFAULT_REQ_OPTS) {
         return await this.sendRequest(url, REQUEST_METHODS.POST, options, requestParams);
     }
+
+    async put(url, requestParams = {}, options = DEFAULT_REQ_OPTS) {
+        return await this.sendRequest(url, REQUEST_METHODS.PUT, options, requestParams);
+    }
 	
 	async delete(url, requestParams = {}, options = DEFAULT_REQ_OPTS) {
         return await this.sendRequest(url, REQUEST_METHODS.DELETE, options, requestParams);
@@ -115,6 +119,13 @@ export class HttpWrapper  {
           }
           return { status: resp.status, ...data };
         } catch (error) {
+            if (error.toString().includes("401")) {
+                return { status: 401, success: false, message: this.#errorMessages[401] };       
+            }
+            
+            if (error.toString().includes("400")) {
+                return { status: 400, success: false, message: this.#errorMessages[400] };       
+           }
           return { status: 500, success: false, message: this.#errorMessages[500] };
         }
     }
