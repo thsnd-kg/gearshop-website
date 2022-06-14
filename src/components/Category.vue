@@ -12,7 +12,7 @@
             color="white"
             depressed
             class="font-weight-medium mx-1"
-            :to="category.categoryLink"
+            @click="pushPage(category.categoryLink)"
           >
             <v-img class="mr-1" max-width="40" :src="category.imgUrl"></v-img>
             {{ category.categoryName }}
@@ -100,6 +100,10 @@ export default {
       this.slideGroupNext.click();
       this.count++;
     },
+     pushPage(link) {
+      this.$router.push({ path: `/${link}`, query: { p: 1 } });
+       window.location.reload();
+    }
   },
 };
 </script>

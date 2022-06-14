@@ -110,7 +110,6 @@
 
       <Login :show="showLogin" @closeLogin="closeLogin"></Login>
     </v-app-bar>
-  </div>
 </template>
 <script>
 import Login from './login/Login.vue';
