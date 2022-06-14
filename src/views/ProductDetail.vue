@@ -11,7 +11,7 @@
           <v-carousel
             hide-delimiters
             show-arrows-on-hover
-            :class="`rounded-xl rounded-bl-0`"
+            :class="`rounded-xl`"
           >
             <v-carousel-item
               v-for="(item, i) in imgs"
@@ -90,12 +90,12 @@
               </v-row>
             </div>
           </div>
-          <div class="discount">
+          <!-- <div class="discount">
             <div class="title">
               <v-icon class="icon-title" color="black">mdi-gift</v-icon>Chương
               trình khuyến mãi
             </div>
-          </div>
+          </div> -->
           <div class="insurance">
             <div class="title">
               <v-icon class="icon-title" color="black"
@@ -238,7 +238,8 @@ export default {
         if(cart != null) {
           if(cart.orderDetails.find(item => item.variant.variantId == this.radios.variantId) == undefined)
           {
-           cart.orderDetails.push({quantity: this.quantity, variant: this.radios})
+           cart.orderDetails.push({quantity: this.quantity, variant: this.radios, variantId: this.radios.variantId})
+            this.$notify.success("Đã thêm sản phẩm vào giỏ hàng")
           } else {
              this.$notify.warning("Đã thêm sản phẩm vào giỏ hàng")
           }
@@ -261,7 +262,7 @@ export default {
   .product-detail {
     width: 600px;
     padding: 0px 0px 20px 20px;
-    border-radius: 20px;
+    border-radius: 25px;
     background-color: white;
     .title {
       padding-top: 10px;
@@ -315,7 +316,7 @@ export default {
 
   .product-image-container {
     margin-top: 16px;
-    height: 550px;
+    height: 500px;
     width: 600px;
     border-radius: 20px;
     background-color: white;

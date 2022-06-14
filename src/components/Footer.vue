@@ -10,36 +10,43 @@
                 src="https://gearshop.vn/frontend/images/shop/logo-df.png"
                 width="180px"
               ></v-img>
-               <div class="infor"><strong>Hotline liên hệ:</strong> 1900 0009</div>
-               <div class="infor"><strong>Công ty TNHH GearShop</strong></div>
-               <div class="infor"><strong>Địa chỉ:</strong> Khu phố 6, Phường Linh Trung, Thành phố Thủ Đức</div>
+              <div class="infor">
+                <strong>Hotline liên hệ:</strong> 1900 0009
+              </div>
+              <div class="infor"><strong>Công ty TNHH GearShop</strong></div>
+              <div class="infor">
+                <strong>Địa chỉ:</strong> Khu phố 6, Phường Linh Trung, Thành
+                phố Thủ Đức
+              </div>
             </div>
           </v-col>
           <v-col cols="6" offset-md="1">
             <v-row>
-                <v-col cols="4">
-                    <div class="title"><strong>Thông tin cần biết</strong></div>
-                    <div class="desc">Bảo hành đổi trả</div>
-                    <div class="desc">Hướng dẫn thanh toán</div>
-                    <div class="desc">Thỏa thuận sử dụng</div>
-                    <div class="desc">Thỏa thuận bảo mật</div>
-                    <div class="desc">Quy chế hoạt động</div>
-                </v-col>
-                <v-col cols="4">
-                    <div class="title"><strong>Hỗ trợ</strong></div>
-                    <div class="desc">Giới thiệu</div>
-                    <div class="desc">Thông tin liên hệ</div>
-                    <div class="desc">Hỏi đáp</div>
-                    <div class="desc">Tin công nghệ</div>
-                </v-col>
-                <v-col cols="4">
-                    <div class="title"><strong>Danh mục</strong></div>
-                    <div class="desc">Laptop</div>
-                    <div class="desc">Màn hình</div>
-                    <div class="desc">Chuột</div>
-                    <div class="desc">Bàn phím</div>
-                    <div class="desc">Ghế công thái học</div>
-                </v-col>
+              <v-col cols="4">
+                <div class="title"><strong>Thông tin cần biết</strong></div>
+                <div class="desc">Bảo hành đổi trả</div>
+                <div class="desc">Hướng dẫn thanh toán</div>
+                <div class="desc">Thỏa thuận sử dụng</div>
+                <div class="desc">Thỏa thuận bảo mật</div>
+                <div class="desc">Quy chế hoạt động</div>
+              </v-col>
+              <v-col cols="4">
+                <div class="title"><strong>Hỗ trợ</strong></div>
+                <div class="desc">Giới thiệu</div>
+                <div class="desc">Thông tin liên hệ</div>
+                <div class="desc">Hỏi đáp</div>
+                <div class="desc">Tin công nghệ</div>
+              </v-col>
+              <v-col cols="4">
+                <div class="title"><strong>Danh mục</strong></div>
+                <div class="desc"><a href="/laptop">Laptop</a></div>
+                <div class="desc"><a href="/man-hinh">Màn hình</a></div>
+                <div class="desc"><a href="/chuot">Chuột</a></div>
+                <div class="desc"><a href="/ban-phim">Bàn phím</a></div>
+                <div class="desc">
+                  <a href="/ghe-cong-thai-hoc">Ghế công thái học</a>
+                </div>
+              </v-col>
             </v-row>
           </v-col>
         </v-row>
@@ -67,21 +74,28 @@ export default {};
     .content {
       margin: 0px auto;
       width: 1300px;
-      .infor{
-         font-family: 'Be Vietnam Pro', sans-serif;
+      .infor {
+        font-family: "Be Vietnam Pro", sans-serif;
       }
       .title {
         margin-top: 10px;
         font-size: 15px !important;
       }
-      .desc{
+      .desc {
         margin-top: 10px;
         font-size: 13px;
-        font-family: 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
-       &:hover {
-            cursor: pointer;
-       }
-     }
+        font-family: "Lucida Sans", "Lucida Sans Regular", "Lucida Grande",
+          "Lucida Sans Unicode", Geneva, Verdana, sans-serif;
+        &:hover {
+          cursor: pointer;
+        }
+      }
+      a:link,
+      a:visited {
+        color: black;
+        text-decoration: none;
+        cursor: pointer;
+      }
     }
   }
 }
