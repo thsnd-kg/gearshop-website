@@ -12,7 +12,28 @@
         </v-img>
       </v-col>
       <v-col cols="3" class="d-flex align-center">
-        <v-app-bar-nav-icon></v-app-bar-nav-icon>
+        <v-menu
+          :close-on-content-click="false"
+          :close-on-click="false"
+          close
+          offset-y
+          nudge-bottom="14px"
+          min-width="100%"
+        >
+          <template v-slot:activator="{ on, attrs }">
+            <v-btn
+              elevation="0"
+              fab
+              small
+              color="#f8fafc"
+              v-bind="attrs"
+              v-on="on"
+            >
+              <v-app-bar-nav-icon></v-app-bar-nav-icon>
+            </v-btn>
+          </template>
+          <Category></Category>
+        </v-menu>
 
         <div class="text">Danh mục</div>
       </v-col>
@@ -87,14 +108,18 @@
 import Login from './login/Login.vue';
 import ModalAccount from './login/ModalAccount.vue';
 import { mapState } from 'vuex';
+import Category from './Category.vue';
+
 export default {
   components: {
     Login,
     ModalAccount,
+    Category,
   },
 
   data() {
     return {
+      showCategory: true,
       showModal: false,
       showLogin: false,
       closeModal: false,
