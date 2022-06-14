@@ -62,6 +62,7 @@
           >
             <div
               class="brand-item mx-2 d-flex align-center justify-center"
+              @click="pushPage(brand.brandName)"
             >
               <v-img
                 contain
@@ -162,6 +163,10 @@ export default {
       this.slideGroupNext.click();
       this.count++;
     },
+    pushPage(name) {
+      this.$router.push({ path: `/brands/${name}`, query: { p: 1 } });
+       window.location.reload();
+    }
   },
 };
 </script>
@@ -185,6 +190,9 @@ export default {
     border: 1px solid rgb(198, 213, 228);
     height: 80px;
     width: 120px;
+    &:hover {
+          cursor: pointer;
+        }
   }
 
   &-slide::v-deep .v-slide-group {

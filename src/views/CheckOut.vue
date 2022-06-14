@@ -19,20 +19,24 @@
                   <v-text-field
                     class="text-field"
                     label="Họ tên"
+                    v-model="name"
                     outlined
                     clearable
                     dense
                     height="48px"
+                    :rules="[notEmpty]"
                   ></v-text-field>
                 </v-col>
                 <v-col>
                   <v-text-field
                     class="text-field"
                     label="Số điện thoại"
+                    v-model="phone"
                     outlined
                     clearable
                     dense
                     height="48px"
+                    :rules="[isNumber, notEmpty, lenghtNumber]"
                   ></v-text-field>
                 </v-col>
               </v-row>
@@ -131,7 +135,13 @@
                 </div>
                 <div class="tamtinh">
                   <div>Khuyến mãi:</div>
-                  <div>0</div>
+                  <div>
+                    {{
+                      items.discountPrice != undefined
+                        ? items.discountPrice.toLocaleString()
+                        : 0
+                    }}
+                  </div>
                 </div>
                 <div class="tamtinh">
                   <div>Phí vận chuyển:</div>
@@ -140,7 +150,15 @@
               </div>
               <div class="total">
                 <div>Tổng cộng:</div>
-                <div>0</div>
+                <div>
+                  {{
+                    items.discountPrice != undefined
+                      ? (
+                          items.totalPrice - items.discountPrice
+                        ).toLocaleString()
+                      : 0
+                  }}
+                </div>
               </div>
               <div class="checkout-btn" @click="handleClickCk">
                 Đặt hàng<v-icon color="white">mdi-chevron-right</v-icon>
@@ -160,7 +178,7 @@
   </div>
 </template>
 <script>
-import { mapState } from 'vuex';
+import { mapState } from "vuex";
 export default {
   data() {
     return {
@@ -182,15 +200,29 @@ export default {
         }
       ],
       items: {},
-      num: 0
+      num: 0,
+      name: "",
+      phone: "0000"
     };
   },
   computed: {
-    ...mapState('auth', ['isAuthendicated']),
+    ...mapState("auth", ["isAuthendicated", "user"])
   },
   methods: {
+    isNumber(input) {
+      return /[0-9]+/g.test(input) || "Vui lòng nhập số";
+    },
+    lenghtNumber(input) {
+      if (input.length > 10) return "Tối đa 10 kí tự";
+      else return;
+    },
+    notEmpty(input) {
+      if (input == null || input == "") return "Vui lòng không để trống";
+      else return;
+    },
     async getCart() {
       if (this.isAuthendicated) {
+        console.log(this.user);
         const response = await this.$http.get(`orders/cart`);
         if (response.status == 200) {
           this.items = response.content;
@@ -217,29 +249,78 @@ export default {
     },
     caculateTotal() {
       let total = 0;
-       if (this.items?.orderDetails !== undefined) {
-      this.items.orderDetails.forEach((item) => {
-        total += item.quantity * item.variant.price;
-      });
-      this.items.totalPrice = total;
-       }
+      if (this.items?.orderDetails !== undefined) {
+        this.items.orderDetails.forEach((item) => {
+          total += item.quantity * item.variant.price;
+        });
+        this.items.totalPrice = total;
+      }
       this.caculateQty();
     },
     caculateQty() {
       let total = 0;
-       if (this.items?.orderDetails !== undefined) {
-      this.items.orderDetails.forEach((item) => {
-        total += item.quantity;
-      });
-       }
+      if (this.items?.orderDetails !== undefined) {
+        this.items.orderDetails.forEach((item) => {
+          total += item.quantity;
+        });
+      }
       this.num = total;
     },
     async handleClickCk() {
       if (this.isAuthendicated) {
+        if (this.name == "" || this.name == null) {
+          this.$notify.warning("Vui lòng điền tên người nhận!");
+          return;
+        }
+        if (this.phone == "" || this.phone == null) {
+          this.$notify.warning("Vui lòng điền số điện thoại người nhận!");
+          return;
+        }
         if (this.items.orderDetails.length > 0) {
-          const response = await this.$http.get(`orders/user/checkout`);
+          const response0 = await this.$http.post(
+            `orders/user/checkout/infor`,
+            {
+              deliveryAddress: "",
+              recipientName: this.name,
+              phoneNumber: this.phone
+            }
+          );
+          if (response0.status !== 200) {
+            this.$notify.error("Lỗi! Vui lòng thử lại sau.");
+          } else {
+            const response = await this.$http.get(`orders/user/checkout`);
+            if (response.status == 200) {
+              this.$notify.success("Đặt hàng thành công!");
+            } else {
+              this.$notify.error("Lỗi! Vui lòng thử lại sau.");
+            }
+          }
+        } else {
+          this.$notify.warning("Danh sách rỗng!");
+        }
+      } else {
+        if (this.name == "" || this.name == null) {
+          this.$notify.warning("Vui lòng điền tên người nhận!");
+          return;
+        }
+        if (this.phone == "" || this.phone == null) {
+          this.$notify.warning("Vui lòng điền số điện thoại người nhận!");
+          return;
+        }
+        if (this.items.orderDetails.length > 0) {
+          const response = await this.$http.post(
+            `orders/user/checkout/none-account`,
+            {
+              orderDetail: this.items.orderDetails,
+              deliveryAddress: "c",
+              recipientName: this.name,
+              phoneNumber: this.phone
+            }
+          );
           if (response.status == 200) {
             this.$notify.success("Đặt hàng thành công!");
+            localStorage.removeItem("cart");
+            this.$router.push("/");
           } else {
             this.$notify.error("Lỗi! Vui lòng thử lại sau.");
           }
