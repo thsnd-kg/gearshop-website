@@ -2,10 +2,20 @@
   <div class="wrapper">
     <v-row>
       <v-col cols="4">
-        <div class="mb-10"><strong>Mã đơn hàng:</strong> #{{ item.orderId }}</div>
-        <div class="mb-3"><strong>Ngày đặt: </strong>{{item.createdAt.substring(8,10)}}-{{item.createdAt.substring(5,7)}}-{{item.createdAt.substring(0,4)}}</div>
-        <div class="mb-3"><strong>Trạng thái đơn hàng:</strong> {{ item.orderStatus }}</div>
-        <div class="mb-3"><strong>Tình trạng thanh toán:</strong> {{ item.paymentStatus }}</div>
+        <div class="mb-10">
+          <strong>Mã đơn hàng:</strong> #{{ item.orderId }}
+        </div>
+        <div class="mb-3">
+          <strong>Ngày đặt: </strong>{{ item.createdAt.substring(8, 10) }}-{{
+            item.createdAt.substring(5, 7)
+          }}-{{ item.createdAt.substring(0, 4) }}
+        </div>
+        <div class="mb-3">
+          <strong>Trạng thái đơn hàng:</strong> {{ item.orderStatus }}
+        </div>
+        <div class="mb-3">
+          <strong>Tình trạng thanh toán:</strong> {{ item.paymentStatus }}
+        </div>
         <div class="mb-3">
           <strong>Tổng tiền:</strong> {{ item.totalPrice.toLocaleString() }}
         </div>
@@ -37,8 +47,16 @@
                 </v-col>
                 <v-col cols="6">
                   <div>{{ data.variant.variantName }}</div>
-                  <div>{{`${data.variant.price.toLocaleString() } x ${ data.quantity}`}}</div>
-                  <div class="ttprice">{{ (data.variant.price*data.quantity).toLocaleString() }}</div>
+                  <div>
+                    {{
+                      `${data.variant.price.toLocaleString()} x ${
+                        data.quantity
+                      }`
+                    }}
+                  </div>
+                  <div class="ttprice">
+                    {{ (data.variant.price * data.quantity).toLocaleString() }}
+                  </div>
                 </v-col>
               </v-row>
             </div>
@@ -50,15 +68,15 @@
 </template>
 <script>
 export default {
-  props: ["items"],
+  props: ['items'],
   data() {
     return {
-      item: {}
+      item: {},
     };
   },
   created() {
     this.item = JSON.parse(JSON.stringify(this.items));
-  }
+  },
 };
 </script>
 <style lang="scss" scoped>
@@ -69,28 +87,28 @@ export default {
   width: 850px !important;
   background-color: white;
   border-radius: 15px;
-  .title-detail{
+  .title-detail {
     background-color: white;
     margin-bottom: 20px;
     font-weight: bold;
   }
-  .container-detail{
+  .container-detail {
     margin-bottom: 20px;
     height: 300px;
     overflow-y: scroll;
-  .image {
-    border-radius: 5px;
-    border-width: 1px;
-    border-style: solid;
-    border-color: #c4cdd0;
-  }
-  .ttprice{
-     color: #f43688;
-    font-weight: bold;
-  }
+    .image {
+      border-radius: 5px;
+      border-width: 1px;
+      border-style: solid;
+      border-color: #c4cdd0;
+    }
+    .ttprice {
+      color: #f43688;
+      font-weight: bold;
+    }
   }
   .container-detail::-webkit-scrollbar {
-  display: none;
-}
+    display: none;
+  }
 }
 </style>

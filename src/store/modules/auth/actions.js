@@ -7,14 +7,15 @@ export const login = async ({commit}, params) => {
     const username = email.slice(0, email.indexOf('@'));
     const response = await $http.post('/auth/login', {password, username});
     const { content } = response;
-    if(content){
+    if (content) {
       $http.setAccessToken(content);
+      
       const profile = await $http.get('/profile/me');
-      const user = profile.content;
+      localStorage.setItem('auth', JSON.stringify({token: content, profile: profile.content}))
 
       const data = {
         token: content,
-        user: user,
+        profile: profile.content,
       }
       commit(type.LOGIN_SUCCESS, data);
       
@@ -30,6 +31,7 @@ export const login = async ({commit}, params) => {
 
 export const logout = async ({commit}) => {
   $http.removeAccessToken()
+  localStorage.removeItem('auth')
   commit(type.LOGOUT)
 };
 
@@ -53,3 +55,17 @@ export const register = async ({commit},params) => {
 
 
 }
+
+
+export const getProfile = async ({ commit }) => {
+  try {
+    const response = await $http.get('/profile/me');
+    const { content } = response;
+    if (content) {
+      commit(type.UPDATE_PROFILE, content);
+    }
+  } catch (error) {
+    console.log(error);
+  }
+    
+};
