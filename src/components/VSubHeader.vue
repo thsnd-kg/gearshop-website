@@ -165,7 +165,7 @@ export default {
     },
     pushPage(name) {
       this.$router.push({ path: `/brands/${name}`, query: { p: 1 } });
-       window.location.reload();
+      setTimeout(() => window.location.reload(),200);
     }
   },
 };

@@ -102,7 +102,7 @@ export default {
     },
      pushPage(link) {
       this.$router.push({ path: `/${link}`, query: { p: 1 } });
-       window.location.reload();
+       setTimeout(() => window.location.reload(),200);
     }
   },
 };
