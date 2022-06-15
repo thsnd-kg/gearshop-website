@@ -46,6 +46,12 @@ export default [
   },
 
   {
+    path: '/xac-thuc/quen-mat-khau',
+    name: 'ForgotPassword',
+
+    component: () => import ('../views/auth-page/ForgotPassword.vue')
+  },
+  {
     path: '/xac-thuc/xac-nhan-email',
     name: 'MailConfirmation',
    

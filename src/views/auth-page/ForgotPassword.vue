@@ -63,17 +63,16 @@ export default {
     async save() {
       try {
         this.isLoading = true;
-        const response = await this.$http.post('auths/reset-password', {
+        const response = await this.$http.post('auth/reset-password', {
           token: this.token,
-          newPassword: this.password,
-          confirmPassword: this.confirmPassword,
+          password: this.password,
         });
 
-        if (response.success) {
+        if (response.status == 200) {
           this.$notify.success('Thay đổi mật khẩu thành công');
           this.$router.push({ path: '/' });
         } else {
-          this.$notify.error('Hệ thống đang xảy ra sự cố!');
+          this.$notify.error(response.error);
         }
       } catch (error) {
         console.log(error);
