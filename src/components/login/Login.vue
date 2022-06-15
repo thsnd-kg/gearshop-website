@@ -101,7 +101,7 @@
           </div>
           <div class="px-4">
             <v-btn
-              :isLoading="isLoading"
+              :loading="isLoading"
               bottom
               width="100%"
               height="48px"
@@ -232,6 +232,7 @@ export default {
               localStorage.removeItem('cart');
             }
           }
+
           this.close();
           window.location.reload();
         } else this.errorMessages = 'Email hoặc mật khẩu bạn nhập không đúng';
@@ -248,9 +249,14 @@ export default {
       if (this.user.email && this.user.password && this.user.confirmPassword) {
         const response = await this.register(this.user);
         if (response.success) {
-          this.$notify.success('Đăng ký thành công');
-          this.changeType();
-          this.$refs.formRegister.resetValidation();
+          this.$notify.success('Vui lòng xác thực mail');
+          const data = {
+            isShow: true,
+            email: this.user.email,
+          };
+
+          this.$emit('showConfirmMail', data);
+          this.close();
         } else this.$notify.error('Tài khoản này đã được đăng ký');
       }
       this.isLoading = false;

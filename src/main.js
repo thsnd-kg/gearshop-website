@@ -7,11 +7,13 @@ import Default from './views/DefaultLayout'
 import notify from './plugins/notify'
 import { $http } from './plugins/http-wrapper'
 
+
 Vue.component('default-layout', Default)
 
 Vue.config.productionTip = false;
 Vue.prototype.$notify = notify;
 Vue.prototype.$http = $http;
+
 
 const token = store.getters['auth/token']
 

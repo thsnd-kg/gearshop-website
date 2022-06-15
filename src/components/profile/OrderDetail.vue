@@ -12,49 +12,47 @@
       </div>
       <div class="d-flex justify-space-between">
         <div class="px-4">
-          <div><strong>Mã đơn hàng: </strong> {{ order.id }}</div>
+          <div><strong>Mã đơn hàng: </strong> {{ order.orderId }}</div>
           <div>
             <strong>Ngày tạo đơn: </strong> {{ formatDate(order.createdAt) }}
           </div>
-          <div><strong>Trạng thái: </strong> {{ order.status }}</div>
+          <div>
+            <strong>Trạng thái: </strong> {{ convertName(order.orderStatus) }}
+          </div>
           <div>
             <strong>Tổng tiền: </strong>
             {{ order.totalPrice.toLocaleString() }} đ
           </div>
-          <div><strong>Giảm giá: </strong> {{ order.promotionPercent }}%</div>
+          <div><strong>Giảm giá: </strong> {{ order.discountPrice }} đ</div>
           <div>
             <strong>Thanh toán: </strong
-            >{{ order.totalPaid.toLocaleString() }} đ
+            >{{ (order.totalPrice - order.discountPrice).toLocaleString() }} đ
           </div>
         </div>
-        <v-btn
-          :loading="isLoading"
-          v-if="order.status == 'Pending' || order.status == 'Deliveried'"
-          depressed
-          height="36"
-          class="mr-4"
-          color="rgba(254, 52, 100)"
-          @click="cancelOrder"
-        >
-          <div class="text-body-2 font-weight-bold white--text">Huỷ đơn</div>
-        </v-btn>
       </div>
       <div class="my-2">
         <v-data-table
           :headers="headers"
-          :items="order.items"
+          :items="order.orderDetails"
           :items-per-page="5"
           class="elevation-1"
         >
-          <template v-slot:item.imageUrl="{ item }">
-            <v-img class="ma-2" width="48" height="48" :src="item.imageUrl">
+          <template v-slot:item.imgUrl="{ item }">
+            <v-img
+              class="ma-2"
+              width="48"
+              height="48"
+              :src="item.variant.imgUrl"
+            >
             </v-img>
           </template>
           <template v-slot:item.price="{ item }">
-            <span>{{ item.price.toLocaleString() }} đ</span>
+            <span>{{ item.unitPrice.toLocaleString() }} đ</span>
           </template>
           <template v-slot:item.total="{ item }">
-            <span>{{ (item.price * item.quantity).toLocaleString() }} đ</span>
+            <span
+              >{{ (item.unitPrice * item.quantity).toLocaleString() }} đ</span
+            >
           </template>
         </v-data-table>
       </div>
@@ -73,10 +71,10 @@ export default {
           text: '',
           align: 'start',
           sortable: false,
-          value: 'imageUrl',
+          value: 'imgUrl',
         },
-        { text: 'Mã SKU', value: 'productSku' },
-        { text: 'Tên sản phẩm', value: 'name' },
+        { text: 'Mã SKU', value: 'variant.sku' },
+        { text: 'Tên sản phẩm', value: 'variant.productName' },
         { text: 'Đơn giá', value: 'price' },
         { text: 'Số lượng', value: 'quantity' },
         { text: 'Thành tiền', value: 'total' },
@@ -96,21 +94,37 @@ export default {
   },
 
   methods: {
-    async cancelOrder() {
-      try {
-        this.isLoading = true;
-        const response = await this.$http.put(
-          `/orders/${this.order.id}/status/cancel`
-        );
-        if (response.success) {
-          this.$notify.success('Huỷ đơn hàng thành công');
-          this.isCanceled = true;
-          this.close();
-        }
-      } catch (error) {
-        console.log(error);
-      } finally {
-        this.isLoading = false;
+    // async cancelOrder() {
+    //   try {
+    //     this.isLoading = true;
+    //     const response = await this.$http.put(
+    //       `/orders/${this.order.id}/status/cancel`
+    //     );
+    //     if (response.success) {
+    //       this.$notify.success('Huỷ đơn hàng thành công');
+    //       this.isCanceled = true;
+    //       this.close();
+    //     }
+    //   } catch (error) {
+    //     console.log(error);
+    //   } finally {
+    //     this.isLoading = false;
+    //   }
+    // },
+
+    convertName(name) {
+      switch (name) {
+        case 'PENDING':
+          return 'Đang xử lý';
+        case 'SUCCESS':
+          return 'Thành công';
+        case 'CANCELED':
+          return 'Huỷ đơn';
+        case 'SHIPPING':
+          return 'Đang giao';
+
+        default:
+          break;
       }
     },
 

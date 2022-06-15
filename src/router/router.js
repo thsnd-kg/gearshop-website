@@ -46,6 +46,13 @@ export default [
   },
 
   {
+    path: '/xac-thuc/xac-nhan-email',
+    name: 'MailConfirmation',
+   
+    component: () => import ('../views/auth-page/MailConfirmation.vue')
+  },
+
+  {
     name: 'ErrorPage',
     path: '/:pathMatch(.*)*',
 
