@@ -17,7 +17,7 @@
                 <div class="title-filter" @click="setFilter(false)">
                   Bộ lọc
                   <v-icon class="icon-title" color="gray">{{
-                    isFilter ? "mdi-filter-outline" : "mdi-filter-off"
+                    isFilter ? 'mdi-filter-outline' : 'mdi-filter-off'
                   }}</v-icon>
                 </div>
               </div>
@@ -145,12 +145,22 @@
 </template>
 
 <script>
-import ProductCard from "../components/homepages/ProductCard.vue";
-import VSubHeader from "../components/VSubHeader.vue";
+import ProductCard from '../components/homepages/ProductCard.vue';
+import VSubHeader from '../components/VSubHeader.vue';
 export default {
   components: {
     VSubHeader,
-    ProductCard
+    ProductCard,
+  },
+
+  watch: {
+    $route() {
+      this.link = this.$route.params.link;
+    },
+
+    link() {
+      this.load();
+    },
   },
   methods: {
     async load() {
@@ -169,17 +179,17 @@ export default {
     },
     changeSort() {
       console.log(this.radios);
-      if (this.radios == "1") {
+      if (this.radios == '1') {
         this.productsFilter = this.productsFilter.sort(
           (a, b) => b.productId - a.productId
         );
       }
-      if (this.radios == "2") {
+      if (this.radios == '2') {
         this.productsFilter = this.productsFilter.sort(
           (a, b) => a.variants[0].price - b.variants[0].price
         );
       }
-      if (this.radios == "3") {
+      if (this.radios == '3') {
         this.productsFilter = this.productsFilter.sort(
           (a, b) => b.variants[0].price - a.variants[0].price
         );
@@ -213,7 +223,7 @@ export default {
         } else {
           this.$router.push({
             path: `/brands/${this.link}`,
-            query: { p: parseInt(this.pageIndex) + i }
+            query: { p: parseInt(this.pageIndex) + i },
           });
           this.pageIndex = parseInt(this.pageIndex) + i;
         }
@@ -235,11 +245,11 @@ export default {
       }
       if (this.isFilter) {
         this.productsFilter = this.products.filter((item) => {
-            if (
-              item.variants[0].price > this.range[0] * 1000000 &&
-              item.variants[0].price < this.range[1] * 1000000
-            )
-              return item;
+          if (
+            item.variants[0].price > this.range[0] * 1000000 &&
+            item.variants[0].price < this.range[1] * 1000000
+          )
+            return item;
         });
       } else {
         this.productsFilter = this.products;
@@ -248,7 +258,7 @@ export default {
       this.pageIndex = 1;
       console.log(this.productsFilter);
       this.isFisrtSearch = true;
-    }
+    },
   },
   created() {
     this.load();
@@ -266,9 +276,9 @@ export default {
       productsFilter: [],
       lstTagFilter: [],
       isFilter: false,
-      searchText: "",
-      link: "",
-      pageIndex: null
+      searchText: '',
+      link: '',
+      pageIndex: null,
     };
   },
   computed: {
@@ -279,8 +289,8 @@ export default {
       } else {
         return this.productsFilter.slice((index - 1) * 4, (index - 1) * 4 + 4);
       }
-    }
-  }
+    },
+  },
 };
 </script>
 

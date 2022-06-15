@@ -17,7 +17,7 @@
                 <div class="title-filter" @click="setFilter(false)">
                   Bộ lọc
                   <v-icon class="icon-title" color="gray">{{
-                    isFilter ? "mdi-filter-outline" : "mdi-filter-off"
+                    isFilter ? 'mdi-filter-outline' : 'mdi-filter-off'
                   }}</v-icon>
                 </div>
               </div>
@@ -127,11 +127,9 @@
             >
               <ProductCard :item="data" />
             </v-col>
-            <v-col
-             v-if="(getListProductWithIndex.length == 0)"
-             >
-             <div class="no-result">Không có kết quả</div>
-             </v-col>
+            <v-col v-if="getListProductWithIndex.length == 0">
+              <div class="no-result">Không có kết quả</div>
+            </v-col>
             <v-col cols="12">
               <div class="paging-container">
                 <div class="button-paging" @click="movingPage(+1)">
@@ -162,15 +160,26 @@
 </template>
 
 <script>
-import OptionFilter from "../components/homepages/OptionFilter.vue";
-import ProductCard from "../components/homepages/ProductCard.vue";
-import VSubHeader from "../components/VSubHeader.vue";
+import OptionFilter from '../components/homepages/OptionFilter.vue';
+import ProductCard from '../components/homepages/ProductCard.vue';
+import VSubHeader from '../components/VSubHeader.vue';
 export default {
   components: {
     OptionFilter,
     VSubHeader,
-    ProductCard
+    ProductCard,
   },
+
+  watch: {
+    $route() {
+      this.link = this.$route.params.link;
+    },
+
+    link() {
+      this.load();
+    },
+  },
+
   methods: {
     async load() {
       let link = this.$route.params.link;
@@ -180,7 +189,7 @@ export default {
       if (!link) {
         const response = await this.$http.get(`website/categories/link/laptop`);
         this.products = response.content;
-        this.link = "laptop";
+        this.link = 'laptop';
       } else {
         const response = await this.$http.get(
           `website/categories/link/${link}`
@@ -195,26 +204,26 @@ export default {
     },
     changeSort() {
       console.log(this.radios);
-      if (this.radios == "1") {
+      if (this.radios == '1') {
         this.productsFilter = this.productsFilter.sort(
           (a, b) => b.productId - a.productId
         );
       }
-      if (this.radios == "2") {
+      if (this.radios == '2') {
         this.productsFilter = this.productsFilter.sort(
           (a, b) => a.variants[0].price - b.variants[0].price
         );
       }
-      if (this.radios == "3") {
+      if (this.radios == '3') {
         this.productsFilter = this.productsFilter.sort(
           (a, b) => b.variants[0].price - a.variants[0].price
         );
       }
     },
     searchProduct() {
-      if(this.isFisrtSearch) {
-         this.lstProductsBackupAfterSort = this.productsFilter;
-         this.isFisrtSearch = false;
+      if (this.isFisrtSearch) {
+        this.lstProductsBackupAfterSort = this.productsFilter;
+        this.isFisrtSearch = false;
       }
       this.productsFilter = this.lstProductsBackupAfterSort.filter((item) =>
         item.productName.toUpperCase().includes(this.searchText.toUpperCase())
@@ -239,7 +248,7 @@ export default {
         } else {
           this.$router.push({
             path: `/${this.link}`,
-            query: { p: parseInt(this.pageIndex) + i }
+            query: { p: parseInt(this.pageIndex) + i },
           });
           this.pageIndex = parseInt(this.pageIndex) + i;
         }
@@ -251,7 +260,7 @@ export default {
       } else {
         this.lstTagFilter = this.lstTagFilter.filter((item) => item != id);
       }
-      if(this.isFilter) this.setFilter(true);
+      if (this.isFilter) this.setFilter(true);
     },
     setFilter(isTrue) {
       if (isTrue) {
@@ -266,29 +275,31 @@ export default {
           item.variants.forEach((variant) => {
             let variantTags = [];
             variant.attributes.forEach((attr) => {
-              if(attr.tagId != null)
-              variantTags.push(attr.tagId)
+              if (attr.tagId != null) variantTags.push(attr.tagId);
             });
-            this.lstTagFilter.forEach(tagId => {
-              if(!variantTags.includes(tagId)) {
+            this.lstTagFilter.forEach((tagId) => {
+              if (!variantTags.includes(tagId)) {
                 isSel = false;
               }
             });
-            if(isSel) sub = true;
+            if (isSel) sub = true;
           });
           if (sub) {
-            if(item.variants[0].price > this.range[0]*1000000 && item.variants[0].price < this.range[1]*1000000)
-            return item;
-          } 
+            if (
+              item.variants[0].price > this.range[0] * 1000000 &&
+              item.variants[0].price < this.range[1] * 1000000
+            )
+              return item;
+          }
         });
       } else {
         this.productsFilter = this.products;
       }
       this.$router.push({ path: `/${this.link}`, query: { p: 1 } });
       this.pageIndex = 1;
-      console.log(this.productsFilter)
+      console.log(this.productsFilter);
       this.isFisrtSearch = true;
-    }
+    },
   },
   created() {
     this.load();
@@ -306,9 +317,9 @@ export default {
       productsFilter: [],
       lstTagFilter: [],
       isFilter: false,
-      searchText: "",
-      link: "",
-      pageIndex: null
+      searchText: '',
+      link: '',
+      pageIndex: null,
     };
   },
   computed: {
@@ -319,8 +330,8 @@ export default {
       } else {
         return this.productsFilter.slice((index - 1) * 4, (index - 1) * 4 + 4);
       }
-    }
-  }
+    },
+  },
 };
 </script>
 

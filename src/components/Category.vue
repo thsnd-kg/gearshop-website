@@ -100,10 +100,9 @@ export default {
       this.slideGroupNext.click();
       this.count++;
     },
-     pushPage(link) {
+    pushPage(link) {
       this.$router.push({ path: `/${link}`, query: { p: 1 } });
-       setTimeout(() => window.location.reload(),200);
-    }
+    },
   },
 };
 </script>

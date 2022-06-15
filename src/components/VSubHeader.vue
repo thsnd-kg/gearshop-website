@@ -52,14 +52,8 @@
     <div class="mb-2">
       <div class="text-h5 font-weight-bold mb-2">Thương hiệu nổi bật</div>
       <div class="brand-list d-flex">
-        <v-slide-group
-          class="brand-slide"
-          ref="slide_group"
-        >
-          <v-slide-item
-            v-for="brand in brands"
-            :key="brand.brandId"
-          >
+        <v-slide-group class="brand-slide" ref="slide_group">
+          <v-slide-item v-for="brand in brands" :key="brand.brandId">
             <div
               class="brand-item mx-2 d-flex align-center justify-center"
               @click="pushPage(brand.brandName)"
@@ -165,8 +159,7 @@ export default {
     },
     pushPage(name) {
       this.$router.push({ path: `/brands/${name}`, query: { p: 1 } });
-      setTimeout(() => window.location.reload(),200);
-    }
+    },
   },
 };
 </script>
@@ -191,8 +184,8 @@ export default {
     height: 80px;
     width: 120px;
     &:hover {
-          cursor: pointer;
-        }
+      cursor: pointer;
+    }
   }
 
   &-slide::v-deep .v-slide-group {
