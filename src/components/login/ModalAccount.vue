@@ -140,7 +140,9 @@ export default {
 
     handleLogout() {
       this.logout();
+
       this.$emit('close');
+      this.redirectPage('/');
     },
 
     redirectPage(url) {
