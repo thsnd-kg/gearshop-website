@@ -7,18 +7,19 @@
     </v-breadcrumbs>
     <v-row>
       <v-col cols="8">
-        <v-row>
-          <v-col 
-          v-for="data in items.orderDetails"
-          :key="data.variant.variantId"
-          cols="12">
-            <CartItem :items="data" @delete="delItem" @edit-qty="editQty"/>
+        <v-row class="item-container">
+          <v-col
+            v-for="data in items.orderDetails"
+            :key="data.variant.variantId"
+            cols="12"
+          >
+            <CartItem :items="data" @delete="delItem" @edit-qty="editQty" />
           </v-col>
         </v-row>
       </v-col>
       <v-col cols="4">
         <v-row>
-          <v-col cols="12">
+          <v-col cols="12" v-if="isAuthendicated">
             <div class="discount-container">
               <div class="title">
                 <v-icon class="icon"> mdi-ticket-percent-outline </v-icon>
@@ -33,6 +34,9 @@
                   dense
                   height="40px"
                   solo
+                  @blur="setVoucher"
+                  @click:clear="removeVoucher"
+                  v-model="voucherCode"
                 ></v-text-field>
               </div>
             </div>
@@ -46,19 +50,31 @@
 
               <div class="detail">
                 <div class="tamtinh">
+                  <div>Số lượng:</div>
+                  <div>{{ num }}</div>
+                </div>
+                <div class="tamtinh">
                   <div>Tạm tính:</div>
-                  <div>{{items.totalPrice != undefined ?  items.totalPrice.toLocaleString() : 0}}</div>
+                  <div>
+                    {{
+                      items.totalPrice != undefined
+                        ? items.totalPrice.toLocaleString()
+                        : 0
+                    }}
+                  </div>
                 </div>
                 <div class="tamtinh">
                   <div>Khuyến mãi:</div>
-                  <div>0</div>
+                  <div>{{items.discountPrice != undefined ? items.discountPrice.toLocaleString() : 0}}</div>
                 </div>
               </div>
               <div class="total">
                 <div>Tổng cộng:</div>
-                <div>0</div>
+                <div>{{items.discountPrice != undefined ? (items.totalPrice-items.discountPrice).toLocaleString(): 0}}</div>
               </div>
-              <div class="checkout-btn" @click="handleClickCk" >Check out<v-icon color="white">mdi-chevron-right</v-icon></div>
+              <div class="checkout-btn" @click="handleClickCk">
+                Check out<v-icon color="white">mdi-chevron-right</v-icon>
+              </div>
             </div>
           </v-col>
         </v-row>
@@ -68,60 +84,151 @@
 </template>
 <script>
 import CartItem from "../components/cart/CartItem.vue";
+import { mapState } from "vuex";
 export default {
   components: {
     CartItem
   },
   data() {
     return {
-      breadcrumb:[
+      breadcrumb: [
         {
-          text: 'Trang chủ',
+          text: "Trang chủ",
           disabled: false,
-          href: '/laptop',
+          href: "/laptop"
         },
         {
-          text: 'Giỏ hàng',
+          text: "Giỏ hàng",
           disabled: false,
-          href: '',
-        },
+          href: ""
+        }
       ],
-      items: {}
-    }
+      items: {},
+      voucherCode: "",
+      num: 0
+    };
+  },
+  computed: {
+    ...mapState("auth", ["isAuthendicated"])
   },
   methods: {
-    async getCart() {
-      const response = await this.$http.get(`orders/cart`);
-      if(response.status == 200) {
-        this.items = response.content
+    async setVoucher() {
+      if (this.voucherCode != "" && this.voucherCode != null) {
+        const response = await this.$http.post("orders/add-voucher", {
+          voucherName: this.voucherCode
+        });
+        if (response.status == 200) {
+          this.items = response.content;
+          this.$notify.success("Đã áp dụng khuyến mãi!");
+        } else {
+          this.$notify.warning("Mã không tồn tại hoặc hết hạn!");
+        }
       }
     },
-     async handleClickCk()  {
-      this.$router.push("/checkout");
+    async removeVoucher() {
+      const response = await this.$http.post("orders/remove-voucher");
+      if (response.status == 200) {
+        this.items = response.content;
+        this.$notify.success("Đã xóa khuyến mãi!");
+      }
+    },
+    async getCart() {
+      if (this.isAuthendicated) {
+        const response = await this.$http.get(`orders/cart`);
+        if (response.status == 200) {
+          this.items = response.content;          
+          console.log(response.content)
+          if (this.items.voucher != null) {
+            this.voucherCode = this.items.voucher.voucherName;
+          }
+        } else {
+          this.$notify.warning("Bạn chưa có sản phẩm nào trong giỏ hàng!");
+        }
+      } else {
+        // get cart from localStorage
+        let cart;
+        const lc = localStorage.getItem("cart");
+        if (!lc) {
+          cart = null;
+        } else {
+          cart = JSON.parse(localStorage.getItem("cart"));
+        }
+        //check null and set cart
+        if (cart != null) {
+          this.items = cart;
+        } else {
+          this.$notify.warning("Bạn chưa có sản phẩm nào trong giỏ hàng");
+        }
+      }
+      this.caculateTotal();
+    },
+    async handleClickCk() {
+      if (this.items?.orderDetails === undefined) {
+        this.$notify.warning("Danh sách rỗng!");
+      } else {
+        if (this.items.orderDetails.length > 0) {
+          this.$router.push("/checkout");
+        } else {
+          this.$notify.warning("Danh sách rỗng!");
+        }
+      }
     },
     async delItem(id) {
-     this.items.orderDetails = this.items.orderDetails.filter(item => item.variant.variantId !== id);
-      await this.$http.post(`orders/remove-item`,id);
-     this.caculateTotal();
+      this.items.orderDetails = this.items.orderDetails.filter(
+        (item) => item.variant.variantId !== id
+      );
+      if (this.isAuthendicated) {
+        const response  = await this.$http.post(`orders/remove-item`, id);
+        this.items = response.content;
+      } else {
+       
+        localStorage.setItem("cart", JSON.stringify(this.items));
+      }
+       this.caculateTotal();
     },
     async editQty(id, i) {
       let qty = 0;
-       this.items.orderDetails =  this.items.orderDetails.map(item => {
-         if(item.variant.variantId == id) {
-           item.quantity += i;
-           qty = item.quantity;
-         }
-        return item
-       })
-       await this.$http.post(`orders/add-item`,{quantity: qty, variantId: id});
-       this.caculateTotal();
+      this.items.orderDetails = this.items.orderDetails.map((item) => {
+        if (item.variant.variantId == id) {
+          if (item.quantity + i <= item.variant.quantity) {
+            item.quantity += i;
+            console.log(item.quantity);
+          }
+          qty = item.quantity;
+        }
+        return item;
+      });
+      if (this.isAuthendicated) {
+        const response = await this.$http.post(`orders/add-item`, {
+          quantity: qty,
+          variantId: id
+        });
+        this.items = response.content;
+        this.caculateTotal();
+      } else {
+        this.caculateTotal();
+        localStorage.setItem("cart", JSON.stringify(this.items));
+      }
     },
     caculateTotal() {
       let total = 0;
-      this.items.orderDetails.forEach(item => {
-        total += item.quantity*item.variant.price;
-      });
-      this.items.totalPrice = total;
+      if (this.items?.orderDetails !== undefined) {
+        this.items.orderDetails.forEach((item) => {
+          total += item.quantity * item.variant.price;
+        });
+        this.items.totalPrice = total;
+      }
+      this.caculateQty();
+    },
+    caculateQty() {
+      let total = 0;
+      if (this.items?.orderDetails !== undefined) {
+        if (this.items?.orderDetails !== undefined)
+          this.items.orderDetails.forEach((item) => {
+            total += item.quantity;
+          });
+      }
+      this.num = total;
     }
   },
   created() {
@@ -134,6 +241,15 @@ export default {
 .wrapper {
   margin: auto;
   width: 1100px;
+}
+.item-container {
+  margin-bottom: 20px;
+  max-height: 800px;
+  border-radius: 15px;
+  overflow-y: scroll;
+}
+.item-container::-webkit-scrollbar {
+  display: none;
 }
 .discount-container {
   height: 150px;

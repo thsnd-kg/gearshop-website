@@ -6,7 +6,7 @@
       </v-col>
       <v-col cols="6">
         <div class="product-name">
-          {{ item.variant.variantId }}
+          {{ item.variant.productName }}
         </div>
         <div class="variant-name">
           <v-icon class="icon">mdi-alert-circle-outline</v-icon>
@@ -46,6 +46,7 @@ export default {
   methods: {
     plus() {
       this.$emit('edit-qty',this.item.variant.variantId,1);
+      if(this.item.variant.quantity > this.item.quantity)
       this.item.quantity++;
       this.item.total =
         this.item.quantity * this.item.variant.price;
@@ -93,7 +94,7 @@ export default {
   }
   .product-name {
     font-weight: bold;
-    font-size: 13px;
+    font-size: 15px;
   }
   .variant-name {
     color: gray;

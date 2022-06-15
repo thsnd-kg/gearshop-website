@@ -11,7 +11,7 @@
           <v-carousel
             hide-delimiters
             show-arrows-on-hover
-            :class="`rounded-xl rounded-bl-0`"
+            :class="`rounded-xl`"
           >
             <v-carousel-item
               v-for="(item, i) in imgs"
@@ -37,7 +37,7 @@
           </div>
           <div class="variant-container">
             <v-container fluid>
-              <v-radio-group v-model="radios" mandatory>
+              <v-radio-group v-model="radios" mandatory @change="setQuantity">
                 <template v-slot:label>
                   <div class="title-v">Phiên bản</div>
                 </template>
@@ -90,12 +90,12 @@
               </v-row>
             </div>
           </div>
-          <div class="discount">
+          <!-- <div class="discount">
             <div class="title">
               <v-icon class="icon-title" color="black">mdi-gift</v-icon>Chương
               trình khuyến mãi
             </div>
-          </div>
+          </div> -->
           <div class="insurance">
             <div class="title">
               <v-icon class="icon-title" color="black"
@@ -148,6 +148,7 @@
 </template>
 <script>
 import VariantRadio from "../components/productdetail/VariantRadio.vue";
+import { mapState } from 'vuex';
 export default {
   components: {
     VariantRadio
@@ -170,13 +171,15 @@ export default {
       radios: null,
       imgs: [],
       quantity: 1,
-      clicked: false,
+      clicked: [],
     };
   },
   created() {
     this.getProduct();
   },
-  computed: {},
+  computed: {
+    ...mapState('auth', ['isAuthendicated']),
+  },
   methods: {
     async getProduct() {
       let link = this.$route.params.link;
@@ -194,13 +197,23 @@ export default {
       if(this.quantity > 1 && i == -1) {
         this.quantity = this.quantity+i;
       }
-      if(this.quantity < 10 && i == 1) {
+      if(this.quantity < this.radios.quantity && i == 1) {
          this.quantity = this.quantity+i;
       }
 
     },
+    setQuantity() {
+      if(this.radios.quantity < 1)
+      {
+        this.quantity = 0;
+      }
+      else {
+       this.quantity = 1;
+      }
+    },
     async addToCart() {
-      if(!this.clicked) {
+      if (this.isAuthendicated) {
+      if(!this.clicked.includes(this.radios.variantId)) {
       const response = await this.$http.post(`orders/add-item`,{quantity: this.quantity, variantId: this.radios.variantId});
       if(response.status != 200) {
         this.$notify.error("Không thể thêm sản phẩm vào giỏ hàng")
@@ -208,7 +221,34 @@ export default {
       if(response.status == 200) {
         this.$notify.success("Đã thêm sản phẩm vào giỏ hàng")
       }
-      this.clicked = true;
+      this.clicked.push(this.radios.variantId);
+      } else {
+         this.$notify.warning("Đã sản phẩm vào giỏ hàng")
+      }
+      }
+      else {
+        let cart;
+        const lc = localStorage.getItem('cart');
+        if(!lc) {
+          cart = null;
+        }
+        else {
+          cart = JSON.parse(localStorage.getItem('cart'));
+        }
+        if(cart != null) {
+          if(cart.orderDetails.find(item => item.variant.variantId == this.radios.variantId) == undefined)
+          {
+           cart.orderDetails.push({quantity: this.quantity, variant: this.radios, variantId: this.radios.variantId})
+            this.$notify.success("Đã thêm sản phẩm vào giỏ hàng")
+          } else {
+             this.$notify.warning("Đã thêm sản phẩm vào giỏ hàng")
+          }
+        }
+        else {
+           cart = {};
+           cart['orderDetails'] = [{quantity: this.quantity, variant: this.radios}];
+        }
+        localStorage.setItem('cart', JSON.stringify(cart));
       }
     }
   }
@@ -222,7 +262,7 @@ export default {
   .product-detail {
     width: 600px;
     padding: 0px 0px 20px 20px;
-    border-radius: 20px;
+    border-radius: 25px;
     background-color: white;
     .title {
       padding-top: 10px;
@@ -276,15 +316,14 @@ export default {
 
   .product-image-container {
     margin-top: 16px;
-    height: 550px;
+    height: 500px;
     width: 600px;
     border-radius: 20px;
     background-color: white;
   }
   .product-infor-container {
     width: 470px;
-    position: fixed;
-    top: 145px;
+    margin-top:20px;
     padding: 10px 0px 20px 20px;
     margin-left: -70px;
     border-radius: 20px;

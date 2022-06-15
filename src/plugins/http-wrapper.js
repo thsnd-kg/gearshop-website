@@ -5,9 +5,7 @@ const DEFAULT_HEADERS = {
 };
 
 const DEFAULT_REQ_OPTS = {
-    headers: {
-        Authorization: 'Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJodXlidWkiLCJpYXQiOjE2NTQ0NTYzNzcsImV4cCI6MTY1NDU0Mjc3N30._C4WSLjm62S_iZT8ScDCDHqAbxDRPreMx9WOs58Q9VtlHxfXbynFx-7p6PTA9AjScWC1W4qj4-5DzrOeD_ml2g'
-    }, 
+    headers: {}, 
     ignoreInterceptor: false
 };
 
@@ -60,6 +58,10 @@ export class HttpWrapper  {
 
     async post(url, requestParams = {}, options = DEFAULT_REQ_OPTS) {
         return await this.sendRequest(url, REQUEST_METHODS.POST, options, requestParams);
+    }
+
+    async put(url, requestParams = {}, options = DEFAULT_REQ_OPTS) {
+        return await this.sendRequest(url, REQUEST_METHODS.PUT, options, requestParams);
     }
 	
 	async delete(url, requestParams = {}, options = DEFAULT_REQ_OPTS) {
@@ -117,6 +119,13 @@ export class HttpWrapper  {
           }
           return { status: resp.status, ...data };
         } catch (error) {
+            if (error.toString().includes("401")) {
+                return { status: 401, success: false, message: this.#errorMessages[401] };       
+            }
+            
+            if (error.toString().includes("400")) {
+                return { status: 400, success: false, message: this.#errorMessages[400] };       
+           }
           return { status: 500, success: false, message: this.#errorMessages[500] };
         }
     }

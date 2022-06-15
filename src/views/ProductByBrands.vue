@@ -9,8 +9,8 @@
               <div class="title">
                 <div class="title-text">
                   {{
-                    category.categoryName != undefined
-                      ? `Tất cả ${category.categoryName}`
+                    brand.brandName != undefined
+                      ? `Tất cả ${brand.brandName}`
                       : ``
                   }}
                 </div>
@@ -59,20 +59,6 @@
                   </div>
                 </div>
               </div>
-            </v-col>
-            <v-col
-              class="product-attribute-container"
-              v-for="data in category.attributes"
-              :key="data.attributeId"
-              cols="12"
-            >
-              <template v-if="data.tags.length > 0">
-                <OptionFilter
-                  :title="data.attributeName"
-                  :items="data.tags"
-                  @setTag="setTag"
-                />
-              </template>
             </v-col>
           </v-row>
         </v-col>
@@ -159,12 +145,10 @@
 </template>
 
 <script>
-import OptionFilter from '../components/homepages/OptionFilter.vue';
 import ProductCard from '../components/homepages/ProductCard.vue';
 import VSubHeader from '../components/VSubHeader.vue';
 export default {
   components: {
-    OptionFilter,
     VSubHeader,
     ProductCard,
   },
@@ -178,25 +162,17 @@ export default {
       this.load();
     },
   },
-
   methods: {
     async load() {
       let link = this.$route.params.link;
       let index = this.$route.query.p;
       if (index == undefined) this.pageIndex = 1;
       else this.pageIndex = index;
-      if (!link) {
-        const response = await this.$http.get(`website/categories/link/laptop`);
-        this.products = response.content;
-        this.link = 'laptop';
-      } else {
-        const response = await this.$http.get(
-          `website/categories/link/${link}`
-        );
-        this.products = response.content;
-        this.link = link;
-      }
-      this.category = this.products[0].category;
+      const response = await this.$http.get(`website/brands/${link}`);
+      this.products = response.content;
+      this.link = link;
+
+      this.brand = this.products[0].brand;
       this.productsFilter = this.products;
       //const response = await this.$http.get(`website/products/link/${link}`);
       // this.product = response.content;
@@ -227,7 +203,7 @@ export default {
       this.productsFilter = this.lstProductsBackupAfterSort.filter((item) =>
         item.productName.toUpperCase().includes(this.searchText.toUpperCase())
       );
-      this.$router.push({ path: `/${this.link}`, query: { p: 1 } });
+      this.$router.push({ path: `/brands/${this.link}`, query: { p: 1 } });
       this.pageIndex = 1;
     },
     clearSearchText() {
@@ -237,7 +213,7 @@ export default {
     },
     movingPage(i) {
       if (this.pageIndex == 1 && i == -1) {
-        this.$router.push({ path: `/${this.link}`, query: { p: 1 } });
+        this.$router.push({ path: `/brands/${this.link}`, query: { p: 1 } });
       } else {
         if (
           this.pageIndex == Math.ceil(this.productsFilter.length / 4) &&
@@ -246,7 +222,7 @@ export default {
           return;
         } else {
           this.$router.push({
-            path: `/${this.link}`,
+            path: `/brands/${this.link}`,
             query: { p: parseInt(this.pageIndex) + i },
           });
           this.pageIndex = parseInt(this.pageIndex) + i;
@@ -267,34 +243,18 @@ export default {
       } else {
         this.isFilter = !this.isFilter;
       }
-      if (this.isFilter && this.lstTagFilter.length > 0) {
+      if (this.isFilter) {
         this.productsFilter = this.products.filter((item) => {
-          let isSel = true;
-          let sub = false;
-          item.variants.forEach((variant) => {
-            let variantTags = [];
-            variant.attributes.forEach((attr) => {
-              if (attr.tagId != null) variantTags.push(attr.tagId);
-            });
-            this.lstTagFilter.forEach((tagId) => {
-              if (!variantTags.includes(tagId)) {
-                isSel = false;
-              }
-            });
-            if (isSel) sub = true;
-          });
-          if (sub) {
-            if (
-              item.variants[0].price > this.range[0] * 1000000 &&
-              item.variants[0].price < this.range[1] * 1000000
-            )
-              return item;
-          }
+          if (
+            item.variants[0].price > this.range[0] * 1000000 &&
+            item.variants[0].price < this.range[1] * 1000000
+          )
+            return item;
         });
       } else {
         this.productsFilter = this.products;
       }
-      this.$router.push({ path: `/${this.link}`, query: { p: 1 } });
+      this.$router.push({ path: `/brands/${this.link}`, query: { p: 1 } });
       this.pageIndex = 1;
       console.log(this.productsFilter);
       this.isFisrtSearch = true;
@@ -309,7 +269,7 @@ export default {
       max: 100,
       range: [0, 30],
       radios: null,
-      category: {},
+      brand: {},
       products: [],
       lstProductsBackupAfterSort: [],
       isFisrtSearch: true,

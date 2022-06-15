@@ -18,7 +18,7 @@
               outlined
               @click="removeItem(item.tagId)"
             >
-              {{ item.tagName}}
+              {{ item.tagName }}
             </v-chip>
           </v-col>
         </v-row>
@@ -43,35 +43,35 @@ export default {
   methods: {
     load() {
       let initOptions = this.items;
-      initOptions.map(element => {
-        element['isSelected'] = false;
+      initOptions.map((element) => {
+        element["isSelected"] = false;
         return element;
       });
       this.options = initOptions;
-      console.log(initOptions);
     },
     changeStatusOpen() {
-      if(!this.isOpen) {
+      if (!this.isOpen) {
         this.isOpen = true;
         return;
       }
       let change = false;
-      this.options.forEach(element => {
-        if(element.isSelected) {
+      this.options.forEach((element) => {
+        if (element.isSelected) {
           change = true;
         }
       });
-      if(!change) this.isOpen = ! this.isOpen;
+      if (!change) this.isOpen = !this.isOpen;
     },
     removeItem(itemId) {
-      console.log(itemId)
       let newoption = this.options.map((obj) => {
-        if (obj.tagId === itemId) obj.isSelected = !obj.isSelected;
+        if (obj.tagId === itemId) {
+          obj.isSelected = !obj.isSelected;
+          this.$emit("setTag", obj.tagId);
+        }
         return obj;
       });
-      this.options = newoption
+      this.options = newoption;
       this.isOpen = true;
-      console.log(newoption)
     }
   }
 };
@@ -85,20 +85,20 @@ export default {
   //     color: #0aa1dd;
   //   }
 }
-.menu-item{
+.menu-item {
   padding: 0px 15px 7px 15px;
-.title-container {
-  padding-top: 7px;
-  border-width: 1px 0px 0px 0px;
-  border-color: #a0bcc2;
-  border-style: solid;
-  display: flex;
-  justify-content: space-between;
-  &:hover {
-    cursor: pointer;
-    color: #0aa1dd;
+  .title-container {
+    padding-top: 7px;
+    border-width: 1px 0px 0px 0px;
+    border-color: #a0bcc2;
+    border-style: solid;
+    display: flex;
+    justify-content: space-between;
+    &:hover {
+      cursor: pointer;
+      color: #0aa1dd;
+    }
   }
-}
 }
 .icon {
   color: inherit !important;
