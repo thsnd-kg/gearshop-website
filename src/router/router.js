@@ -12,6 +12,13 @@ export default [
       import(/* webpackChunkName: "about" */ "../views/CheckOut.vue")
   },
   {
+    path: '/tai-khoan/:url',
+    name: 'profile',
+
+    component: () =>
+      import( /* webpackChunkName: "about" */ '../views/ProfileView.vue')
+  },
+  {
     path: "/my-orders",
     name: "Orders",
     component: () =>
@@ -29,13 +36,20 @@ export default [
     component: () =>
       import(/* webpackChunkName: "about" */ "../views/Homepage.vue")
   },
-  { path: "",  redirect: '/laptop'  },
-  { path: '*', redirect: '/laptop' },
+  { path: "/",  redirect: '/laptop'  },
+
   {
     path: "/product/:link",
     name: "Product Detail",
     component: () =>
       import(/* webpackChunkName: "about" */ "../views/ProductDetail.vue")
+  },
+
+  {
+    name: 'ErrorPage',
+    path: '/:pathMatch(.*)*',
+
+    component: () => import ('../views/static-page/ErrorPage.vue')
   },
   
 ];

@@ -1,5 +1,5 @@
 <template>
-  <v-sheet class="category-list" height="60">
+  <div class="category-list">
     <div class="d-flex pa-1 justify-center">
       <v-slide-group
         style="width: 75%"
@@ -43,7 +43,7 @@
         </v-btn>
       </div>
     </div>
-  </v-sheet>
+  </div>
 </template>
 
 <script>
@@ -111,7 +111,9 @@ export default {
 <style lang="scss" scoped>
 .category {
   &-list {
+    background-color: white;
     width: 100%;
+    box-shadow: none;
   }
   &-slide::v-deep .v-slide-group {
     &__prev {
