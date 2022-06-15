@@ -225,15 +225,17 @@ export default {
               cart.orderDetails.forEach((item) => {
                 this.$http.post(`orders/add-item`, {
                   quantity: item.quantity,
-                  variantId: item.variant.variantId,
+                  variantId: item.variantId,
                 });
               });
 
               localStorage.removeItem('cart');
             }
           }
+         setTimeout(() => { 
           this.close();
           window.location.reload();
+         }, 200);
         } else this.errorMessages = 'Email hoặc mật khẩu bạn nhập không đúng';
       }
       this.isLoading = false;

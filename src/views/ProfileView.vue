@@ -43,27 +43,18 @@
 
             <div class="flex-grow-1 ml-3 my-auto">
               <div
-                class="
-                  text-h6
-                  font-weight-medium
-                  blue-grey--text
-                  text--darken-3
-                "
+                class="text-h6 font-weight-medium blue-grey--text text--darken-3"
               >
                 {{ profile.firstName ? profile.firstName : sliceEmail }}
               </div>
 
               <div
-                class="
-                  blue--text
-                  text--lighten-1 text-caption
-                  font-weight-medium
-                "
+                class="blue--text text--lighten-1 text-caption font-weight-medium"
               >
                 {{
                   profile.phoneNo
                     ? profile.phoneNo
-                    : 'Chưa cập nhật số điện thoại'
+                    : "Chưa cập nhật số điện thoại"
                 }}
               </div>
             </div>
@@ -85,12 +76,7 @@
             </v-icon>
 
             <div
-              class="
-                ml-1
-                blue-grey--text
-                text--darken-1 text-subtile-1
-                font-weight-bold
-              "
+              class="ml-1 blue-grey--text text--darken-1 text-subtile-1 font-weight-bold"
             >
               Thông tin tài khoản
             </div>
@@ -110,12 +96,7 @@
           >
             <v-icon color="blue-grey" left size="28">mdi-key-outline </v-icon>
             <div
-              class="
-                ml-1
-                blue-grey--text
-                text--darken-1 text-subtile-1
-                font-weight-bold
-              "
+              class="ml-1 blue-grey--text text--darken-1 text-subtile-1 font-weight-bold"
             >
               Đổi mật khẩu
             </div>
@@ -138,12 +119,7 @@
             </v-icon>
 
             <div
-              class="
-                ml-1
-                blue-grey--text
-                text--darken-1 text-subtile-1
-                font-weight-bold
-              "
+              class="ml-1 blue-grey--text text--darken-1 text-subtile-1 font-weight-bold"
             >
               Lịch sử mua hàng
             </div>
@@ -393,11 +369,12 @@
 </template>
 
 <script>
-import { mapGetters, mapActions } from 'vuex';
+import { mapGetters, mapActions } from "vuex";
 // import OrderTable from '../components/profile/OrderTable.vue';
-import axios from 'axios';
+import axios from "axios";
+import { uploader } from "../plugins/uploader";
 export default {
-  name: 'ProfileView',
+  name: "ProfileView",
   components: {
     // OrderTable,
   },
@@ -405,16 +382,16 @@ export default {
   data() {
     return {
       page: {
-        info: 'thong-tin-tai-khoan',
-        address: 'doi-mat-khau',
-        order: 'lich-su-mua-hang',
+        info: "thong-tin-tai-khoan",
+        address: "doi-mat-khau",
+        order: "lich-su-mua-hang"
       },
       isLoading: false,
       isSelecting: false,
-      usrAva: '',
-      radioGroup: '',
-      url: '',
-      user: '',
+      usrAva: "",
+      radioGroup: "",
+      url: "",
+      user: "",
       tabInfo: false,
       tabAddress: false,
       tabOrder: false,
@@ -423,9 +400,9 @@ export default {
       showNewPass: false,
       showPass: false,
       passwordRules: [
-        (value) => !!value || 'Mật khẩu không được để trống.',
+        (value) => !!value || "Mật khẩu không được để trống.",
         (value) =>
-          (value && value.length >= 6) || 'Mật khẩu phải có ít nhất 6 ký tự',
+          (value && value.length >= 6) || "Mật khẩu phải có ít nhất 6 ký tự"
       ],
 
       oldPassword: null,
@@ -437,7 +414,7 @@ export default {
       currentProvince: null,
       currentDistrict: null,
       currentWard: null,
-      currentStreet: null,
+      currentStreet: null
     };
   },
 
@@ -480,28 +457,28 @@ export default {
     },
     currentDistrict(newCurrentDistrict) {
       this.wardsAPI = newCurrentDistrict.wards;
-    },
+    }
   },
 
   computed: {
-    ...mapGetters('auth', ['profile']),
+    ...mapGetters("auth", ["profile"]),
 
     // computedDateFormatted() {
     //   return this.formatDate(this.date);
     // },
 
     sliceEmail() {
-      return this.profile.email.slice(0, this.profile.email.indexOf('@'));
-    },
+      return this.profile.email.slice(0, this.profile.email.indexOf("@"));
+    }
   },
 
   methods: {
-    ...mapActions('auth', ['getProfile']),
-
+    ...mapActions("auth", ["getProfile"]),
+    uploader,
     formatDate(date) {
       if (!date) return null;
 
-      const [year, month, day] = date.split('-');
+      const [year, month, day] = date.split("-");
       return `${day}-${month}-${year}`;
     },
 
@@ -512,27 +489,27 @@ export default {
       // );
       if (address == null) return;
 
-      const addressDetail = address.split('|');
+      const addressDetail = address.split("|");
       addressDetail.forEach((item) => {
-        if (item.includes('Province')) {
+        if (item.includes("Province")) {
           const name = item.substr(9, item.length);
           this.currentProvince = this.provincesAPI.find(
             (item) => item.name === name
           );
         }
-        if (item.includes('District')) {
+        if (item.includes("District")) {
           const name = item.substr(9, item.length);
           this.currentDistrict = this.currentProvince.districts.find(
             (item) => item.name === name
           );
         }
-        if (item.includes('Ward')) {
+        if (item.includes("Ward")) {
           const name = item.substr(5, item.length);
           this.currentWard = this.currentDistrict.wards.find(
             (item) => item.name === name
           );
         }
-        if (item.includes('Address')) {
+        if (item.includes("Address")) {
           this.currentStreet = item.substr(8, item.length);
         }
       });
@@ -550,12 +527,12 @@ export default {
     getFormatAddress() {
       const province = this.currentProvince
         ? `Province ${this.currentProvince.name}|`
-        : '';
+        : "";
       const district = this.currentDistrict
         ? `District ${this.currentDistrict.name}|`
-        : '';
-      const ward = this.currentWard ? `Ward ${this.currentWard.name}|` : '';
-      const street = this.currentStreet ? `Address ${this.currentStreet}|` : '';
+        : "";
+      const ward = this.currentWard ? `Ward ${this.currentWard.name}|` : "";
+      const street = this.currentStreet ? `Address ${this.currentStreet}|` : "";
 
       return province + district + ward + street;
     },
@@ -578,22 +555,22 @@ export default {
     async changePassword() {
       try {
         this.isLoading = true;
-        const response = await this.$http.post('profile/me/change-password', {
+        const response = await this.$http.post("profile/me/change-password", {
           oldPassword: this.oldPassword,
           newPassword: this.newPassword,
-          confirmPassword: this.newPassword,
+          confirmPassword: this.newPassword
         });
 
         const { status } = response;
 
         if (status === 200)
-          this.$notify.success('Thay đổi mật khẩu thành công');
+          this.$notify.success("Thay đổi mật khẩu thành công");
         else if (status === 500) {
-          this.$notify.error('Mật khẩu cũ không chính xác');
-        } else this.$notify.error('Hệ thống đang xảy ra sự cố');
+          this.$notify.error("Mật khẩu cũ không chính xác");
+        } else this.$notify.error("Hệ thống đang xảy ra sự cố");
       } catch (error) {
         console.log(error);
-        this.$notify.error('Hệ thống đang xảy ra sự cố');
+        this.$notify.error("Hệ thống đang xảy ra sự cố");
       } finally {
         this.isLoading = false;
       }
@@ -603,22 +580,22 @@ export default {
       const address = this.getFormatAddress();
       try {
         this.isLoading = true;
-        const repsonse = await this.$http.put('profile/me', {
+        const repsonse = await this.$http.put("profile/me", {
           firstName: this.user.firstName,
           dateOfBirth: this.user.dateOfBirth,
           phoneNo: this.user.phoneNo,
           address: address,
-          username: this.user.username,
+          username: this.user.username
         });
 
         if (repsonse.status === 200) {
-          this.$notify.success('Cập nhật thông tin thành công');
+          this.$notify.success("Cập nhật thông tin thành công");
           await this.getProfile();
         } else {
-          this.$notify.error('Hệ thống xảy ra sự cố');
+          this.$notify.error("Hệ thống xảy ra sự cố");
         }
       } catch (error) {
-        this.$notify.error('Hệ thống xảy ra sự cố');
+        this.$notify.error("Hệ thống xảy ra sự cố");
         console.log(error);
       } finally {
         this.isLoading = false;
@@ -626,13 +603,16 @@ export default {
     },
 
     async uploadAva(files) {
+      console.log(files);
+      const url = await this.uploader(files);
+      console.log(url);
       this.isSelecting = true;
-      const form = new FormData();
-      files.forEach((file) => form.append('file', file));
+      // const form = new FormData();
+      // files.forEach((file) => form.append("file", file));
 
-      const { data } = await this.$http.upload('images/upload/avatar', form);
-      this.isSelecting = false;
-      return data[0];
+      // const { data } = await this.$http.upload("images/upload/avatar", form);
+      // this.isSelecting = false;
+      // return data[0];
     },
 
     onButtonClick() {
@@ -640,16 +620,17 @@ export default {
     },
 
     async onFileChanged(e) {
+      console.log(e);
       this.usrAva = e.target.files[0];
       this.profile.imageUrl = URL.createObjectURL(e.target.files[0]);
 
-      await this.uploadAva([this.usrAva]);
-    },
-  },
+      await this.uploadAva(this.usrAva);
+    }
+  }
 };
 </script>
 
-<style lang ="scss" scoped>
+<style lang="scss" scoped>
 .btn {
   margin-bottom: 12px;
   border-radius: 12px;
