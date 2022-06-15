@@ -241,7 +241,7 @@ export default {
            cart.orderDetails.push({quantity: this.quantity, variant: this.radios, variantId: this.radios.variantId})
             this.$notify.success("Đã thêm sản phẩm vào giỏ hàng")
           } else {
-             this.$notify.warning("Đã thêm sản phẩm vào giỏ hàng")
+             this.$notify.warning("Sản phẩm đã tồn tại trong giỏ hàng")
           }
         }
         else {

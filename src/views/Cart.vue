@@ -36,6 +36,7 @@
                   solo
                   @blur="setVoucher"
                   @click:clear="removeVoucher"
+                  @keyup.enter="setVoucher"
                   v-model="voucherCode"
                 ></v-text-field>
               </div>
