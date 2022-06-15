@@ -246,7 +246,7 @@ export default {
         }
         else {
            cart = {};
-           cart['orderDetails'] = [{quantity: this.quantity, variant: this.radios}];
+           cart['orderDetails'] = [{quantity: this.quantity, variant: this.radios, variantId: this.radios.variantId}];
         }
         localStorage.setItem('cart', JSON.stringify(cart));
       }
