@@ -15,9 +15,8 @@
         <v-menu
           :close-on-content-click="false"
           :close-on-click="false"
-          close
           offset-y
-          nudge-bottom="14px"
+          nudge-bottom="12px"
           min-width="100%"
         >
           <template v-slot:activator="{ on, attrs }">
