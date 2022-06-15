@@ -2,7 +2,7 @@
   <div class="background">
     <div class="wrapper pt-10">
       <v-row>
-        <v-col cols="4">
+        <v-col cols="3" offset="1">
           <div class="d-flex mb-4">
             <v-hover>
               <template v-slot:default="{ hover }">
