@@ -4,13 +4,17 @@
       <v-card class="d-flex overflow-y-hidden" v-if="isLogin">
         <div class="content">
           <div class="d-flex align-center">
-            <v-card-title class="text-h5">Đăng nhập</v-card-title>
+            <v-card-title class="text-h5 blue--text blue-lighten-1"
+              >Đăng nhập</v-card-title
+            >
             <v-spacer></v-spacer>
             <v-btn icon @click="close">
               <v-icon>mdi-close</v-icon>
             </v-btn>
           </div>
-          <v-card-title class="title text-h6">Gearshop xin chào!</v-card-title>
+          <v-card-title class="text-h6 blue--text blue-lighten-1"
+            >Gear Shop xin chào!</v-card-title
+          >
           <div class="px-4">
             <v-form ref="formLogin" lazy-validation>
               <v-text-field
@@ -24,6 +28,7 @@
               <v-text-field
                 validate-on-blur
                 label="Mật khẩu"
+                hide-details
                 v-model="user.password"
                 :append-icon="showPass ? 'mdi-eye' : 'mdi-eye-off'"
                 @click:append="showPass = !showPass"
@@ -35,19 +40,27 @@
             </v-form>
           </div>
           <div class="px-4">
+            <div class="my-2 d-flex justify-end">
+              <a
+                class="text-subtitle-2 blue--text blue-lighten-1"
+                @click="showForgotPassword"
+                >Quên mật khẩu?</a
+              >
+            </div>
             <v-btn
               :loading="isLoading"
               bottom
               width="100%"
               height="48px"
               class="mx-auto"
-              color="#81ccb7"
+              color="primary"
               @click="handleLogin"
             >
               <div class="text">Đăng nhập</div>
             </v-btn>
           </div>
-          <v-divider class="my-8"></v-divider>
+          <v-divider class="my-4"></v-divider>
+
           <div class="mb-8 d-flex justify-center">
             <div class="text-bottom">Bạn chưa có tài khoản ?</div>
             <div class="ml-2">
@@ -66,7 +79,9 @@
               <v-icon>mdi-close</v-icon>
             </v-btn>
           </div>
-          <v-card-title class="title text-h6">Giftshop xin chào!</v-card-title>
+          <v-card-title class="blue--text blue-lighten-1 text-h6"
+            >Gear Shop xin chào!</v-card-title
+          >
           <div class="px-4">
             <v-form ref="formRegister" lazy-validation>
               <v-text-field
@@ -101,12 +116,12 @@
           </div>
           <div class="px-4">
             <v-btn
-              :isLoading="isLoading"
+              color="primary"
+              :loading="isLoading"
               bottom
               width="100%"
               height="48px"
               class="mx-auto"
-              color="#81ccb7"
               @click="handleRegister"
             >
               <div class="text">Đăng ký</div>
@@ -125,13 +140,22 @@
         <div class="check"></div>
       </v-card>
     </v-dialog>
+    <SendMail
+      :isShowSendMail="isShowSendMail"
+      @closeSendMail="closeSendMail"
+      @changeType="showLogin"
+    ></SendMail>
   </div>
 </template>
-
 <script>
 import { mapActions } from 'vuex';
+import SendMail from '../SendMail';
 export default {
   name: 'Login',
+
+  components: {
+    SendMail,
+  },
 
   props: {
     show: {
@@ -156,6 +180,7 @@ export default {
       isLogin: true,
       showDialog: false,
       user: {},
+      isShowSendMail: false,
       errorMessages: '',
       emailRules: [
         (v) => !!v || 'E-mail không được để trống',
@@ -189,6 +214,7 @@ export default {
       this.isLogin = true;
       this.isLoading = false;
       this.errorMessages = '';
+      this.isShowSendMail = false;
       this.$emit('closeLogin');
     },
 
@@ -250,12 +276,30 @@ export default {
       if (this.user.email && this.user.password && this.user.confirmPassword) {
         const response = await this.register(this.user);
         if (response.success) {
-          this.$notify.success('Đăng ký thành công');
-          this.changeType();
-          this.$refs.formRegister.resetValidation();
+          this.$notify.success('Vui lòng xác thực mail');
+          const data = {
+            isShow: true,
+            email: this.user.email,
+          };
+
+          this.$emit('showConfirmMail', data);
+          this.close();
         } else this.$notify.error('Tài khoản này đã được đăng ký');
       }
       this.isLoading = false;
+    },
+
+    showForgotPassword() {
+      this.isShowSendMail = true;
+      this.showDialog = false;
+    },
+
+    closeSendMail() {
+      this.close();
+    },
+
+    showLogin() {
+      this.showDialog = true;
     },
   },
 };
@@ -265,7 +309,7 @@ export default {
   width: 50%;
 }
 .title {
-  color: #81ccb7;
+  color: #52acde;
 }
 
 .text-bottom {
@@ -273,7 +317,7 @@ export default {
   opacity: 0.6;
 
   &--highlight {
-    color: #81ccb7;
+    color: #52acde;
   }
 }
 .text {
@@ -288,6 +332,6 @@ export default {
 .check {
   background-size: 100% 100%;
   width: 50%;
-  background-image: url('https://img.rawpixel.com/s3fs-private/rawpixel_images/website_content/rm422-047-x.jpg?w=800&dpr=1&fit=default&crop=default&q=65&vib=3&con=3&usm=15&bg=F4F4F3&ixlib=js-2.2.1&s=16ea540dabc12e86960a8b74ab282c3f');
+  background-image: url('https://i.pinimg.com/736x/6e/32/87/6e32878542a4a6b86e640204d951fbff--blue-wallpapers-blue-backgrounds.jpg');
 }
 </style>

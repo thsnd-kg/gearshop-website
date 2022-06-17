@@ -7,10 +7,10 @@
       class="elevation-1"
       @click:row="selectOrder"
     >
-      <template v-slot:item.status="{ item }">
+      <template v-slot:item.orderStatus="{ item }">
         <v-chip
-          :key="item.id"
-          :color="getColor(item.status)"
+          :key="item.orderId"
+          :color="getColor(item.orderStatus)"
           outlined
           label
           class="mr-1 my-1"
@@ -18,11 +18,13 @@
           xl="mr-2"
           sm="mr-2"
         >
-          {{ item.status }}
+          {{ convertName(item.orderStatus) }}
         </v-chip>
       </template>
       <template v-slot:item.totalPaid="{ item }">
-        <span>{{ item.totalPaid.toLocaleString() }} đ</span>
+        <span
+          >{{ (item.totalPrice - item.discountPrice).toLocaleString() }} đ</span
+        >
       </template>
       <template v-slot:item.createdAt="{ item }">
         <span>{{ formatDate(item.createdAt) }} </span>
@@ -49,10 +51,10 @@ export default {
         {
           text: 'Mã đơn hàng',
           align: 'start',
-          value: 'id',
+          value: 'orderId',
         },
         { text: 'Ngày tạo đơn', value: 'createdAt' },
-        { text: 'Trạng thái', value: 'status' },
+        { text: 'Trạng thái', value: 'orderStatus' },
         { text: 'Thanh toán', value: 'totalPaid' },
       ],
 
@@ -68,10 +70,10 @@ export default {
   methods: {
     async getOrders() {
       try {
-        const response = await this.$http.get('orders');
-        if (response.success) {
-          const { data } = response;
-          this.orders = data.items;
+        const response = await this.$http.get('orders/user');
+        if (response.status === 200) {
+          const { content } = response;
+          this.orders = content;
         }
       } catch (error) {
         console.log(error);
@@ -79,15 +81,32 @@ export default {
     },
 
     getColor(status) {
+      console.log('ok');
       switch (status) {
-        case 'Pending':
+        case 'PENDING':
           return 'teal';
-        case 'Success':
+        case 'COMPLETED':
           return 'green';
-        case 'Canceled':
+        case 'CANCELED':
           return 'red';
-        case 'Delivered':
+        case 'SHIPPING':
           return 'blue';
+
+        default:
+          break;
+      }
+    },
+
+    convertName(name) {
+      switch (name) {
+        case 'PENDING':
+          return 'Đang xử lý';
+        case 'COMPLETED':
+          return 'Thành công';
+        case 'CANCELED':
+          return 'Huỷ đơn';
+        case 'SHIPPING':
+          return 'Đang giao';
 
         default:
           break;

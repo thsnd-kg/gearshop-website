@@ -360,7 +360,7 @@
           </v-card>
           <v-card v-show="tabOrder" class="rounded-lg pa-6 pb-10">
             <div class="text-h5 mb-6 font-weight-medium">Lịch sử mua hàng</div>
-            <!-- <OrderTable></OrderTable> -->
+            <OrderTable></OrderTable>
           </v-card>
         </v-col>
       </v-row>
@@ -369,14 +369,16 @@
 </template>
 
 <script>
-import { mapGetters, mapActions } from "vuex";
-// import OrderTable from '../components/profile/OrderTable.vue';
-import axios from "axios";
+
 import { uploader } from "../plugins/uploader";
+import { mapGetters, mapActions } from 'vuex';
+import OrderTable from '../components/profile/OrderTable.vue';
+import axios from 'axios';
+
 export default {
   name: "ProfileView",
   components: {
-    // OrderTable,
+    OrderTable,
   },
 
   data() {

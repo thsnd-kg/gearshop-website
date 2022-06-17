@@ -101,20 +101,31 @@
       </v-col>
     </v-row>
 
-    <Login :show="showLogin" @closeLogin="closeLogin"></Login>
+    <Login
+      :show="showLogin"
+      @closeLogin="closeLogin"
+      @showConfirmMail="showConfirmMail"
+    ></Login>
+    <ConfirmMail
+      v-if="isShowConfirmMail"
+      :email="email"
+      @showConfirmMail="showConfirmMail"
+    ></ConfirmMail>
   </v-app-bar>
 </template>
 <script>
 import Login from './login/Login.vue';
 import ModalAccount from './login/ModalAccount.vue';
-import { mapState } from 'vuex';
+import { mapGetters } from 'vuex';
 import Category from './Category.vue';
+import ConfirmMail from './ConfirmMail.vue';
 
 export default {
   components: {
     Login,
     ModalAccount,
     Category,
+    ConfirmMail,
   },
 
   data() {
@@ -124,11 +135,13 @@ export default {
       showLogin: false,
       closeModal: false,
       closeOnContentClick: false,
+      isShowConfirmMail: false,
+      email: '',
     };
   },
 
   computed: {
-    ...mapState('auth', ['isAuthendicated']),
+    ...mapGetters('auth', ['isAuthendicated']),
   },
 
   methods: {
@@ -161,6 +174,13 @@ export default {
 
     handleModalAccount() {
       this.closeOnContentClick = !this.closeOnContentClick;
+    },
+
+    showConfirmMail(data) {
+      console.log(data);
+      const { email, isShow } = data;
+      this.isShowConfirmMail = isShow;
+      this.email = email;
     },
   },
 };
