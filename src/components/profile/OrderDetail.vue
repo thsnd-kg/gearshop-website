@@ -2,7 +2,9 @@
   <v-dialog v-model="showDialog" persistent max-width="1000">
     <v-card class="">
       <div class="d-flex align-center">
-        <div class="text-h5 text-center title-popup">Chi tiết đơn hàng</div>
+        <div class="text-h5 text-center title-popup py-2">
+          Chi tiết đơn hàng
+        </div>
         <v-spacer></v-spacer>
         <div class="mr-2">
           <v-btn icon @click="close()">
@@ -184,7 +186,6 @@ export default {
 
 <style lang="scss" scoped>
 .title-popup {
-  width: 500px;
-  margin-left: 250px;
+  width: 100%;
 }
 </style>

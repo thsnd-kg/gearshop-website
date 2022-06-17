@@ -24,9 +24,7 @@
         </div>
         <div class="blue--text text--lighten-1 text-caption font-weight-medium">
           {{
-            profile.phoneNumber
-              ? profile.phoneNumber
-              : 'Chưa cập nhật số điện thoại'
+            profile.phoneNo ? profile.phoneNo : 'Chưa cập nhật số điện thoại'
           }}
         </div>
       </div>

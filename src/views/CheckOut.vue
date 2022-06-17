@@ -208,7 +208,7 @@ export default {
           href: "/cart"
         },
         {
-          text: "Check out",
+          text: "Đặt hàng",
           disabled: false,
           href: ""
         }
