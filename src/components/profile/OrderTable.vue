@@ -85,7 +85,7 @@ export default {
       switch (status) {
         case 'PENDING':
           return 'teal';
-        case 'SUCCESS':
+        case 'COMPLETED':
           return 'green';
         case 'CANCELED':
           return 'red';
@@ -101,7 +101,7 @@ export default {
       switch (name) {
         case 'PENDING':
           return 'Đang xử lý';
-        case 'SUCCESS':
+        case 'COMPLETED':
           return 'Thành công';
         case 'CANCELED':
           return 'Huỷ đơn';
