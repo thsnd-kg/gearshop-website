@@ -21,7 +21,8 @@
                 <strong>Người nhận: </strong> {{ order.recipientName }}
               </v-col>
               <v-col cols="7">
-                <strong>Địa chỉ: </strong> {{ getAddress(order.deliveryAddress) }}
+                <strong>Địa chỉ: </strong>
+                {{ getAddress(order.deliveryAddress) }}
               </v-col>
               <v-col cols="5">
                 <strong>Ngày tạo đơn: </strong>
@@ -40,9 +41,7 @@
               >
               <v-col cols="5">
                 <strong>Thanh toán: </strong
-                >{{
-                  (order.totalPrice - order.discountPrice).toLocaleString()
-                }}
+                >{{ (order.totalPrice - order.discountPrice).toLocaleString() }}
                 đ
               </v-col>
             </v-row>
@@ -89,19 +88,19 @@ export default {
       showDialog: true,
       headers: [
         {
-          text: "",
-          align: "start",
+          text: '',
+          align: 'start',
           sortable: false,
-          value: "imgUrl"
+          value: 'imgUrl',
         },
-        { text: "Mã SKU", value: "variant.sku" },
-        { text: "Tên sản phẩm", value: "variant.productName" },
-        { text: "Đơn giá", value: "price" },
-        { text: "Số lượng", value: "quantity" },
-        { text: "Thành tiền", value: "total" }
+        { text: 'Mã SKU', value: 'variant.sku' },
+        { text: 'Tên sản phẩm', value: 'variant.productName' },
+        { text: 'Đơn giá', value: 'price' },
+        { text: 'Số lượng', value: 'quantity' },
+        { text: 'Thành tiền', value: 'total' },
       ],
 
-      isCanceled: false
+      isCanceled: false,
     };
   },
 
@@ -110,8 +109,8 @@ export default {
       type: Object,
       default: () => {
         return {};
-      }
-    }
+      },
+    },
   },
 
   methods: {
@@ -135,14 +134,14 @@ export default {
 
     convertName(name) {
       switch (name) {
-        case "PENDING":
-          return "Đang xử lý";
-        case "SUCCESS":
-          return "Thành công";
-        case "CANCELED":
-          return "Huỷ đơn";
-        case "SHIPPING":
-          return "Đang giao";
+        case 'PENDING':
+          return 'Đang xử lý';
+        case 'COMPLETED':
+          return 'Thành công';
+        case 'CANCELED':
+          return 'Huỷ đơn';
+        case 'SHIPPING':
+          return 'Đang giao';
 
         default:
           break;
@@ -151,35 +150,35 @@ export default {
     getAddress(address) {
       if (address == null) return;
       let province, district, ward, street;
-      const addressDetail = address.split("|");
+      const addressDetail = address.split('|');
       addressDetail.forEach((item) => {
-        if (item.includes("Province")) {
+        if (item.includes('Province')) {
           province = item.substr(9, item.length);
         }
-        if (item.includes("District")) {
+        if (item.includes('District')) {
           district = item.substr(9, item.length);
         }
-        if (item.includes("Ward")) {
+        if (item.includes('Ward')) {
           ward = item.substr(5, item.length);
         }
-        if (item.includes("Address")) {
+        if (item.includes('Address')) {
           street = item.substr(8, item.length);
         }
       });
-      return province + ", " + district + ", " + ward + ", " + street;
+      return province + ', ' + district + ', ' + ward + ', ' + street;
     },
 
     close() {
-      this.$emit("closeOrderDetail", this.isCanceled);
+      this.$emit('closeOrderDetail', this.isCanceled);
     },
     formatDate(date) {
       if (!date) return null;
-      date = date.slice(0, date.indexOf("T"));
+      date = date.slice(0, date.indexOf('T'));
 
-      const [year, month, day] = date.split("-");
+      const [year, month, day] = date.split('-');
       return `${day}-${month}-${year}`;
-    }
-  }
+    },
+  },
 };
 </script>
 
