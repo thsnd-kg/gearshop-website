@@ -43,7 +43,7 @@
           hide-details
           solo
           background-color="#ecf0f4"
-          placeholder="Placeholder"
+          placeholder="Tìm kiếm sản phẩm"
           dense
           flat
           heigh="20px"

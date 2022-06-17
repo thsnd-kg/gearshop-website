@@ -30,10 +30,10 @@
             {{ product.productName }}
           </div>
           <div class="label-sku">
-            {{ radios != null ? `SKU: ${radios.sku}` : "" }}
+            {{ radios != null ? `SKU: ${radios.sku}` : '' }}
           </div>
           <div class="label-price">
-            {{ radios != null ? radios.price.toLocaleString() : "" }}
+            {{ radios != null ? radios.price.toLocaleString() : '' }}
           </div>
           <div class="variant-container">
             <v-container fluid>
@@ -147,38 +147,38 @@
   </div>
 </template>
 <script>
-import VariantRadio from "../components/productdetail/VariantRadio.vue";
-import { mapState } from "vuex";
+import VariantRadio from '../components/productdetail/VariantRadio.vue';
+import { mapState } from 'vuex';
 export default {
   components: {
-    VariantRadio
+    VariantRadio,
   },
   data() {
     return {
       breadcrumb: [
         {
-          text: "Trang chủ",
+          text: 'Trang chủ',
           disabled: false,
-          href: "/laptop"
+          href: '/laptop',
         },
         {
-          text: "Xem chi tiết",
+          text: 'Xem chi tiết',
           disabled: false,
-          href: ""
-        }
+          href: '',
+        },
       ],
       product: {},
       radios: null,
       imgs: [],
       quantity: 1,
-      clicked: []
+      clicked: [],
     };
   },
   created() {
     this.getProduct();
   },
   computed: {
-    ...mapState("auth", ["isAuthendicated"])
+    ...mapState('auth', ['isAuthendicated']),
   },
   methods: {
     async getProduct() {
@@ -213,25 +213,25 @@ export default {
         if (!this.clicked.includes(this.radios.variantId)) {
           const response = await this.$http.post(`orders/add-item`, {
             quantity: this.quantity,
-            variantId: this.radios.variantId
+            variantId: this.radios.variantId,
           });
           if (response.status != 200) {
-            this.$notify.error("Không thể thêm sản phẩm vào giỏ hàng");
+            this.$notify.error('Không thể thêm sản phẩm vào giỏ hàng');
           }
           if (response.status == 200) {
-            this.$notify.success("Đã thêm sản phẩm vào giỏ hàng");
+            this.$notify.success('Đã thêm sản phẩm vào giỏ hàng');
           }
           this.clicked.push(this.radios.variantId);
         } else {
-          this.$notify.warning("Đã sản phẩm vào giỏ hàng");
+          this.$notify.warning('Đã sản phẩm vào giỏ hàng');
         }
       } else {
         let cart;
-        const lc = localStorage.getItem("cart");
+        const lc = localStorage.getItem('cart');
         if (!lc) {
           cart = null;
         } else {
-          cart = JSON.parse(localStorage.getItem("cart"));
+          cart = JSON.parse(localStorage.getItem('cart'));
         }
         if (cart != null) {
           if (
@@ -242,26 +242,26 @@ export default {
             cart.orderDetails.push({
               quantity: this.quantity,
               variant: this.radios,
-              variantId: this.radios.variantId
+              variantId: this.radios.variantId,
             });
-            this.$notify.success("Đã thêm sản phẩm vào giỏ hàng");
+            this.$notify.success('Đã thêm sản phẩm vào giỏ hàng');
           } else {
-            this.$notify.warning("Sản phẩm đã tồn tại trong giỏ hàng");
+            this.$notify.warning('Sản phẩm đã tồn tại trong giỏ hàng');
           }
         } else {
           cart = {};
-          cart["orderDetails"] = [
+          cart['orderDetails'] = [
             {
               quantity: this.quantity,
               variant: this.radios,
-              variantId: this.radios.variantId
-            }
+              variantId: this.radios.variantId,
+            },
           ];
         }
-        localStorage.setItem("cart", JSON.stringify(cart));
+        localStorage.setItem('cart', JSON.stringify(cart));
       }
-    }
-  }
+    },
+  },
 };
 </script>
 <style lang="scss" scoped>
