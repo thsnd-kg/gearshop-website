@@ -12,21 +12,25 @@
       </div>
       <div class="d-flex justify-space-between">
         <div class="px-4">
-          <div><strong>Mã đơn hàng: </strong> {{ order.orderId }}</div>
+          <div class="mb-6"><strong>Mã đơn hàng: </strong> {{ order.orderId }}</div>
           <div>
-            <strong>Ngày tạo đơn: </strong> {{ formatDate(order.createdAt) }}
-          </div>
-          <div>
-            <strong>Trạng thái: </strong> {{ convertName(order.orderStatus) }}
-          </div>
-          <div>
-            <strong>Tổng tiền: </strong>
-            {{ order.totalPrice.toLocaleString() }} đ
-          </div>
-          <div><strong>Giảm giá: </strong> {{ order.discountPrice }} đ</div>
-          <div>
-            <strong>Thanh toán: </strong
-            >{{ (order.totalPrice - order.discountPrice).toLocaleString() }} đ
+            <v-row>
+            <v-col cols="5">
+              <strong>Ngày tạo đơn: </strong> {{ formatDate(order.createdAt) }}
+            </v-col>
+            <v-col cols="5">
+              <strong>Trạng thái: </strong> {{ convertName(order.orderStatus) }}
+            </v-col>
+            <v-col cols="5">
+              <strong>Tổng tiền: </strong>
+              {{ order.totalPrice.toLocaleString() }} đ
+            </v-col>
+            <v-col cols="5"><strong>Giảm giá: </strong> {{ order.discountPrice }} đ</v-col>
+            <v-col cols="5">
+              <strong>Thanh toán: </strong
+              >{{ (order.totalPrice - order.discountPrice).toLocaleString() }} đ
+            </v-col>
+            </v-row>
           </div>
         </div>
       </div>
@@ -68,19 +72,19 @@ export default {
       showDialog: true,
       headers: [
         {
-          text: '',
-          align: 'start',
+          text: "",
+          align: "start",
           sortable: false,
-          value: 'imgUrl',
+          value: "imgUrl"
         },
-        { text: 'Mã SKU', value: 'variant.sku' },
-        { text: 'Tên sản phẩm', value: 'variant.productName' },
-        { text: 'Đơn giá', value: 'price' },
-        { text: 'Số lượng', value: 'quantity' },
-        { text: 'Thành tiền', value: 'total' },
+        { text: "Mã SKU", value: "variant.sku" },
+        { text: "Tên sản phẩm", value: "variant.productName" },
+        { text: "Đơn giá", value: "price" },
+        { text: "Số lượng", value: "quantity" },
+        { text: "Thành tiền", value: "total" }
       ],
 
-      isCanceled: false,
+      isCanceled: false
     };
   },
 
@@ -89,8 +93,8 @@ export default {
       type: Object,
       default: () => {
         return {};
-      },
-    },
+      }
+    }
   },
 
   methods: {
@@ -114,14 +118,14 @@ export default {
 
     convertName(name) {
       switch (name) {
-        case 'PENDING':
-          return 'Đang xử lý';
-        case 'SUCCESS':
-          return 'Thành công';
-        case 'CANCELED':
-          return 'Huỷ đơn';
-        case 'SHIPPING':
-          return 'Đang giao';
+        case "PENDING":
+          return "Đang xử lý";
+        case "SUCCESS":
+          return "Thành công";
+        case "CANCELED":
+          return "Huỷ đơn";
+        case "SHIPPING":
+          return "Đang giao";
 
         default:
           break;
@@ -129,18 +133,17 @@ export default {
     },
 
     close() {
-      this.$emit('closeOrderDetail', this.isCanceled);
+      this.$emit("closeOrderDetail", this.isCanceled);
     },
     formatDate(date) {
       if (!date) return null;
-      date = date.slice(0, date.indexOf('T'));
+      date = date.slice(0, date.indexOf("T"));
 
-      const [year, month, day] = date.split('-');
+      const [year, month, day] = date.split("-");
       return `${day}-${month}-${year}`;
-    },
-  },
+    }
+  }
 };
 </script>
 
-<style>
-</style>
+<style></style>
