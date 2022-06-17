@@ -2,7 +2,7 @@
   <v-dialog v-model="showDialog" persistent max-width="1000">
     <v-card class="">
       <div class="d-flex align-center">
-        <v-card-title class="text-h5">Chi tiết đơn hàng</v-card-title>
+        <div class="text-h5 text-center title-popup">Chi tiết đơn hàng</div>
         <v-spacer></v-spacer>
         <div class="mr-2">
           <v-btn icon @click="close()">
@@ -12,24 +12,39 @@
       </div>
       <div class="d-flex justify-space-between">
         <div class="px-4">
-          <div class="mb-6"><strong>Mã đơn hàng: </strong> {{ order.orderId }}</div>
+          <div class="mb-6">
+            <strong>Mã đơn hàng: </strong> {{ order.orderId }}
+          </div>
           <div>
             <v-row>
-            <v-col cols="5">
-              <strong>Ngày tạo đơn: </strong> {{ formatDate(order.createdAt) }}
-            </v-col>
-            <v-col cols="5">
-              <strong>Trạng thái: </strong> {{ convertName(order.orderStatus) }}
-            </v-col>
-            <v-col cols="5">
-              <strong>Tổng tiền: </strong>
-              {{ order.totalPrice.toLocaleString() }} đ
-            </v-col>
-            <v-col cols="5"><strong>Giảm giá: </strong> {{ order.discountPrice }} đ</v-col>
-            <v-col cols="5">
-              <strong>Thanh toán: </strong
-              >{{ (order.totalPrice - order.discountPrice).toLocaleString() }} đ
-            </v-col>
+              <v-col cols="5">
+                <strong>Người nhận: </strong> {{ order.recipientName }}
+              </v-col>
+              <v-col cols="7">
+                <strong>Địa chỉ: </strong> {{ getAddress(order.deliveryAddress) }}
+              </v-col>
+              <v-col cols="5">
+                <strong>Ngày tạo đơn: </strong>
+                {{ formatDate(order.createdAt) }}
+              </v-col>
+              <v-col cols="5">
+                <strong>Trạng thái: </strong>
+                {{ convertName(order.orderStatus) }}
+              </v-col>
+              <v-col cols="5">
+                <strong>Tổng tiền: </strong>
+                {{ order.totalPrice.toLocaleString() }} đ
+              </v-col>
+              <v-col cols="5"
+                ><strong>Giảm giá: </strong> {{ order.discountPrice }} đ</v-col
+              >
+              <v-col cols="5">
+                <strong>Thanh toán: </strong
+                >{{
+                  (order.totalPrice - order.discountPrice).toLocaleString()
+                }}
+                đ
+              </v-col>
             </v-row>
           </div>
         </div>
@@ -40,6 +55,8 @@
           :items="order.orderDetails"
           :items-per-page="5"
           class="elevation-1"
+          hide-default-footer
+          height="250px"
         >
           <template v-slot:item.imgUrl="{ item }">
             <v-img
@@ -131,6 +148,26 @@ export default {
           break;
       }
     },
+    getAddress(address) {
+      if (address == null) return;
+      let province, district, ward, street;
+      const addressDetail = address.split("|");
+      addressDetail.forEach((item) => {
+        if (item.includes("Province")) {
+          province = item.substr(9, item.length);
+        }
+        if (item.includes("District")) {
+          district = item.substr(9, item.length);
+        }
+        if (item.includes("Ward")) {
+          ward = item.substr(5, item.length);
+        }
+        if (item.includes("Address")) {
+          street = item.substr(8, item.length);
+        }
+      });
+      return province + ", " + district + ", " + ward + ", " + street;
+    },
 
     close() {
       this.$emit("closeOrderDetail", this.isCanceled);
@@ -146,4 +183,9 @@ export default {
 };
 </script>
 
-<style></style>
+<style lang="scss" scoped>
+.title-popup {
+  width: 500px;
+  margin-left: 250px;
+}
+</style>
