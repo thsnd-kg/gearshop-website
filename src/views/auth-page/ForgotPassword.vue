@@ -5,7 +5,7 @@
   >
     <v-card class="rounded-lg pa-6 px-10">
       <div class="text-h5 mb-6 font-weight-medium">Thay đổi mật khẩu</div>
-      <v-form ref="formLogin" lazy-validation>
+      <v-form ref="form" lazy-validation>
         <v-text-field
           validate-on-blur
           label="Mật khẩu"
@@ -52,6 +52,16 @@ export default {
       showConfirmPassword: false,
       showPass: false,
       token: '',
+      passwordRules: [
+        (value) => !!value || 'Mật khẩu không được để trống.',
+        (value) =>
+          (value && value.length >= 6) || 'Mật khẩu phải ít nhất 6 ký tự',
+      ],
+
+      confirmPasswordRules: [
+        (value) => !!value || 'Nhập lại mật khẩu không đƯợc để trống',
+        (value) => value === this.password || 'Mật khẩu không trùng nhau',
+      ],
     };
   },
 
@@ -62,18 +72,18 @@ export default {
   methods: {
     async save() {
       try {
+        if (!this.$refs.form.validate()) return;
         this.isLoading = true;
-        const response = await this.$http.post('auths/reset-password', {
+        const response = await this.$http.post('auth/reset-password', {
           token: this.token,
-          newPassword: this.password,
-          confirmPassword: this.confirmPassword,
+          password: this.password,
         });
 
-        if (response.success) {
+        if (response.status == 200) {
           this.$notify.success('Thay đổi mật khẩu thành công');
           this.$router.push({ path: '/' });
         } else {
-          this.$notify.error('Hệ thống đang xảy ra sự cố!');
+          this.$notify.error(response.error);
         }
       } catch (error) {
         console.log(error);

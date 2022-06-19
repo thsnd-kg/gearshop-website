@@ -393,6 +393,7 @@
 </template>
 
 <script>
+import { uploader } from '../plugins/uploader';
 import { mapGetters, mapActions } from 'vuex';
 import OrderTable from '../components/profile/OrderTable.vue';
 import axios from 'axios';
@@ -498,7 +499,7 @@ export default {
 
   methods: {
     ...mapActions('auth', ['getProfile']),
-
+    uploader,
     formatDate(date) {
       if (!date) return null;
 
@@ -627,13 +628,26 @@ export default {
     },
 
     async uploadAva(files) {
-      this.isSelecting = true;
-      const form = new FormData();
-      files.forEach((file) => form.append('file', file));
+      try {
+        const url = await this.uploader(files);
+        await this.$http.put('/profile/me', {
+          username: this.profile.username,
+          imgUrl: url,
+        });
+        this.isSelecting = true;
+        return url;
+      } catch (error) {
+        console.log(error);
+      } finally {
+        this.selecting = false;
+      }
 
-      const { data } = await this.$http.upload('images/upload/avatar', form);
-      this.isSelecting = false;
-      return data[0];
+      // const form = new FormData();
+      // files.forEach((file) => form.append("file", file));
+
+      // const { data } = await this.$http.upload("images/upload/avatar", form);
+      // this.isSelecting = false;
+      // return data[0];
     },
 
     onButtonClick() {
@@ -641,16 +655,17 @@ export default {
     },
 
     async onFileChanged(e) {
+      console.log(e);
       this.usrAva = e.target.files[0];
       this.profile.imageUrl = URL.createObjectURL(e.target.files[0]);
 
-      await this.uploadAva([this.usrAva]);
+      await this.uploadAva(this.usrAva);
     },
   },
 };
 </script>
 
-<style lang ="scss" scoped>
+<style lang="scss" scoped>
 .btn {
   margin-bottom: 12px;
   border-radius: 12px;

@@ -149,11 +149,7 @@
                 <div class="tamtinh">
                   <div>Khuyến mãi:</div>
                   <div>
-                    {{
-                      items.discountPrice != undefined
-                        ? items.discountPrice.toLocaleString()
-                        : 0
-                    }}
+                    {{ items.discountPrice.toLocaleString() }}
                   </div>
                 </div>
                 <div class="tamtinh">
@@ -169,7 +165,7 @@
                       ? (
                           items.totalPrice - items.discountPrice
                         ).toLocaleString()
-                      : 0
+                      : items.totalPrice.toLocaleString()
                   }}
                 </div>
               </div>
@@ -208,7 +204,7 @@ export default {
           href: '/cart',
         },
         {
-          text: 'Check out',
+          text: 'Đặt hàng',
           disabled: false,
           href: '',
         },
@@ -217,7 +213,6 @@ export default {
       num: 0,
       name: '',
       phone: '0000',
-
       user: null,
       provincesAPI: null,
       districtsAPI: null,
@@ -287,7 +282,6 @@ export default {
 
       return province + district + ward + street;
     },
-
     async getProvince() {
       try {
         const response = await axios.get(
@@ -297,27 +291,6 @@ export default {
       } catch (e) {
         console.log(e);
       }
-    },
-
-    // const district = address.substr(
-    //   address.indexOf('District'),
-    //   address.indexOf('|')
-    // );
-
-    // this.currentProvince = province;
-    // console.log(province);
-    // console.log(array);
-
-    isNumber(input) {
-      return /[0-9]+/g.test(input) || 'Vui lòng nhập số';
-    },
-    lenghtNumber(input) {
-      if (input.length > 10) return 'Tối đa 10 kí tự';
-      else return;
-    },
-    notEmpty(input) {
-      if (input == null || input == '') return 'Vui lòng không để trống';
-      else return;
     },
     async getCart() {
       if (this.isAuthendicated) {
@@ -377,19 +350,25 @@ export default {
         }
         if (this.items.orderDetails.length > 0) {
           const address = this.getFormatAddress();
-          const response0 = await this.$http.post(`orders/user/checkout/info`, {
-            deliveryAddress: address,
-            recipientName: this.user.firstName,
-            phoneNumber: this.user.phoneNo,
-          });
-          if (response0.status !== 200) {
-            this.$notify.error('Lỗi! Vui lòng thử lại sau.');
-          } else {
-            const response = await this.$http.get(`orders/user/checkout`);
-            if (response.status == 200) {
-              this.$notify.success('Đặt hàng thành công!');
-            } else {
+          if (this.checkAddress()) {
+            const response0 = await this.$http.post(
+              `orders/user/checkout/info`,
+              {
+                deliveryAddress: address,
+                recipientName: this.user.firstName,
+                phoneNumber: this.user.phoneNo,
+              }
+            );
+            if (response0.status !== 200) {
               this.$notify.error('Lỗi! Vui lòng thử lại sau.');
+            } else {
+              const response = await this.$http.get(`orders/user/checkout`);
+              if (response.status == 200) {
+                this.$notify.success('Đặt hàng thành công!');
+                this.$router.push({ path: '/my-orders' });
+              } else {
+                this.$notify.error('Lỗi! Vui lòng thử lại sau.');
+              }
             }
           }
         } else {
@@ -406,26 +385,63 @@ export default {
         }
         if (this.items.orderDetails.length > 0) {
           const address = this.getFormatAddress();
-          const response = await this.$http.post(
-            `orders/user/checkout/none-account`,
-            {
-              orderDetail: this.items.orderDetails,
-              deliveryAddress: address,
-              recipientName: this.name,
-              phoneNumber: this.phone,
+          if (this.checkAddress()) {
+            const response = await this.$http.post(
+              `orders/user/checkout/none-account`,
+              {
+                orderDetail: this.items.orderDetails,
+                deliveryAddress: address,
+                recipientName: this.user.firstName,
+                phoneNumber: this.user.phoneNo,
+              }
+            );
+            if (response.status == 200) {
+              this.$notify.success('Đặt hàng thành công!');
+              localStorage.removeItem('cart');
+              this.$router.push('/');
+            } else {
+              this.$notify.error('Lỗi! Vui lòng thử lại sau.');
             }
-          );
-          if (response.status == 200) {
-            this.$notify.success('Đặt hàng thành công!');
-            localStorage.removeItem('cart');
-            this.$router.push('/');
-          } else {
-            this.$notify.error('Lỗi! Vui lòng thử lại sau.');
           }
         } else {
           this.$notify.warning('Danh sách rỗng!');
         }
       }
+    },
+    //validate
+    isNumber(input) {
+      return /[0-9]+/g.test(input) || 'Vui lòng nhập số';
+    },
+    lenghtNumber(input) {
+      if (input.length > 10) return 'Tối đa 10 kí tự';
+      else return;
+    },
+    notEmpty(input) {
+      if (input == null || input == '') return 'Vui lòng không để trống';
+      else return;
+    },
+    checkAddress() {
+      const province = this.currentProvince ? true : false;
+      if (!province) {
+        this.$notify.warning('Vui lòng chọn tỉnh/thành phố!');
+        return false;
+      }
+      const district = this.currentDistrict ? true : false;
+      if (!district) {
+        this.$notify.warning('Vui lòng chọn quận/huyện!');
+        return false;
+      }
+      const ward = this.currentWard ? true : false;
+      if (!ward) {
+        this.$notify.warning('Vui lòng chọn phường/xã!');
+        return false;
+      }
+      const street = this.currentStreet ? true : false;
+      if (!street) {
+        this.$notify.warning('Vui lòng nhập địa chỉ!');
+        return false;
+      }
+      return province && district && ward && street;
     },
   },
   async created() {

@@ -24,16 +24,16 @@
       <v-col cols="4">
         <div class="product-infor-container">
           <div class="bookmark-save">
-            Lưu <v-icon >mdi-bookmark-outline</v-icon>
+            Lưu <v-icon>mdi-bookmark-outline</v-icon>
           </div>
           <div class="label-name">
             {{ product.productName }}
           </div>
           <div class="label-sku">
-            {{ radios != null ? `SKU: ${radios.sku}` : "" }}
+            {{ radios != null ? `SKU: ${radios.sku}` : '' }}
           </div>
           <div class="label-price">
-            {{ radios != null ? radios.price.toLocaleString() : "" }}
+            {{ radios != null ? radios.price.toLocaleString() : '' }}
           </div>
           <div class="variant-container">
             <v-container fluid>
@@ -41,22 +41,24 @@
                 <template v-slot:label>
                   <div class="title-v">Phiên bản</div>
                 </template>
-                <v-radio
-                  v-for="n in product.variants"
-                  :key="n.variantId"
-                  :value="n"
-                >
-                  <template v-slot:label>
-                    <variant-radio :item="n" />
-                  </template>
-                </v-radio>
+                <div class="content">
+                  <v-radio
+                    v-for="n in product.variants"
+                    :key="n.variantId"
+                    :value="n"
+                  >
+                    <template v-slot:label>
+                      <variant-radio :item="n" />
+                    </template>
+                  </v-radio>
+                </div>
               </v-radio-group>
             </v-container>
           </div>
           <div class="add-card-container">
             <div class="quantity">
               <v-icon class="minus" @click="clickQty(-1)">mdi-minus</v-icon>
-              <div class="counter">{{quantity}}</div>
+              <div class="counter">{{ quantity }}</div>
               <v-icon class="plus" @click="clickQty(1)">mdi-plus</v-icon>
             </div>
             <div class="add-btn" @click="addToCart">THÊM VÀO GIỎ HÀNG</div>
@@ -105,7 +107,7 @@
             <div class="content">
               <ul>
                 <li>Bảo hành 12 tháng tại <strong>Gear Shop</strong></li>
-                 <li>Một đổi một trong vòng một tháng đầu tiên</li>
+                <li>Một đổi một trong vòng một tháng đầu tiên</li>
               </ul>
             </div>
           </div>
@@ -115,8 +117,8 @@
                 >mdi-clipboard-text-outline</v-icon
               >Mô tả sản phẩm
             </div>
-            <div class="pr-2"> 
-              {{product.productDesc}}
+            <div class="pr-2">
+              {{ product.productDesc }}
             </div>
           </div>
           <div class="thanking">
@@ -127,9 +129,7 @@
                   Cảm ơn bạn đã xem sản phẩm của chúng tôi, hãy liên hệ để được
                   trải nghiệm và tư vấn miễn phí bạn nhé!
                 </div>
-                <div class="btn-hotline">
-                  LIÊN HỆ HOTLINE
-                </div>
+                <div class="btn-hotline">LIÊN HỆ HOTLINE</div>
               </v-col>
               <v-col cols="5">
                 <v-img
@@ -147,15 +147,15 @@
   </div>
 </template>
 <script>
-import VariantRadio from "../components/productdetail/VariantRadio.vue";
+import VariantRadio from '../components/productdetail/VariantRadio.vue';
 import { mapState } from 'vuex';
 export default {
   components: {
-    VariantRadio
+    VariantRadio,
   },
   data() {
     return {
-      breadcrumb:[
+      breadcrumb: [
         {
           text: 'Trang chủ',
           disabled: false,
@@ -194,64 +194,74 @@ export default {
       console.log(this.product);
     },
     clickQty(i) {
-      if(this.quantity > 1 && i == -1) {
-        this.quantity = this.quantity+i;
+      if (this.quantity > 1 && i == -1) {
+        this.quantity = this.quantity + i;
       }
-      if(this.quantity < this.radios.quantity && i == 1) {
-         this.quantity = this.quantity+i;
+      if (this.quantity < this.radios.quantity && i == 1) {
+        this.quantity = this.quantity + i;
       }
-
     },
     setQuantity() {
-      if(this.radios.quantity < 1)
-      {
+      if (this.radios.quantity < 1) {
         this.quantity = 0;
-      }
-      else {
-       this.quantity = 1;
+      } else {
+        this.quantity = 1;
       }
     },
     async addToCart() {
       if (this.isAuthendicated) {
-      if(!this.clicked.includes(this.radios.variantId)) {
-      const response = await this.$http.post(`orders/add-item`,{quantity: this.quantity, variantId: this.radios.variantId});
-      if(response.status != 200) {
-        this.$notify.error("Không thể thêm sản phẩm vào giỏ hàng")
-      }
-      if(response.status == 200) {
-        this.$notify.success("Đã thêm sản phẩm vào giỏ hàng")
-      }
-      this.clicked.push(this.radios.variantId);
+        if (!this.clicked.includes(this.radios.variantId)) {
+          const response = await this.$http.post(`orders/add-item`, {
+            quantity: this.quantity,
+            variantId: this.radios.variantId,
+          });
+          if (response.status != 200) {
+            this.$notify.error('Không thể thêm sản phẩm vào giỏ hàng');
+          }
+          if (response.status == 200) {
+            this.$notify.success('Đã thêm sản phẩm vào giỏ hàng');
+          }
+          this.clicked.push(this.radios.variantId);
+        } else {
+          this.$notify.warning('Đã sản phẩm vào giỏ hàng');
+        }
       } else {
-         this.$notify.warning("Đã sản phẩm vào giỏ hàng")
-      }
-      }
-      else {
         let cart;
         const lc = localStorage.getItem('cart');
-        if(!lc) {
+        if (!lc) {
           cart = null;
-        }
-        else {
+        } else {
           cart = JSON.parse(localStorage.getItem('cart'));
         }
-        if(cart != null) {
-          if(cart.orderDetails.find(item => item.variant.variantId == this.radios.variantId) == undefined)
-          {
-           cart.orderDetails.push({quantity: this.quantity, variant: this.radios, variantId: this.radios.variantId})
-            this.$notify.success("Đã thêm sản phẩm vào giỏ hàng")
+        if (cart != null) {
+          if (
+            cart.orderDetails.find(
+              (item) => item.variant.variantId == this.radios.variantId
+            ) == undefined
+          ) {
+            cart.orderDetails.push({
+              quantity: this.quantity,
+              variant: this.radios,
+              variantId: this.radios.variantId,
+            });
+            this.$notify.success('Đã thêm sản phẩm vào giỏ hàng');
           } else {
-             this.$notify.warning("Đã thêm sản phẩm vào giỏ hàng")
+            this.$notify.warning('Sản phẩm đã tồn tại trong giỏ hàng');
           }
-        }
-        else {
-           cart = {};
-           cart['orderDetails'] = [{quantity: this.quantity, variant: this.radios}];
+        } else {
+          cart = {};
+          cart['orderDetails'] = [
+            {
+              quantity: this.quantity,
+              variant: this.radios,
+              variantId: this.radios.variantId,
+            },
+          ];
         }
         localStorage.setItem('cart', JSON.stringify(cart));
       }
-    }
-  }
+    },
+  },
 };
 </script>
 <style lang="scss" scoped>
@@ -260,6 +270,7 @@ export default {
   width: 1200px;
   margin: 0 auto;
   .product-detail {
+    margin-top: -20px;
     width: 600px;
     padding: 0px 0px 20px 20px;
     border-radius: 25px;
@@ -281,7 +292,7 @@ export default {
       height: 500px;
       margin-right: 15px;
     }
-    .insurance{
+    .insurance {
       .content {
         background-color: #f1f1f1;
         margin-right: 20px;
@@ -305,11 +316,11 @@ export default {
         border-radius: 10px;
         background-color: #f43688;
         font-weight: bold;
-         color: white !important;
-         &:hover {
-           cursor: pointer;
-            background-color: #c32b6c;
-         }
+        color: white !important;
+        &:hover {
+          cursor: pointer;
+          background-color: #c32b6c;
+        }
       }
     }
   }
@@ -323,7 +334,7 @@ export default {
   }
   .product-infor-container {
     width: 470px;
-    margin-top:20px;
+    margin-top: 20px;
     padding: 10px 0px 20px 20px;
     margin-left: -70px;
     border-radius: 20px;
@@ -350,6 +361,13 @@ export default {
         font-size: 13px;
         font-weight: bolder;
         color: black;
+      }
+      .content {
+        max-height: 230px;
+        overflow-y: scroll;
+      }
+      .content::-webkit-scrollbar {
+        display: none;
       }
     }
     .add-card-container {
@@ -390,11 +408,11 @@ export default {
         border-radius: 10px;
         background-color: #f43688;
         font-weight: bold;
-         color: white !important;
-         &:hover {
-           cursor: pointer;
-            background-color: #c32b6c;
-         }
+        color: white !important;
+        &:hover {
+          cursor: pointer;
+          background-color: #c32b6c;
+        }
       }
     }
   }

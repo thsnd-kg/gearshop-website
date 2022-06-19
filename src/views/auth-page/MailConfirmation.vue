@@ -27,7 +27,7 @@
           height="48"
           class="rounded-lg px-8"
           color="rgba(254, 52, 100)"
-          to="/trang-chu"
+          to="/"
         >
           <div class="text-body-1 font-weight-bold white--text">
             Về trang chủ

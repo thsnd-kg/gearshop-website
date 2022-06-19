@@ -2,7 +2,7 @@
   <div class="container">
     <v-row>
       <v-col cols="2">
-        <v-img class="image" :src="item.variant.imgUrl" height="98" width="98"> </v-img>
+        <v-img class="image" :src="item.variant.imgUrl" height="98" width="98" @click="pushTo(item.variant.productLink)"> </v-img>
       </v-col>
       <v-col cols="6">
         <div class="product-name">
@@ -68,6 +68,13 @@ export default {
         this.item.quantity * this.item.variant.price
       );
     },
+    pushTo(link) {
+       let routeData = this.$router.resolve({
+        name: "Product Detail",
+        params: { link: link }
+      });
+      window.open(routeData.href, "_blank");
+    }
   },
   created() {
     this.setTotal();
@@ -86,6 +93,9 @@ export default {
     border-width: 1px;
     border-style: solid;
     border-color: #c4cdd0;
+    &:hover {
+      cursor: pointer;
+    }
   }
   .icon {
     font-size: 16px;

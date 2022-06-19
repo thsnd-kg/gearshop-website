@@ -118,7 +118,8 @@
                 </div>
               </div>
             </v-col>
-            <v-col
+            <v-col 
+            
               class="product-card-container"
               v-for="data in getListProductWithIndex"
               :key="data.id"
@@ -141,7 +142,7 @@
                   <div class="number">
                     {{
                       `${this.pageIndex}/${Math.ceil(
-                        this.productsFilter.length / 4
+                        this.productsFilter.length / 6
                       )}`
                     }}
                   </div>
@@ -240,7 +241,7 @@ export default {
         this.$router.push({ path: `/${this.link}`, query: { p: 1 } });
       } else {
         if (
-          this.pageIndex == Math.ceil(this.productsFilter.length / 4) &&
+          this.pageIndex == Math.ceil(this.productsFilter.length / 6) &&
           i == 1
         ) {
           return;
@@ -325,9 +326,9 @@ export default {
     getListProductWithIndex() {
       let index = this.$route.query.p;
       if (index === undefined || index == 1) {
-        return this.productsFilter.slice(0, 4);
+        return this.productsFilter.slice(0, 6);
       } else {
-        return this.productsFilter.slice((index - 1) * 4, (index - 1) * 4 + 4);
+        return this.productsFilter.slice((index - 1) * 6, (index - 1) * 6 + 6);
       }
     },
   },
