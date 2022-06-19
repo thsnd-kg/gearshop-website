@@ -83,7 +83,7 @@
                       ? (
                           items.totalPrice - items.discountPrice
                         ).toLocaleString()
-                      : 0
+                      : items.totalPrice.toLocaleString()
                   }}
                 </div>
               </div>

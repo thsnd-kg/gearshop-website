@@ -193,8 +193,7 @@ export default {
       passwordRules: [
         (value) => !!value || 'Mật khẩu không được để trống.',
         (value) =>
-          (value && value.length >= 4) ||
-          'Password must be at least 6 characters',
+          (value && value.length >= 6) || 'Mật khẩu chứa ít nhất 6 ký tự',
       ],
 
       confirmPasswordRules: [
@@ -258,10 +257,10 @@ export default {
               localStorage.removeItem('cart');
             }
           }
-         setTimeout(() => { 
-          this.close();
-          window.location.reload();
-         }, 200);
+          setTimeout(() => {
+            this.close();
+            window.location.reload();
+          }, 200);
         } else this.errorMessages = 'Email hoặc mật khẩu bạn nhập không đúng';
       }
       this.isLoading = false;

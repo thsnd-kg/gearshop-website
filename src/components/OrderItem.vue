@@ -11,10 +11,14 @@
           }}-{{ item.createdAt.substring(0, 4) }}
         </div>
         <div class="mb-3">
-          <strong>Trạng thái đơn hàng:</strong> {{ item.orderStatus }}
+          <strong>Trạng thái đơn hàng:</strong>
+          {{ convertName(item.orderStatus) }}
         </div>
         <div class="mb-3">
-          <strong>Tình trạng thanh toán:</strong> {{ item.paymentStatus }}
+          <strong>Tình trạng thanh toán:</strong>
+          {{
+            item.paymentStatus == 'PAID' ? 'Đã thanh toán' : 'Chưa thanh toán'
+          }}
         </div>
         <div class="mb-3">
           <strong>Tổng tiền:</strong> {{ item.totalPrice.toLocaleString() }}
@@ -67,6 +71,7 @@
   </div>
 </template>
 <script>
+import { convertName } from '../utils/helper';
 export default {
   props: ['items'],
   data() {
@@ -76,6 +81,10 @@ export default {
   },
   created() {
     this.item = JSON.parse(JSON.stringify(this.items));
+  },
+
+  methods: {
+    convertName,
   },
 };
 </script>
