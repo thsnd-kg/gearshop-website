@@ -104,7 +104,7 @@
                 >mdi-shield-check-outline</v-icon
               >Bảo hành, đổi trả
             </div>
-            <div class="content">
+            <div class="content d-flex pa-4">
               <ul>
                 <li>Bảo hành 12 tháng tại <strong>Gear Shop</strong></li>
                 <li>Một đổi một trong vòng một tháng đầu tiên</li>
@@ -149,6 +149,9 @@
 <script>
 import VariantRadio from '../components/productdetail/VariantRadio.vue';
 import { mapState } from 'vuex';
+import { fetchProductByProductLink } from "@/api/product-service";
+import { addProductToOrder } from "@/api/order-service";
+
 export default {
   components: {
     VariantRadio,
@@ -183,7 +186,7 @@ export default {
   methods: {
     async getProduct() {
       let link = this.$route.params.link;
-      const response = await this.$http.get(`website/products/link/${link}`);
+      const response = await fetchProductByProductLink(link);
       this.product = response.content;
       let lstImg = [];
       lstImg.push(this.product.imgUrl);
@@ -211,14 +214,15 @@ export default {
     async addToCart() {
       if (this.isAuthendicated) {
         if (!this.clicked.includes(this.radios.variantId)) {
-          const response = await this.$http.post(`orders/add-item`, {
+          const response = await addProductToOrder({
             quantity: this.quantity,
             variantId: this.radios.variantId,
-          });
-          if (response.status != 200) {
+          })
+
+          if (response.status !== 200) {
             this.$notify.error('Không thể thêm sản phẩm vào giỏ hàng');
           }
-          if (response.status == 200) {
+          if (response.status === 200) {
             this.$notify.success('Đã thêm sản phẩm vào giỏ hàng');
           }
           this.clicked.push(this.radios.variantId);
@@ -402,9 +406,11 @@ export default {
         }
       }
       .add-btn {
-        padding: 12px 0px 0px 55px;
+        text-align: center;
+        padding: 12px 0px 0px;
+        margin-right: 12px;
         height: 50px;
-        width: 300px;
+        width: 260px;
         border-radius: 10px;
         background-color: #f43688;
         font-weight: bold;

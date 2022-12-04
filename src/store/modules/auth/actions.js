@@ -1,16 +1,17 @@
 import * as type from './type'
-import { $http } from '../../../plugins/http-wrapper';
+import { $http } from '@/plugins/http-wrapper';
+import { login, getMe, registerAccount } from "@/api/user-service";
 
-export const login = async ({commit}, params) => {
+export const performLogin = async ({commit}, params) => {
   try {
     const { email, password } = params;
     const username = email.slice(0, email.indexOf('@'));
-    const response = await $http.post('/auth/login', {password, username});
+    const response = await login(username, password)
     const { content } = response;
     if (content) {
       $http.setAccessToken(content);
       
-      const profile = await $http.get('/profile/me');
+      const profile = await getMe();
       localStorage.setItem('auth', JSON.stringify({token: content, profile: profile.content}))
 
       const data = {
@@ -40,9 +41,9 @@ export const register = async ({commit},params) => {
     const { email , password, confirmPassword } = params;
     const username = email.slice(0, email.indexOf('@'));
     
-    const repsonse = await $http.post('/auth/register', { email, username, password, confirmPassword })
+    const response = await registerAccount( { email, username, password, confirmPassword })
     
-    if(repsonse.status === 201){
+    if(response.status === 201){
       commit(type.REGISTER_SUCCESS)
       return { success: true };
     }
@@ -59,7 +60,7 @@ export const register = async ({commit},params) => {
 
 export const getProfile = async ({ commit }) => {
   try {
-    const response = await $http.get('/profile/me');
+    const response = await getMe();
     const { content } = response;
     if (content) {
       commit(type.UPDATE_PROFILE, content);

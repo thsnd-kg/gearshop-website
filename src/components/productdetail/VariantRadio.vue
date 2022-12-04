@@ -1,8 +1,8 @@
 <template>
-  <div class="item-variant-container">
+  <div class="item-variant-container d-flex flex-column">
     <div class="variant-name-label">{{ item.variantName }}</div>
     <div class="variant-price-label">{{ item.price.toLocaleString() }}</div>
-    <div class="variant-attributes-label">
+    <div class="variant-attributes-label my-auto">
       <v-chip
         class="chip"
         label
@@ -36,7 +36,7 @@ export default {
   height: 100px;
   width: 370px;
   border-radius: 10px;
-  box-shadow: 0 1px 1px 1px#ccc;
+  border: 1px solid #ccc;
   &:hover {
     background-color: #d8d9db;
   }

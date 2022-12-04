@@ -9,8 +9,8 @@
                 <div>
                   <v-avatar size="64">
                     <img
-                      alt="Avatar"
-                      :src="
+                        alt="Avatar"
+                        :src="
                         profile.imgUrl
                           ? profile.imgUrl
                           : require('@/assets/default-user.png')
@@ -19,20 +19,20 @@
                     <v-fade-transition>
                       <v-overlay v-if="hover" absolute>
                         <v-btn
-                          :loading="isSelecting"
-                          depressed
-                          class="avatar__upload"
-                          icon
-                          @click="onButtonClick"
+                            :loading="isSelecting"
+                            depressed
+                            class="avatar__upload"
+                            icon
+                            @click="onButtonClick"
                         >
                           <v-icon color="black" size="32">mdi-camera</v-icon>
                         </v-btn>
                         <input
-                          ref="uploader"
-                          class="d-none"
-                          type="file"
-                          accept="image/*"
-                          @change="onFileChanged"
+                            ref="uploader"
+                            class="d-none"
+                            type="file"
+                            accept="image/*"
+                            @change="onFileChanged"
                         />
                       </v-overlay>
                     </v-fade-transition>
@@ -43,7 +43,7 @@
 
             <div class="flex-grow-1 ml-3 my-auto">
               <div
-                class="
+                  class="
                   text-h6
                   font-weight-medium
                   blue-grey--text
@@ -54,7 +54,7 @@
               </div>
 
               <div
-                class="
+                  class="
                   blue--text
                   text--lighten-1 text-caption
                   font-weight-medium
@@ -62,8 +62,8 @@
               >
                 {{
                   profile.phoneNo
-                    ? profile.phoneNo
-                    : 'Chưa cập nhật số điện thoại'
+                      ? profile.phoneNo
+                      : 'Chưa cập nhật số điện thoại'
                 }}
               </div>
             </div>
@@ -71,21 +71,21 @@
           <v-divider class="my-3"></v-divider>
 
           <v-btn
-            height="52"
-            class="btn"
-            large
-            depressed
-            block
-            @click="redirectPage(page.info)"
-            :outlined="tabInfo"
-            :color="tabInfo ? `primary` : `rgba(248, 250, 252)`"
+              height="52"
+              class="btn"
+              large
+              depressed
+              block
+              @click="redirectPage(page.info)"
+              :outlined="tabInfo"
+              :color="tabInfo ? `primary` : `rgba(248, 250, 252)`"
           >
             <v-icon color="#6ad9e2" left size="28">
               mdi-account-circle-outline
             </v-icon>
 
             <div
-              class="
+                class="
                 ml-1
                 blue-grey--text
                 text--darken-1 text-subtile-1
@@ -99,18 +99,18 @@
           </v-btn>
 
           <v-btn
-            class="btn mt-1"
-            height="52"
-            large
-            depressed
-            block
-            @click="redirectPage(page.address)"
-            :outlined="tabAddress"
-            :color="tabAddress ? `primary` : `rgba(248, 250, 252)`"
+              class="btn mt-1"
+              height="52"
+              large
+              depressed
+              block
+              @click="redirectPage(page.address)"
+              :outlined="tabAddress"
+              :color="tabAddress ? `primary` : `rgba(248, 250, 252)`"
           >
-            <v-icon color="blue-grey" left size="28">mdi-key-outline </v-icon>
+            <v-icon color="blue-grey" left size="28">mdi-key-outline</v-icon>
             <div
-              class="
+                class="
                 ml-1
                 blue-grey--text
                 text--darken-1 text-subtile-1
@@ -124,21 +124,21 @@
           </v-btn>
 
           <v-btn
-            class="btn mt-1"
-            height="52"
-            large
-            depressed
-            block
-            @click="redirectPage(page.order)"
-            :outlined="tabOrder"
-            :color="tabOrder ? `primary` : `rgba(248, 250, 252)`"
+              class="btn mt-1"
+              height="52"
+              large
+              depressed
+              block
+              @click="redirectPage(page.order)"
+              :outlined="tabOrder"
+              :color="tabOrder ? `primary` : `rgba(248, 250, 252)`"
           >
             <v-icon color="blue darken-1 " left size="28">
               mdi-cart-outline
             </v-icon>
 
             <div
-              class="
+                class="
                 ml-1
                 blue-grey--text
                 text--darken-1 text-subtile-1
@@ -160,81 +160,81 @@
             <v-row>
               <v-col class="py-0" cols="6" dense>
                 <div
-                  class="text-caption font-weight-bold blue-grey--text darken-2"
+                    class="text-caption font-weight-bold blue-grey--text darken-2"
                 >
                   Họ và tên
                 </div>
                 <v-text-field
-                  v-model="user.firstName"
-                  height="48"
-                  outlined
-                  dense
+                    v-model="user.firstName"
+                    height="48"
+                    outlined
+                    dense
                 >
                 </v-text-field>
               </v-col>
               <v-col class="py-0" cols="6">
                 <div
-                  class="text-caption font-weight-bold blue-grey--text darken-2"
+                    class="text-caption font-weight-bold blue-grey--text darken-2"
                 >
                   Số điện thoại
                 </div>
                 <v-text-field
-                  v-model="user.phoneNo"
-                  height="48"
-                  outlined
-                  dense
-                  type="number"
+                    v-model="user.phoneNo"
+                    height="48"
+                    outlined
+                    dense
+                    type="number"
                 ></v-text-field>
               </v-col>
               <v-col class="py-0" cols="6">
                 <div
-                  class="text-caption font-weight-bold blue-grey--text darken-2"
+                    class="text-caption font-weight-bold blue-grey--text darken-2"
                 >
                   Email
                 </div>
                 <v-text-field
-                  disabled
-                  height="48"
-                  outlined
-                  dense
-                  v-model="user.email"
+                    disabled
+                    height="48"
+                    outlined
+                    dense
+                    v-model="user.email"
                 ></v-text-field>
               </v-col>
               <v-col class="py-0" cols="6">
                 <div
-                  class="text-caption font-weight-bold blue-grey--text darken-2"
+                    class="text-caption font-weight-bold blue-grey--text darken-2"
                 >
                   Ngày sinh
                 </div>
                 <v-menu
-                  ref="menu"
-                  v-model="menu"
-                  transition="scale-transition"
-                  :close-on-content-click="false"
-                  min-width="auto"
-                  offset-y
+                    ref="menu"
+                    v-model="menu"
+                    transition="scale-transition"
+                    :close-on-content-click="false"
+                    min-width="auto"
+                    offset-y
                 >
                   <template v-slot:activator="{ on, attrs }">
                     <v-text-field
-                      :value="formatDate(user.dateOfBirth)"
-                      readonly
-                      outlined
-                      height="48"
-                      dense
-                      append-icon="mdi-calendar"
-                      v-bind="attrs"
-                      v-on="on"
+                        :value="formatDate(user.dateOfBirth)"
+                        readonly
+                        outlined
+                        height="48"
+                        dense
+                        append-icon="mdi-calendar"
+                        v-bind="attrs"
+                        v-on="on"
                     />
                   </template>
                   <v-date-picker v-model="user.dateOfBirth" no-title scrollable>
-                    <v-spacer />
+                    <v-spacer/>
                     <v-btn text color="primary" @click="menu = false">
                       Huỷ
                     </v-btn>
                     <v-btn
-                      text
-                      color="primary"
-                      @click="$refs.menu.save(user.dateOfBirth)"
+                        text
+                        color="primary"
+                        @click="$refs.menu.save(user.dateOfBirth)"
                     >
                       Lưu
                     </v-btn>
@@ -246,76 +246,76 @@
             <v-row>
               <v-col class="py-0" cols="6" dense>
                 <div
-                  class="text-caption font-weight-bold blue-grey--text darken-2"
+                    class="text-caption font-weight-bold blue-grey--text darken-2"
                 >
                   Tỉnh / Thành phố
                 </div>
                 <v-select
-                  ref="provinceRef"
-                  :items="provincesAPI"
-                  v-model="currentProvince"
-                  :item-text="'name'"
-                  return-object
-                  :value="currentProvince"
-                  height="48"
-                  outlined
-                  dense
+                    ref="provinceRef"
+                    :items="provincesAPI"
+                    v-model="currentProvince"
+                    :item-text="'name'"
+                    return-object
+                    :value="currentProvince"
+                    height="48"
+                    outlined
+                    dense
                 ></v-select>
               </v-col>
               <v-col class="py-0" cols="6" dense>
                 <div
-                  class="text-caption font-weight-bold blue-grey--text darken-2"
+                    class="text-caption font-weight-bold blue-grey--text darken-2"
                 >
                   Quận / Huyện
                 </div>
                 <v-select
-                  :items="districtsAPI"
-                  v-model="currentDistrict"
-                  :item-text="'name'"
-                  return-object
-                  height="48"
-                  outlined
-                  dense
+                    :items="districtsAPI"
+                    v-model="currentDistrict"
+                    :item-text="'name'"
+                    return-object
+                    height="48"
+                    outlined
+                    dense
                 ></v-select>
               </v-col>
               <v-col class="py-0" cols="6" dense>
                 <div
-                  class="text-caption font-weight-bold blue-grey--text darken-2"
+                    class="text-caption font-weight-bold blue-grey--text darken-2"
                 >
                   Phường / Xã
                 </div>
                 <v-select
-                  :items="wardsAPI"
-                  v-model="currentWard"
-                  :item-text="'name'"
-                  return-object
-                  height="48"
-                  outlined
-                  dense
+                    :items="wardsAPI"
+                    v-model="currentWard"
+                    :item-text="'name'"
+                    return-object
+                    height="48"
+                    outlined
+                    dense
                 ></v-select>
               </v-col>
               <v-col class="py-0" cols="6" dense>
                 <div
-                  class="text-caption font-weight-bold blue-grey--text darken-2"
+                    class="text-caption font-weight-bold blue-grey--text darken-2"
                 >
                   Địa chỉ nhận hàng
                 </div>
                 <v-text-field
-                  v-model="currentStreet"
-                  height="48"
-                  outlined
-                  dense
+                    v-model="currentStreet"
+                    height="48"
+                    outlined
+                    dense
                 ></v-text-field>
               </v-col>
               <v-col class="py-0" cols="6">
                 <v-btn
-                  :loading="isLoading"
-                  block
-                  depressed
-                  height="48"
-                  class="rounded-lg"
-                  color="rgba(254, 52, 100)"
-                  @click="updateProfile"
+                    :loading="isLoading"
+                    block
+                    depressed
+                    height="48"
+                    class="rounded-lg"
+                    color="rgba(254, 52, 100)"
+                    @click="updateProfile"
                 >
                   <div class="text-body-1 font-weight-bold white--text">
                     Lưu thay đổi
@@ -332,48 +332,48 @@
             <v-row>
               <v-col class="py-0" cols="6" dense>
                 <div
-                  class="text-caption font-weight-bold blue-grey--text darken-2"
+                    class="text-caption font-weight-bold blue-grey--text darken-2"
                 >
                   Mật khẩu hiện tại
                 </div>
                 <v-text-field
-                  height="48"
-                  outlined
-                  v-model="oldPassword"
-                  dense
-                  :append-icon="showPass ? 'mdi-eye' : 'mdi-eye-off'"
-                  @click:append="showPass = !showPass"
-                  :type="showPass ? 'text' : 'password'"
-                  :rules="passwordRules"
+                    height="48"
+                    outlined
+                    v-model="oldPassword"
+                    dense
+                    :append-icon="showPass ? 'mdi-eye' : 'mdi-eye-off'"
+                    @click:append="showPass = !showPass"
+                    :type="showPass ? 'text' : 'password'"
+                    :rules="passwordRules"
                 >
                 </v-text-field>
               </v-col>
               <v-col class="py-0" cols="6">
                 <div
-                  class="text-caption font-weight-bold blue-grey--text darken-2"
+                    class="text-caption font-weight-bold blue-grey--text darken-2"
                 >
                   Mật khẩu mới
                 </div>
                 <v-text-field
-                  height="48"
-                  v-model="newPassword"
-                  outlined
-                  dense
-                  :append-icon="showNewPass ? 'mdi-eye' : 'mdi-eye-off'"
-                  @click:append="showNewPass = !showNewPass"
-                  :type="showNewPass ? 'text' : 'password'"
-                  :rules="passwordRules"
+                    height="48"
+                    v-model="newPassword"
+                    outlined
+                    dense
+                    :append-icon="showNewPass ? 'mdi-eye' : 'mdi-eye-off'"
+                    @click:append="showNewPass = !showNewPass"
+                    :type="showNewPass ? 'text' : 'password'"
+                    :rules="passwordRules"
                 ></v-text-field>
               </v-col>
               <v-col class="py-0" cols="6">
                 <v-btn
-                  block
-                  depressed
-                  height="48"
-                  class="rounded-lg"
-                  color="rgba(254, 52, 100)"
-                  :loading="isLoading"
-                  @click="changePassword"
+                    block
+                    depressed
+                    height="48"
+                    class="rounded-lg"
+                    color="rgba(254, 52, 100)"
+                    :loading="isLoading"
+                    @click="changePassword"
                 >
                   <div class="text-body-1 font-weight-bold white--text">
                     Lưu thay đổi
@@ -393,10 +393,11 @@
 </template>
 
 <script>
-import { uploader } from '../plugins/uploader';
+import { uploader } from '@/plugins/uploader';
 import { mapGetters, mapActions } from 'vuex';
-import OrderTable from '../components/profile/OrderTable.vue';
+import OrderTable from '@/components/profile/OrderTable.vue';
 import axios from 'axios';
+import { changePassword, updateProfile } from "@/api/user-service";
 
 export default {
   name: 'ProfileView',
@@ -427,7 +428,7 @@ export default {
       passwordRules: [
         (value) => !!value || 'Mật khẩu không được để trống.',
         (value) =>
-          (value && value.length >= 6) || 'Mật khẩu phải có ít nhất 6 ký tự',
+            (value && value.length >= 6) || 'Mật khẩu phải có ít nhất 6 ký tự',
       ],
 
       oldPassword: null,
@@ -451,7 +452,8 @@ export default {
     await this.parseAddress(this.user.address);
   },
 
-  beforeMount() {},
+  beforeMount() {
+  },
 
   watch: {
     $route(value) {
@@ -504,7 +506,7 @@ export default {
       if (!date) return null;
 
       const [year, month, day] = date.split('-');
-      return `${day}-${month}-${year}`;
+      return `${ day }-${ month }-${ year }`;
     },
 
     parseAddress(address) {
@@ -519,19 +521,19 @@ export default {
         if (item.includes('Province')) {
           const name = item.substr(9, item.length);
           this.currentProvince = this.provincesAPI.find(
-            (item) => item.name === name
+              (item) => item.name === name
           );
         }
         if (item.includes('District')) {
           const name = item.substr(9, item.length);
           this.currentDistrict = this.currentProvince.districts.find(
-            (item) => item.name === name
+              (item) => item.name === name
           );
         }
         if (item.includes('Ward')) {
           const name = item.substr(5, item.length);
           this.currentWard = this.currentDistrict.wards.find(
-            (item) => item.name === name
+              (item) => item.name === name
           );
         }
         if (item.includes('Address')) {
@@ -551,13 +553,13 @@ export default {
 
     getFormatAddress() {
       const province = this.currentProvince
-        ? `Province ${this.currentProvince.name}|`
-        : '';
+          ? `Province ${ this.currentProvince.name }|`
+          : '';
       const district = this.currentDistrict
-        ? `District ${this.currentDistrict.name}|`
-        : '';
-      const ward = this.currentWard ? `Ward ${this.currentWard.name}|` : '';
-      const street = this.currentStreet ? `Address ${this.currentStreet}|` : '';
+          ? `District ${ this.currentDistrict.name }|`
+          : '';
+      const ward = this.currentWard ? `Ward ${ this.currentWard.name }|` : '';
+      const street = this.currentStreet ? `Address ${ this.currentStreet }|` : '';
 
       return province + district + ward + street;
     },
@@ -569,7 +571,7 @@ export default {
     async getProvince() {
       try {
         const response = await axios.get(
-          `https://provinces.open-api.vn/api/?depth=3`
+            `https://provinces.open-api.vn/api/?depth=3`
         );
         this.provincesAPI = response.data;
       } catch (e) {
@@ -580,11 +582,12 @@ export default {
     async changePassword() {
       try {
         this.isLoading = true;
-        const response = await this.$http.post('profile/me/change-password', {
+        const response = await changePassword({
           oldPassword: this.oldPassword,
           newPassword: this.newPassword,
           confirmPassword: this.newPassword,
-        });
+        })
+
 
         const { status } = response;
 
@@ -605,7 +608,7 @@ export default {
       const address = this.getFormatAddress();
       try {
         this.isLoading = true;
-        const repsonse = await this.$http.put('profile/me', {
+        const repsonse = await updateProfile({
           firstName: this.user.firstName,
           dateOfBirth: this.user.dateOfBirth,
           phoneNo: this.user.phoneNo,
@@ -630,10 +633,11 @@ export default {
     async uploadAva(files) {
       try {
         const url = await this.uploader(files);
-        await this.$http.put('/profile/me', {
+        await updateProfile({
           username: this.profile.username,
           imgUrl: url,
-        });
+        })
+
         this.isSelecting = true;
         return url;
       } catch (error) {
@@ -642,12 +646,7 @@ export default {
         this.selecting = false;
       }
 
-      // const form = new FormData();
-      // files.forEach((file) => form.append("file", file));
 
-      // const { data } = await this.$http.upload("images/upload/avatar", form);
-      // this.isSelecting = false;
-      // return data[0];
     },
 
     onButtonClick() {

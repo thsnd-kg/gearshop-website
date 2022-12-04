@@ -118,8 +118,7 @@
                 </div>
               </div>
             </v-col>
-            <v-col 
-            
+            <v-col
               class="product-card-container"
               v-for="data in getListProductWithIndex"
               :key="data.id"
@@ -163,6 +162,7 @@
 import OptionFilter from '../components/homepages/OptionFilter.vue';
 import ProductCard from '../components/homepages/ProductCard.vue';
 import VSubHeader from '../components/VSubHeader.vue';
+import {fetchProductsByCategoryLink} from '@/api/product-service'
 export default {
   components: {
     OptionFilter,
@@ -187,20 +187,17 @@ export default {
       if (index == undefined) this.pageIndex = 1;
       else this.pageIndex = index;
       if (!link) {
-        const response = await this.$http.get(`website/categories/link/laptop`);
+        const response = await fetchProductsByCategoryLink('laptop')
         this.products = response.content;
         this.link = 'laptop';
       } else {
-        const response = await this.$http.get(
-          `website/categories/link/${link}`
-        );
+        const response = await fetchProductsByCategoryLink(link)
         this.products = response.content;
         this.link = link;
       }
       this.category = this.products[0].category;
       this.productsFilter = this.products;
-      //const response = await this.$http.get(`website/products/link/${link}`);
-      // this.product = response.content;
+
     },
     changeSort() {
       console.log(this.radios);

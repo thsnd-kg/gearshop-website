@@ -13,7 +13,8 @@
   </div>
 </template>
 <script>
-import OrderItem from '../components/OrderItem.vue';
+import OrderItem from '@/components/OrderItem.vue';
+import { fetchMyOrders } from "@/api/order-service";
 export default {
   components: {
     OrderItem,
@@ -38,7 +39,7 @@ export default {
   },
   methods: {
     async getOrders() {
-      const response = await this.$http.get(`orders/user`);
+      const response = await fetchMyOrders();
       if (response.status == 200) {
         this.items = response.content;
       } else {

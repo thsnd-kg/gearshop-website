@@ -9,11 +9,11 @@
       <v-col cols="8">
         <v-row class="item-container">
           <v-col
-            v-for="data in items.orderDetails"
-            :key="data.variant.variantId"
-            cols="12"
+              v-for="data in items.orderDetails"
+              :key="data.variant.variantId"
+              cols="12"
           >
-            <CartItem :items="data" @delete="delItem" @edit-qty="editQty" />
+            <CartItem :items="data" @delete="delItem" @edit-qty="editQty"/>
           </v-col>
         </v-row>
       </v-col>
@@ -22,22 +22,22 @@
           <v-col cols="12" v-if="isAuthendicated">
             <div class="discount-container">
               <div class="title">
-                <v-icon class="icon"> mdi-ticket-percent-outline </v-icon>
+                <v-icon class="icon"> mdi-ticket-percent-outline</v-icon>
                 Mã khuyến mãi
               </div>
               <div class="content">
                 <v-text-field
-                  class="input-discount"
-                  flat
-                  clearable
-                  placeholder="Nhập mã khuyến mãi"
-                  dense
-                  height="40px"
-                  solo
-                  @blur="setVoucher"
-                  @click:clear="removeVoucher"
-                  @keyup.enter="setVoucher"
-                  v-model="voucherCode"
+                    class="input-discount"
+                    flat
+                    clearable
+                    placeholder="Nhập mã khuyến mãi"
+                    dense
+                    height="40px"
+                    solo
+                    @blur="setVoucher"
+                    @click:clear="removeVoucher"
+                    @keyup.enter="setVoucher"
+                    v-model="voucherCode"
                 ></v-text-field>
               </div>
             </div>
@@ -45,7 +45,8 @@
           <v-col cols="12">
             <div class="order-container">
               <div class="title">
-                <v-icon class="icon">mdi-text-box-check-outline</v-icon> Tóm tắt
+                <v-icon class="icon">mdi-text-box-check-outline</v-icon>
+                Tóm tắt
                 đơn hàng
               </div>
 
@@ -59,8 +60,8 @@
                   <div>
                     {{
                       items.totalPrice != undefined
-                        ? items.totalPrice.toLocaleString()
-                        : 0
+                          ? items.totalPrice.toLocaleString()
+                          : 0
                     }}
                   </div>
                 </div>
@@ -69,8 +70,8 @@
                   <div>
                     {{
                       items.discountPrice != undefined
-                        ? items.discountPrice.toLocaleString()
-                        : 0
+                          ? items.discountPrice.toLocaleString()
+                          : 0
                     }}
                   </div>
                 </div>
@@ -80,15 +81,16 @@
                 <div>
                   {{
                     items.discountPrice != undefined
-                      ? (
-                          items.totalPrice - items.discountPrice
+                        ? (
+                            items.totalPrice - items.discountPrice
                         ).toLocaleString()
-                      : items.totalPrice.toLocaleString()
+                        : items.totalPrice.toLocaleString()
                   }}
                 </div>
               </div>
               <div class="checkout-btn" @click="handleClickCk">
-                Đặt hàng<v-icon color="white">mdi-chevron-right</v-icon>
+                Đặt hàng
+                <v-icon color="white">mdi-chevron-right</v-icon>
               </div>
             </div>
           </v-col>
@@ -100,6 +102,8 @@
 <script>
 import CartItem from '../components/cart/CartItem.vue';
 import { mapState } from 'vuex';
+import { addProductToOrder, addVoucher, fetchMyCart, removeProductInOrder, removeVoucher } from "@/api/order-service";
+
 export default {
   components: {
     CartItem,
@@ -129,7 +133,7 @@ export default {
   methods: {
     async setVoucher() {
       if (this.voucherCode != '' && this.voucherCode != null) {
-        const response = await this.$http.post('orders/add-voucher', {
+        const response = await addVoucher({
           voucherName: this.voucherCode,
         });
         if (response.status == 200) {
@@ -141,7 +145,7 @@ export default {
       }
     },
     async removeVoucher() {
-      const response = await this.$http.post('orders/remove-voucher');
+      const response = await removeVoucher();
       if (response.status == 200) {
         this.items = response.content;
         this.$notify.success('Đã xóa khuyến mãi!');
@@ -149,7 +153,7 @@ export default {
     },
     async getCart() {
       if (this.isAuthendicated) {
-        const response = await this.$http.get(`orders/cart`);
+        const response = await fetchMyCart();
         if (response.status == 200) {
           this.items = response.content;
           console.log(response.content);
@@ -190,10 +194,10 @@ export default {
     },
     async delItem(id) {
       this.items.orderDetails = this.items.orderDetails.filter(
-        (item) => item.variant.variantId !== id
+          (item) => item.variant.variantId !== id
       );
       if (this.isAuthendicated) {
-        const response = await this.$http.post(`orders/remove-item`, id);
+        const response = await removeProductInOrder(id);
         this.items = response.content;
       } else {
         localStorage.setItem('cart', JSON.stringify(this.items));
@@ -213,7 +217,7 @@ export default {
         return item;
       });
       if (this.isAuthendicated) {
-        const response = await this.$http.post(`orders/add-item`, {
+        const response = await addProductToOrder({
           quantity: qty,
           variantId: id,
         });
@@ -256,30 +260,36 @@ export default {
   margin: auto;
   width: 1100px;
 }
+
 .item-container {
   margin-bottom: 20px;
   max-height: 800px;
   border-radius: 15px;
   overflow-y: scroll;
 }
+
 .item-container::-webkit-scrollbar {
   display: none;
 }
+
 .discount-container {
   height: 150px;
   background-color: white;
   border-radius: 10px;
   padding: 10px 10px 10px 10px;
+
   .title {
     margin-bottom: 15px;
     font-weight: bold;
     font-size: 18px !important;
+
     .icon {
       color: black;
       font-size: 22px;
       margin-right: 5px;
     }
   }
+
   .content {
     margin-left: 18px;
     width: 300px;
@@ -288,36 +298,43 @@ export default {
     border-radius: 10px;
     background-color: #2d89e5;
     padding: 28px 2px 4px 80px;
+
     .input-discount {
       width: 180px;
     }
   }
 }
+
 .order-container {
   background-color: white;
   border-radius: 10px;
   padding: 10px 10px 10px 10px;
+
   .title {
     font-weight: bold;
     font-size: 18px !important;
     margin-bottom: 20px;
+
     .icon {
       color: black;
       font-size: 22px;
       margin-right: 5px;
     }
   }
+
   .detail {
     padding: 0px 5px 10px 5px;
     border-style: dashed;
     border-width: 0px 0px 1px 0px;
     border-color: grey;
+
     .tamtinh {
       display: flex;
       justify-content: space-between;
       margin-bottom: 10px;
     }
   }
+
   .total {
     padding: 20px 5px 20px 5px;
     display: flex;
@@ -326,6 +343,7 @@ export default {
     border-width: 0px 0px 1px 0px;
     border-color: grey;
   }
+
   .checkout-btn {
     margin: 20px 0px 0px 15px;
     padding: 12px 0px 0px 110px;
@@ -335,6 +353,7 @@ export default {
     background-color: #f43688;
     font-weight: bold;
     color: white !important;
+
     &:hover {
       cursor: pointer;
       background-color: #c32b6c;

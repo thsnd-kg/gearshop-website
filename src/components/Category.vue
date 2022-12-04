@@ -47,6 +47,8 @@
 </template>
 
 <script>
+import {fetchCategories} from "@/api/product-service";
+
 export default {
   data: () => ({
     categories: [],
@@ -82,9 +84,8 @@ export default {
   methods: {
     async getCategories() {
       try {
-        const response = await this.$http.get('/categories', {
-          onlyActive: true,
-        });
+        const response = await fetchCategories()
+        console.log(response)
         this.categories = response.content;
       } catch (error) {
         console.log(error);

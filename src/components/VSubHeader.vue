@@ -144,7 +144,9 @@ export default {
 
   methods: {
     async getBrands() {
-      const response = await this.$http.get('brands', { onlyActive: true });
+      const response = await this.$http.get('product-service/brands', {
+        onlyActive: true,
+      });
       this.brands = response.content;
     },
 

@@ -1,3 +1,4 @@
+`1
 <template>
   <div>
     <v-dialog v-model="showDialog" persistent max-width="800px">
@@ -5,7 +6,8 @@
         <div class="content">
           <div class="d-flex align-center">
             <v-card-title class="text-h5 blue--text blue-lighten-1"
-              >Đăng nhập</v-card-title
+            >Đăng nhập
+            </v-card-title
             >
             <v-spacer></v-spacer>
             <v-btn icon @click="close">
@@ -13,48 +15,49 @@
             </v-btn>
           </div>
           <v-card-title class="text-h6 blue--text blue-lighten-1"
-            >Gear Shop xin chào!</v-card-title
+          >Gear Shop xin chào!
+          </v-card-title
           >
           <div class="px-4">
             <v-form ref="formLogin" lazy-validation>
               <v-text-field
-                validate-on-blur
-                label="Email"
-                ref="email"
-                v-model="user.email"
-                :rules="emailRules"
-                outlined
+                  validate-on-blur
+                  label="Email"
+                  ref="email"
+                  v-model="user.email"
+                  :rules="emailRules"
+                  outlined
               ></v-text-field>
               <v-text-field
-                validate-on-blur
-                label="Mật khẩu"
-                hide-details
-                v-model="user.password"
-                :append-icon="showPass ? 'mdi-eye' : 'mdi-eye-off'"
-                @click:append="showPass = !showPass"
-                :type="showPass ? 'text' : 'password'"
-                :error-messages="errorMessages"
-                :rules="passwordRules"
-                outlined
+                  validate-on-blur
+                  label="Mật khẩu"
+                  hide-details
+                  v-model="user.password"
+                  :append-icon="showPass ? 'mdi-eye' : 'mdi-eye-off'"
+                  @click:append="showPass = !showPass"
+                  :type="showPass ? 'text' : 'password'"
+                  :error-messages="errorMessages"
+                  :rules="passwordRules"
+                  outlined
               ></v-text-field>
             </v-form>
           </div>
           <div class="px-4">
             <div class="my-2 d-flex justify-end">
               <a
-                class="text-subtitle-2 blue--text blue-lighten-1"
-                @click="showForgotPassword"
-                >Quên mật khẩu?</a
+                  class="text-subtitle-2 blue--text blue-lighten-1"
+                  @click="showForgotPassword"
+              >Quên mật khẩu?</a
               >
             </div>
             <v-btn
-              :loading="isLoading"
-              bottom
-              width="100%"
-              height="48px"
-              class="mx-auto"
-              color="primary"
-              @click="handleLogin"
+                :loading="isLoading"
+                bottom
+                width="100%"
+                height="48px"
+                class="mx-auto"
+                color="primary"
+                @click="handleLogin"
             >
               <div class="text">Đăng nhập</div>
             </v-btn>
@@ -80,49 +83,50 @@
             </v-btn>
           </div>
           <v-card-title class="blue--text blue-lighten-1 text-h6"
-            >Gear Shop xin chào!</v-card-title
+          >Gear Shop xin chào!
+          </v-card-title
           >
           <div class="px-4">
             <v-form ref="formRegister" lazy-validation>
               <v-text-field
-                validate-on-blur
-                label="Email"
-                ref="email"
-                v-model="user.email"
-                :rules="emailRules"
-                outlined
+                  validate-on-blur
+                  label="Email"
+                  ref="email"
+                  v-model="user.email"
+                  :rules="emailRules"
+                  outlined
               ></v-text-field>
               <v-text-field
-                validate-on-blur
-                label="Mật khẩu"
-                v-model="user.password"
-                :append-icon="showPass ? 'mdi-eye' : 'mdi-eye-off'"
-                @click:append="showPass = !showPass"
-                :type="showPass ? 'text' : 'password'"
-                :rules="passwordRules"
-                outlined
+                  validate-on-blur
+                  label="Mật khẩu"
+                  v-model="user.password"
+                  :append-icon="showPass ? 'mdi-eye' : 'mdi-eye-off'"
+                  @click:append="showPass = !showPass"
+                  :type="showPass ? 'text' : 'password'"
+                  :rules="passwordRules"
+                  outlined
               ></v-text-field>
               <v-text-field
-                label="Nhập lại mật khẩu"
-                validate-on-blur
-                v-model="user.confirmPassword"
-                :append-icon="showConfirmPassword ? 'mdi-eye' : 'mdi-eye-off'"
-                @click:append="showConfirmPassword = !showConfirmPassword"
-                :type="showConfirmPassword ? 'text' : 'password'"
-                :rules="confirmPasswordRules"
-                outlined
+                  label="Nhập lại mật khẩu"
+                  validate-on-blur
+                  v-model="user.confirmPassword"
+                  :append-icon="showConfirmPassword ? 'mdi-eye' : 'mdi-eye-off'"
+                  @click:append="showConfirmPassword = !showConfirmPassword"
+                  :type="showConfirmPassword ? 'text' : 'password'"
+                  :rules="confirmPasswordRules"
+                  outlined
               ></v-text-field>
             </v-form>
           </div>
           <div class="px-4">
             <v-btn
-              color="primary"
-              :loading="isLoading"
-              bottom
-              width="100%"
-              height="48px"
-              class="mx-auto"
-              @click="handleRegister"
+                color="primary"
+                :loading="isLoading"
+                bottom
+                width="100%"
+                height="48px"
+                class="mx-auto"
+                @click="handleRegister"
             >
               <div class="text">Đăng ký</div>
             </v-btn>
@@ -132,7 +136,7 @@
             <div class="text-bottom">Bạn đã có tài khoản rồi ?</div>
             <div class="ml-2">
               <a class="text-bottom--highlight" @click="changeType"
-                >Đăng nhập</a
+              >Đăng nhập</a
               >
             </div>
           </div>
@@ -141,15 +145,17 @@
       </v-card>
     </v-dialog>
     <SendMail
-      :isShowSendMail="isShowSendMail"
-      @closeSendMail="closeSendMail"
-      @changeType="showLogin"
+        :isShowSendMail="isShowSendMail"
+        @closeSendMail="closeSendMail"
+        @changeType="showLogin"
     ></SendMail>
   </div>
 </template>
 <script>
 import { mapActions } from 'vuex';
 import SendMail from '../SendMail';
+import { addProductToOrder } from "@/api/order-service";
+
 export default {
   name: 'Login',
 
@@ -185,15 +191,15 @@ export default {
       emailRules: [
         (v) => !!v || 'E-mail không được để trống',
         (v) =>
-          /^(([^<>()[\]\\.,;:\s@']+(\.[^<>()\\[\]\\.,;:\s@']+)*)|('.+'))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/.test(
-            v
-          ) || 'E-mail có định dạng không đúng',
+            /^(([^<>()[\]\\.,;:\s@']+(\.[^<>()\\[\]\\.,;:\s@']+)*)|('.+'))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/.test(
+                v
+            ) || 'E-mail có định dạng không đúng',
       ],
 
       passwordRules: [
         (value) => !!value || 'Mật khẩu không được để trống.',
         (value) =>
-          (value && value.length >= 6) || 'Mật khẩu chứa ít nhất 6 ký tự',
+            (value && value.length >= 6) || 'Mật khẩu chua ít nhất 6 ký tự',
       ],
 
       confirmPasswordRules: [
@@ -204,7 +210,7 @@ export default {
   },
 
   methods: {
-    ...mapActions('auth', ['login', 'register']),
+    ...mapActions('auth', ['performLogin', 'register']),
 
     close() {
       if (this.isLogin) this.$refs.formLogin.resetValidation();
@@ -235,7 +241,7 @@ export default {
       }
       this.isLoading = true;
       if (this.user.email && this.user.password) {
-        const response = await this.login(this.user);
+        const response = await this.performLogin(this.user);
         if (response.success) {
           this.$notify.success('Đăng nhập thành công');
           //post cart item to BE
@@ -248,19 +254,16 @@ export default {
             cart = JSON.parse(localStorage.getItem('cart'));
             if (cart?.orderDetails !== undefined) {
               cart.orderDetails.forEach((item) => {
-                this.$http.post(`orders/add-item`, {
+                addProductToOrder({
                   quantity: item.quantity,
                   variantId: item.variantId,
-                });
+                })
               });
 
               localStorage.removeItem('cart');
             }
           }
-          setTimeout(() => {
-            this.close();
-            window.location.reload();
-          }, 200);
+          this.showDialog = false
         } else this.errorMessages = 'Email hoặc mật khẩu bạn nhập không đúng';
       }
       this.isLoading = false;
@@ -307,6 +310,7 @@ export default {
 .content {
   width: 50%;
 }
+
 .title {
   color: #52acde;
 }
@@ -319,6 +323,7 @@ export default {
     color: #52acde;
   }
 }
+
 .text {
   font-weight: bold;
   font-size: 16px;
@@ -328,6 +333,7 @@ export default {
 .dialog-bottom {
   height: 100px;
 }
+
 .check {
   background-size: 100% 100%;
   width: 50%;

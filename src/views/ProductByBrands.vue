@@ -147,6 +147,8 @@
 <script>
 import ProductCard from '../components/homepages/ProductCard.vue';
 import VSubHeader from '../components/VSubHeader.vue';
+import {fetchProductsByBrand} from "@/api/product-service";
+
 export default {
   components: {
     VSubHeader,
@@ -168,14 +170,13 @@ export default {
       let index = this.$route.query.p;
       if (index == undefined) this.pageIndex = 1;
       else this.pageIndex = index;
-      const response = await this.$http.get(`website/brands/${link}`);
+      const response = await fetchProductsByBrand(link);
       this.products = response.content;
       this.link = link;
 
       this.brand = this.products[0].brand;
       this.productsFilter = this.products;
-      //const response = await this.$http.get(`website/products/link/${link}`);
-      // this.product = response.content;
+
     },
     changeSort() {
       console.log(this.radios);

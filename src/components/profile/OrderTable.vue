@@ -40,6 +40,7 @@
 
 <script>
 import OrderDetail from './OrderDetail.vue';
+import { fetchMyOrders } from "@/api/order-service";
 export default {
   components: {
     OrderDetail,
@@ -70,7 +71,7 @@ export default {
   methods: {
     async getOrders() {
       try {
-        const response = await this.$http.get('orders/user');
+        const response = await fetchMyOrders();
         if (response.status === 200) {
           const { content } = response;
           this.orders = content;

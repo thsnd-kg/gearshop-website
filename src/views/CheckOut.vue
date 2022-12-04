@@ -189,6 +189,7 @@
 <script>
 import { mapGetters } from 'vuex';
 import axios from 'axios';
+import { checkoutOrderByNoneAccount, fetchCheckout, fetchMyCart, updateInfoCheckout } from "@/api/order-service";
 export default {
   data() {
     return {
@@ -295,7 +296,7 @@ export default {
     async getCart() {
       if (this.isAuthendicated) {
         console.log(this.user);
-        const response = await this.$http.get(`orders/cart`);
+        const response = await fetchMyCart();
         if (response.status == 200) {
           this.items = response.content;
         } else {
@@ -351,8 +352,7 @@ export default {
         if (this.items.orderDetails.length > 0) {
           const address = this.getFormatAddress();
           if (this.checkAddress()) {
-            const response0 = await this.$http.post(
-              `orders/user/checkout/info`,
+            const response0 = await updateInfoCheckout(
               {
                 deliveryAddress: address,
                 recipientName: this.user.firstName,
@@ -362,7 +362,7 @@ export default {
             if (response0.status !== 200) {
               this.$notify.error('Lỗi! Vui lòng thử lại sau.');
             } else {
-              const response = await this.$http.get(`orders/user/checkout`);
+              const response = await fetchCheckout();
               if (response.status == 200) {
                 this.$notify.success('Đặt hàng thành công!');
                 this.$router.push({ path: '/my-orders' });
@@ -386,8 +386,7 @@ export default {
         if (this.items.orderDetails.length > 0) {
           const address = this.getFormatAddress();
           if (this.checkAddress()) {
-            const response = await this.$http.post(
-              `orders/user/checkout/none-account`,
+            const response = await checkoutOrderByNoneAccount(
               {
                 orderDetail: this.items.orderDetails,
                 deliveryAddress: address,
