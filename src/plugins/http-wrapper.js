@@ -1,7 +1,9 @@
+/** @format */
+
 import axios from 'axios';
 
 const DEFAULT_HEADERS = {
-  'Content-Type': 'application/json',
+  'Content-Type': 'application/json'
 };
 
 const noIntercept = (resp) => resp;
@@ -9,7 +11,7 @@ const noIntercept = (resp) => resp;
 const DEFAULT_REQ_OPTS = {
   headers: {},
   ignoreInterceptor: false,
-  withCredentials: false,
+  withCredentials: false
 };
 
 const REQUEST_METHODS = {
@@ -17,13 +19,13 @@ const REQUEST_METHODS = {
   POST: 'POST',
   PUT: 'PUT',
   PATCH: 'PATCH',
-  DELETE: 'DELETE',
+  DELETE: 'DELETE'
 };
 
 const METHODS_ALLOW_PAYLOAD = [
   REQUEST_METHODS.POST,
   REQUEST_METHODS.PUT,
-  REQUEST_METHODS.PATCH,
+  REQUEST_METHODS.PATCH
 ];
 
 export class HttpWrapper {
@@ -34,7 +36,7 @@ export class HttpWrapper {
     401: 'Endpoint requires authentication',
     403: 'Forbidden endpoint',
     404: 'Endpoint is not found',
-    500: 'Something went wrong',
+    500: 'Something went wrong'
   };
 
   constructor(options = {}) {
@@ -43,19 +45,19 @@ export class HttpWrapper {
     this.$axios = axios.create({
       baseURL,
       responseType,
-      headers: { ...DEFAULT_HEADERS, ...headers },
+      headers: { ...DEFAULT_HEADERS, ...headers }
     });
   }
 
   removeAccessToken = () => {
     this.$axios.defaults.headers.common = {
       ...DEFAULT_HEADERS,
-      ...this.#customHeaders,
+      ...this.#customHeaders
     };
   };
 
-  setAccessToken = (token) => {
-    this.$axios.defaults.headers.common['Authorization'] = `${token}`;
+  setAccessToken = (token, type = 'Bearer ') => {
+    this.$axios.defaults.headers.common['Authorization'] = `${type}${token}`;
   };
 
   async get(url, requestParams = {}, options = DEFAULT_REQ_OPTS) {
@@ -97,7 +99,7 @@ export class HttpWrapper {
   async upload(url, form = {}, options = DEFAULT_REQ_OPTS) {
     const headers = {
       ...(options.headers || {}),
-      'Content-Type': 'multipart/form-data',
+      'Content-Type': 'multipart/form-data'
     };
     return await this.sendRequest(
       url,
@@ -149,7 +151,7 @@ export class HttpWrapper {
       data: requestBody,
       // transformRequest: [ this.#transformRequest ],
       ignoreInterceptor,
-      withCredentials,
+      withCredentials
     };
 
     return await this.#parseResponse(this.$axios.request(url, opts));
@@ -202,7 +204,7 @@ export class HttpWrapper {
 }
 
 export const $http = new HttpWrapper({
-  baseURL: process.env.VUE_APP_API_URL + '/api',
+  baseURL: process.env.VUE_APP_API_URL + '/api'
 });
 
 $http.addResponseInterceptor(noIntercept, (error) => {
