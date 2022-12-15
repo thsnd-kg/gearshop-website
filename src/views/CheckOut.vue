@@ -169,7 +169,7 @@
                   }}
                 </div>
               </div>
-              <div class="checkout-btn" @click="handleClickCk">
+              <div class="checkout-btn" @click="checkOutStripe">
                 Đặt hàng<v-icon color="white">mdi-chevron-right</v-icon>
               </div>
             </div>
@@ -188,6 +188,7 @@
 </template>
 <script>
 import { mapGetters } from 'vuex';
+import {loadStripe} from '@stripe/stripe-js';
 import axios from 'axios';
 export default {
   data() {
@@ -213,7 +214,10 @@ export default {
       num: 0,
       name: '',
       phone: '0000',
-      user: null,
+      user: {
+        firstName: '',
+        phoneNo: '',
+      },
       provincesAPI: null,
       districtsAPI: null,
       wardsAPI: null,
@@ -221,6 +225,8 @@ export default {
       currentDistrict: null,
       currentWard: null,
       currentStreet: null,
+      stripeAPIToken: 'pk_test_51LxTbYE6RLTRdT5kpH7sI1HcaonewHPgWJlOTGhXZ1odAXjebQtIlogwkeKPRMKg854nkxzyTHdlPjB2DfwF4hu700v2h8J7zz',
+      stripe: '',
     };
   },
 
@@ -292,12 +298,36 @@ export default {
         console.log(e);
       }
     },
+    async checkOutStripe() {
+    let checkOutItems = [];
+    this.items.orderDetails.forEach((item) => {
+      checkOutItems.push({
+        productId: item.variant.variantId,
+        productName: item.variant.productName,
+        price: item.variant.price,
+        quantity: item.quantity,
+        userId: '',
+      });
+    });
+    const response = await this.$http.post(`orders/create-checkout-session`,checkOutItems);
+    if (response.status === 200) {
+      const session = response.content;
+      const result = await this.stripe.redirectToCheckout({
+        sessionId: session.sessionId,
+      });
+      if (result.error) {
+        console.log(result.error.message);
+      }
+    }
+    },
     async getCart() {
       if (this.isAuthendicated) {
+        this.stripe = await loadStripe(this.stripeAPIToken);
         console.log(this.user);
         const response = await this.$http.get(`orders/cart`);
         if (response.status == 200) {
           this.items = response.content;
+          console.log(this.items);
         } else {
           this.$notify.warning('Bạn chưa có sản phẩm nào trong giỏ hàng!');
         }

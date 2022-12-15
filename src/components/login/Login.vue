@@ -237,6 +237,7 @@ export default {
       if (this.user.email && this.user.password) {
         const response = await this.login(this.user);
         if (response.success) {
+          this.isLoading = false;
           this.$notify.success('Đăng nhập thành công');
           //post cart item to BE
           // get cart from localStorage
@@ -257,11 +258,15 @@ export default {
               localStorage.removeItem('cart');
             }
           }
-          setTimeout(() => {
+          
             this.close();
             window.location.reload();
-          }, 200);
-        } else this.errorMessages = 'Email hoặc mật khẩu bạn nhập không đúng';
+        
+        } else {
+           //this.errorMessages = 'Email hoặc mật khẩu bạn nhập không đúng';
+           this.$notify.error(response.msg);
+           this.isLoading = false;
+        }
       }
       this.isLoading = false;
     },
