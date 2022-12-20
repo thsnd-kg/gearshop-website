@@ -49,6 +49,8 @@
 </template>
 
 <script>
+import { forgotPassword } from '@/api/user-service';
+
 export default {
   props: {
     isShowSendMail: {
@@ -85,9 +87,7 @@ export default {
     async sendMail() {
       try {
         this.isLoading = true;
-        const response = await this.$http.get('/auth/forgot-password', {
-          email: this.email,
-        });
+        const response = await forgotPassword(this.email)
 
         if (response.status === 200) {
           this.$notify.success(

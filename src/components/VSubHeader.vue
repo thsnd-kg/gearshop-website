@@ -96,6 +96,8 @@
 </template>
 
 <script>
+import { fetchBrands } from '@/api/product-service';
+
 export default {
   data() {
     return {
@@ -144,9 +146,7 @@ export default {
 
   methods: {
     async getBrands() {
-      const response = await this.$http.get('product-service/brands', {
-        onlyActive: true,
-      });
+      const response = await fetchBrands();
       this.brands = response.content;
     },
 

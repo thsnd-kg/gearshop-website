@@ -39,6 +39,8 @@
 </template>
 
 <script>
+import { authenticateEmail } from '@/api/user-service';
+
 export default {
   data() {
     return {
@@ -55,11 +57,9 @@ export default {
   methods: {
     async confirmEmail() {
       try {
-        const response = await this.$http.get('/auth/confirm-email', {
-          token: this.token,
-        });
+        const response = await authenticateEmail(this.token)
 
-        if (response.status == 200) {
+        if (response.status === 200) {
           this.isConfirmed = true;
         }
       } catch (err) {

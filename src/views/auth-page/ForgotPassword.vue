@@ -43,6 +43,8 @@
 </template>
 
 <script>
+import { resetPassword } from '@/api/user-service';
+
 export default {
   data() {
     return {
@@ -74,12 +76,9 @@ export default {
       try {
         if (!this.$refs.form.validate()) return;
         this.isLoading = true;
-        const response = await this.$http.post('auth/reset-password', {
-          token: this.token,
-          password: this.password,
-        });
+        const response = await resetPassword(this.token, this.password);
 
-        if (response.status == 200) {
+        if (response.status === 200) {
           this.$notify.success('Thay đổi mật khẩu thành công');
           this.$router.push({ path: '/' });
         } else {
