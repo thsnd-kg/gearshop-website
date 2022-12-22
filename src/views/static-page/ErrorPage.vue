@@ -1,3 +1,5 @@
+<!-- @format -->
+
 <template>
   <v-container
     class="d-flex align-center justify-center flex-column"
@@ -35,11 +37,11 @@
 </template>
 
 <script>
-export default {};
+  export default {};
 </script>
 
 <style lang="scss" scoped>
-.wrapper {
-  margin: 0 auto;
-}
+  .wrapper {
+    margin: 0 auto;
+  }
 </style>

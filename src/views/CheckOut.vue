@@ -1,3 +1,5 @@
+<!-- @format -->
+
 <template>
   <div class="wrapper">
     <v-breadcrumbs :items="breadcrumb">
@@ -169,7 +171,16 @@
                   }}
                 </div>
               </div>
-              <div class="checkout-btn" @click="checkOutStripe">
+              <div>
+                <v-radio-group v-model="paymentStatus">
+                  <v-radio label="Thanh toán bằng thẻ" value="paid"></v-radio>
+                  <v-radio
+                    label="Nhận hàng và thanh toán"
+                    value="unpaid"
+                  ></v-radio>
+                </v-radio-group>
+              </div>
+              <div class="checkout-btn" @click="handleClickCk">
                 Đặt hàng<v-icon color="white">mdi-chevron-right</v-icon>
               </div>
             </div>
@@ -187,399 +198,418 @@
   </div>
 </template>
 <script>
-import { mapGetters } from 'vuex';
-import {loadStripe} from '@stripe/stripe-js';
-import axios from 'axios';
-import { checkoutOrderByNoneAccount, fetchCheckout, fetchMyCart, updateInfoCheckout } from "@/api/order-service";
-export default {
-  data() {
-    return {
-      breadcrumb: [
-        {
-          text: 'Trang chủ',
-          disabled: false,
-          href: '/laptop',
+  import { mapGetters } from 'vuex';
+  import { loadStripe } from '@stripe/stripe-js';
+  import axios from 'axios';
+  import {
+    checkoutOrderByNoneAccount,
+    fetchCheckout,
+    fetchMyCart,
+    updateInfoCheckout,
+    createCheckoutSession
+  } from '@/api/order-service';
+  export default {
+    data() {
+      return {
+        breadcrumb: [
+          {
+            text: 'Trang chủ',
+            disabled: false,
+            href: '/laptop'
+          },
+          {
+            text: 'Giỏ hàng',
+            disabled: false,
+            href: '/cart'
+          },
+          {
+            text: 'Đặt hàng',
+            disabled: false,
+            href: ''
+          }
+        ],
+        items: {},
+        paymentStatus: 'unpaid',
+        num: 0,
+        name: '',
+        phone: '0000',
+        user: {
+          firstName: '',
+          phoneNo: ''
         },
-        {
-          text: 'Giỏ hàng',
-          disabled: false,
-          href: '/cart',
-        },
-        {
-          text: 'Đặt hàng',
-          disabled: false,
-          href: '',
-        },
-      ],
-      items: {},
-      num: 0,
-      name: '',
-      phone: '0000',
-      user: {
-        firstName: '',
-        phoneNo: '',
+        provincesAPI: null,
+        districtsAPI: null,
+        wardsAPI: null,
+        currentProvince: null,
+        currentDistrict: null,
+        currentWard: null,
+        currentStreet: null,
+        stripeAPIToken:
+          'pk_test_51LxTbYE6RLTRdT5kpH7sI1HcaonewHPgWJlOTGhXZ1odAXjebQtIlogwkeKPRMKg854nkxzyTHdlPjB2DfwF4hu700v2h8J7zz',
+        stripe: '',
+        voucherId: ''
+      };
+    },
+
+    watch: {
+      currentProvince(newCurrentProvince) {
+        this.districtsAPI = newCurrentProvince.districts;
       },
-      provincesAPI: null,
-      districtsAPI: null,
-      wardsAPI: null,
-      currentProvince: null,
-      currentDistrict: null,
-      currentWard: null,
-      currentStreet: null,
-      stripeAPIToken: 'pk_test_51LxTbYE6RLTRdT5kpH7sI1HcaonewHPgWJlOTGhXZ1odAXjebQtIlogwkeKPRMKg854nkxzyTHdlPjB2DfwF4hu700v2h8J7zz',
-      stripe: '',
-    };
-  },
-
-  watch: {
-    currentProvince(newCurrentProvince) {
-      this.districtsAPI = newCurrentProvince.districts;
-    },
-    currentDistrict(newCurrentDistrict) {
-      this.wardsAPI = newCurrentDistrict.wards;
-    },
-  },
-
-  computed: {
-    ...mapGetters('auth', ['isAuthendicated', 'profile']),
-  },
-  methods: {
-    parseAddress(address) {
-      // const province = address.substr(
-      //   address.indexOf('Province'),
-      //   address.indexOf('|')
-      // );
-      if (address == null) return;
-
-      const addressDetail = address.split('|');
-      addressDetail.forEach((item) => {
-        if (item.includes('Province')) {
-          const name = item.substr(9, item.length);
-          this.currentProvince = this.provincesAPI.find(
-            (item) => item.name === name
-          );
-        }
-        if (item.includes('District')) {
-          const name = item.substr(9, item.length);
-          this.currentDistrict = this.currentProvince.districts.find(
-            (item) => item.name === name
-          );
-        }
-        if (item.includes('Ward')) {
-          const name = item.substr(5, item.length);
-          this.currentWard = this.currentDistrict.wards.find(
-            (item) => item.name === name
-          );
-        }
-        if (item.includes('Address')) {
-          this.currentStreet = item.substr(8, item.length);
-        }
-      });
-    },
-
-    getFormatAddress() {
-      const province = this.currentProvince
-        ? `Province ${this.currentProvince.name}|`
-        : '';
-      const district = this.currentDistrict
-        ? `District ${this.currentDistrict.name}|`
-        : '';
-      const ward = this.currentWard ? `Ward ${this.currentWard.name}|` : '';
-      const street = this.currentStreet ? `Address ${this.currentStreet}|` : '';
-
-      return province + district + ward + street;
-    },
-    async getProvince() {
-      try {
-        const response = await axios.get(
-          `https://provinces.open-api.vn/api/?depth=3`
-        );
-        this.provincesAPI = response.data;
-      } catch (e) {
-        console.log(e);
+      currentDistrict(newCurrentDistrict) {
+        this.wardsAPI = newCurrentDistrict.wards;
       }
     },
-    async checkOutStripe() {
-    let checkOutItems = [];
-    this.items.orderDetails.forEach((item) => {
-      checkOutItems.push({
-        productId: item.variant.variantId,
-        productName: item.variant.productName,
-        price: item.variant.price,
-        quantity: item.quantity,
-        userId: '',
-      });
-    });
-    const response = await this.$http.post(`orders/create-checkout-session`,checkOutItems);
-    if (response.status === 200) {
-      const session = response.content;
-      const result = await this.stripe.redirectToCheckout({
-        sessionId: session.sessionId,
-      });
-      if (result.error) {
-        console.log(result.error.message);
-      }
-    }
+
+    computed: {
+      ...mapGetters('auth', ['isAuthendicated', 'profile'])
     },
-    async getCart() {
-      if (this.isAuthendicated) {
-        this.stripe = await loadStripe(this.stripeAPIToken);
-        console.log(this.user);
-        const response = await fetchMyCart();
-        if (response.status == 200) {
-          this.items = response.content;
-          console.log(this.items);
-        } else {
-          this.$notify.warning('Bạn chưa có sản phẩm nào trong giỏ hàng!');
-        }
-      } else {
-        // get cart from localStorage
-        let cart;
-        const lc = localStorage.getItem('cart');
-        if (!lc) {
-          cart = null;
-        } else {
-          cart = JSON.parse(localStorage.getItem('cart'));
-        }
-        //check null and set cart
-        if (cart != null) {
-          this.items = cart;
-        } else {
-          this.$notify.warning('Bạn chưa có sản phẩm nào trong giỏ hàng');
-        }
-      }
-      this.caculateTotal();
-    },
-    caculateTotal() {
-      let total = 0;
-      if (this.items?.orderDetails !== undefined) {
-        this.items.orderDetails.forEach((item) => {
-          total += item.quantity * item.variant.price;
+    methods: {
+      parseAddress(address) {
+        // const province = address.substr(
+        //   address.indexOf('Province'),
+        //   address.indexOf('|')
+        // );
+        if (address == null) return;
+
+        const addressDetail = address.split('|');
+        addressDetail.forEach((item) => {
+          if (item.includes('Province')) {
+            const name = item.substr(9, item.length);
+            this.currentProvince = this.provincesAPI.find(
+              (item) => item.name === name
+            );
+          }
+          if (item.includes('District')) {
+            const name = item.substr(9, item.length);
+            this.currentDistrict = this.currentProvince.districts.find(
+              (item) => item.name === name
+            );
+          }
+          if (item.includes('Ward')) {
+            const name = item.substr(5, item.length);
+            this.currentWard = this.currentDistrict.wards.find(
+              (item) => item.name === name
+            );
+          }
+          if (item.includes('Address')) {
+            this.currentStreet = item.substr(8, item.length);
+          }
         });
-        this.items.totalPrice = total;
-      }
-      this.caculateQty();
-    },
-    caculateQty() {
-      let total = 0;
-      if (this.items?.orderDetails !== undefined) {
+      },
+
+      getFormatAddress() {
+        const province = this.currentProvince
+          ? `Province ${this.currentProvince.name}|`
+          : '';
+        const district = this.currentDistrict
+          ? `District ${this.currentDistrict.name}|`
+          : '';
+        const ward = this.currentWard ? `Ward ${this.currentWard.name}|` : '';
+        const street = this.currentStreet
+          ? `Address ${this.currentStreet}|`
+          : '';
+
+        return province + district + ward + street;
+      },
+      async getProvince() {
+        try {
+          const response = await axios.get(
+            `https://provinces.open-api.vn/api/?depth=3`
+          );
+          this.provincesAPI = response.data;
+        } catch (e) {
+          console.log(e);
+        }
+      },
+      async checkOutStripe() {
+        let checkOutItems = [];
         this.items.orderDetails.forEach((item) => {
-          total += item.quantity;
+          checkOutItems.push({
+            productId: item.variant.variantId,
+            productName: item.variant.productName,
+            price: item.variant.price,
+            quantity: item.quantity,
+            userId: '',
+            voucherId: this.voucherId
+          });
         });
-      }
-      this.num = total;
-    },
-    async handleClickCk() {
-      if (this.isAuthendicated) {
-        if (this.user.firstName == '' || this.user.firstName == null) {
-          this.$notify.warning('Vui lòng điền tên người nhận!');
-          return;
+        const response = await createCheckoutSession(checkOutItems);
+        if (response.status === 200) {
+          const session = response.content;
+          const result = await this.stripe.redirectToCheckout({
+            sessionId: session.sessionId
+          });
+          if (result.error) {
+            console.log(result.error.message);
+          }
         }
-        if (this.user.phoneNo == '' || this.user.phoneNo == null) {
-          this.$notify.warning('Vui lòng điền số điện thoại người nhận!');
-          return;
+      },
+      async getCart() {
+        if (this.isAuthendicated) {
+          this.stripe = await loadStripe(this.stripeAPIToken);
+          console.log(this.user);
+          const response = await fetchMyCart();
+          if (response.status == 200) {
+            this.items = response.content;
+            this.voucherId = response.content?.voucher?.voucherId;
+            console.log(this.items);
+          } else {
+            this.$notify.warning('Bạn chưa có sản phẩm nào trong giỏ hàng!');
+          }
+        } else {
+          // get cart from localStorage
+          let cart;
+          const lc = localStorage.getItem('cart');
+          if (!lc) {
+            cart = null;
+          } else {
+            cart = JSON.parse(localStorage.getItem('cart'));
+          }
+          //check null and set cart
+          if (cart != null) {
+            this.items = cart;
+          } else {
+            this.$notify.warning('Bạn chưa có sản phẩm nào trong giỏ hàng');
+          }
         }
-        if (this.items.orderDetails.length > 0) {
-          const address = this.getFormatAddress();
-          if (this.checkAddress()) {
-            const response0 = await updateInfoCheckout(
-              {
+        this.caculateTotal();
+      },
+      caculateTotal() {
+        let total = 0;
+        if (this.items?.orderDetails !== undefined) {
+          this.items.orderDetails.forEach((item) => {
+            total += item.quantity * item.variant.price;
+          });
+          this.items.totalPrice = total;
+        }
+        this.caculateQty();
+      },
+      caculateQty() {
+        let total = 0;
+        if (this.items?.orderDetails !== undefined) {
+          this.items.orderDetails.forEach((item) => {
+            total += item.quantity;
+          });
+        }
+        this.num = total;
+      },
+      async handleClickCk() {
+        if (this.isAuthendicated) {
+          if (this.user.firstName == '' || this.user.firstName == null) {
+            this.$notify.warning('Vui lòng điền tên người nhận!');
+            return;
+          }
+          if (this.user.phoneNo == '' || this.user.phoneNo == null) {
+            this.$notify.warning('Vui lòng điền số điện thoại người nhận!');
+            return;
+          }
+          if (this.items.orderDetails.length > 0) {
+            const address = this.getFormatAddress();
+            if (this.checkAddress()) {
+              const response0 = await updateInfoCheckout({
                 deliveryAddress: address,
                 recipientName: this.user.firstName,
-                phoneNumber: this.user.phoneNo,
+                phoneNumber: this.user.phoneNo
+              });
+              if (response0.status !== 200) {
+                this.$notify.error('Lỗi! Vui lòng thử lại sau.');
+              } else {
+                let response = {};
+                if (this.paymentStatus == 'paid') {
+                  await this.checkOutStripe();
+                  return;
+                } else {
+                  response = await fetchCheckout({ isPaid: false });
+                }
+                if (response.status == 200) {
+                  this.$notify.success('Đặt hàng thành công!');
+                  this.$router.push({ path: '/my-orders' });
+                } else {
+                  this.$notify.error('Lỗi! Vui lòng thử lại sau.');
+                }
               }
-            );
-            if (response0.status !== 200) {
-              this.$notify.error('Lỗi! Vui lòng thử lại sau.');
-            } else {
-              const response = await fetchCheckout();
+            }
+          } else {
+            this.$notify.warning('Danh sách rỗng!');
+          }
+        } else {
+          if (this.user.firstName == '' || this.user.firstName == null) {
+            this.$notify.warning('Vui lòng điền tên người nhận!');
+            return;
+          }
+          if (this.user.phoneNo == '' || this.user.phoneNo == null) {
+            this.$notify.warning('Vui lòng điền số điện thoại người nhận!');
+            return;
+          }
+          if (this.paymentStatus == 'paid') {
+            this.$notify.warning('Vui lòng đăng nhập để thanh toán bằng thẻ!');
+            return;
+          }
+          if (this.items.orderDetails.length > 0) {
+            const address = this.getFormatAddress();
+            if (this.checkAddress()) {
+              const response = await checkoutOrderByNoneAccount({
+                orderDetail: this.items.orderDetails,
+                deliveryAddress: address,
+                recipientName: this.user.firstName,
+                phoneNumber: this.user.phoneNo
+              });
               if (response.status == 200) {
                 this.$notify.success('Đặt hàng thành công!');
-                this.$router.push({ path: '/my-orders' });
+                localStorage.removeItem('cart');
+                this.$router.push('/');
               } else {
                 this.$notify.error('Lỗi! Vui lòng thử lại sau.');
               }
             }
+          } else {
+            this.$notify.warning('Danh sách rỗng!');
           }
-        } else {
-          this.$notify.warning('Danh sách rỗng!');
         }
-      } else {
-        if (this.user.firstName == '' || this.user.firstName == null) {
-          this.$notify.warning('Vui lòng điền tên người nhận!');
-          return;
+      },
+      //validate
+      isNumber(input) {
+        return /[0-9]+/g.test(input) || 'Vui lòng nhập số';
+      },
+      lenghtNumber(input) {
+        if (input.length > 10) return 'Tối đa 10 kí tự';
+        else return;
+      },
+      notEmpty(input) {
+        if (input == null || input == '') return 'Vui lòng không để trống';
+        else return;
+      },
+      checkAddress() {
+        const province = this.currentProvince ? true : false;
+        if (!province) {
+          this.$notify.warning('Vui lòng chọn tỉnh/thành phố!');
+          return false;
         }
-        if (this.user.phoneNo == '' || this.user.phoneNo == null) {
-          this.$notify.warning('Vui lòng điền số điện thoại người nhận!');
-          return;
+        const district = this.currentDistrict ? true : false;
+        if (!district) {
+          this.$notify.warning('Vui lòng chọn quận/huyện!');
+          return false;
         }
-        if (this.items.orderDetails.length > 0) {
-          const address = this.getFormatAddress();
-          if (this.checkAddress()) {
-            const response = await checkoutOrderByNoneAccount(
-              {
-                orderDetail: this.items.orderDetails,
-                deliveryAddress: address,
-                recipientName: this.user.firstName,
-                phoneNumber: this.user.phoneNo,
-              }
-            );
-            if (response.status == 200) {
-              this.$notify.success('Đặt hàng thành công!');
-              localStorage.removeItem('cart');
-              this.$router.push('/');
-            } else {
-              this.$notify.error('Lỗi! Vui lòng thử lại sau.');
-            }
-          }
-        } else {
-          this.$notify.warning('Danh sách rỗng!');
+        const ward = this.currentWard ? true : false;
+        if (!ward) {
+          this.$notify.warning('Vui lòng chọn phường/xã!');
+          return false;
         }
+        const street = this.currentStreet ? true : false;
+        if (!street) {
+          this.$notify.warning('Vui lòng nhập địa chỉ!');
+          return false;
+        }
+        return province && district && ward && street;
       }
     },
-    //validate
-    isNumber(input) {
-      return /[0-9]+/g.test(input) || 'Vui lòng nhập số';
-    },
-    lenghtNumber(input) {
-      if (input.length > 10) return 'Tối đa 10 kí tự';
-      else return;
-    },
-    notEmpty(input) {
-      if (input == null || input == '') return 'Vui lòng không để trống';
-      else return;
-    },
-    checkAddress() {
-      const province = this.currentProvince ? true : false;
-      if (!province) {
-        this.$notify.warning('Vui lòng chọn tỉnh/thành phố!');
-        return false;
-      }
-      const district = this.currentDistrict ? true : false;
-      if (!district) {
-        this.$notify.warning('Vui lòng chọn quận/huyện!');
-        return false;
-      }
-      const ward = this.currentWard ? true : false;
-      if (!ward) {
-        this.$notify.warning('Vui lòng chọn phường/xã!');
-        return false;
-      }
-      const street = this.currentStreet ? true : false;
-      if (!street) {
-        this.$notify.warning('Vui lòng nhập địa chỉ!');
-        return false;
-      }
-      return province && district && ward && street;
-    },
-  },
-  async created() {
-    await this.getCart();
-    this.user = { ...this.profile };
-    await this.getProvince();
-    await this.parseAddress(this.user.address);
-  },
-};
+    async created() {
+      await this.getCart();
+      this.user = { ...this.profile };
+      await this.getProvince();
+      await this.parseAddress(this.user.address);
+    }
+  };
 </script>
 <style lang="scss" scoped>
-.wrapper {
-  margin: auto;
-  width: 1100px;
-  .checkout-container {
-    padding: 15px 10px 20px 15px;
-    border-radius: 15px;
-    background-color: white;
-    .title {
-      margin-bottom: 20px;
-      font-weight: bolder;
-      .icon {
-        color: black;
-        font-weight: bold;
-        margin-right: 5px;
+  .wrapper {
+    margin: auto;
+    width: 1100px;
+    .checkout-container {
+      padding: 15px 10px 20px 15px;
+      border-radius: 15px;
+      background-color: white;
+      .title {
+        margin-bottom: 20px;
+        font-weight: bolder;
+        .icon {
+          color: black;
+          font-weight: bold;
+          margin-right: 5px;
+        }
+      }
+      .text-field-container {
+        margin-left: 20px;
+        .text-field {
+          border-color: gray;
+          height: 50px !important;
+          width: 280px;
+        }
       }
     }
-    .text-field-container {
-      margin-left: 20px;
-      .text-field {
-        border-color: gray;
-        height: 50px !important;
-        width: 280px;
+    .checkout-address-container {
+      padding: 15px 10px 20px 15px;
+      border-radius: 15px;
+      background-color: white;
+      .title {
+        margin-bottom: 20px;
+        font-weight: bolder;
+        .icon {
+          color: black;
+          font-weight: bold;
+          margin-right: 5px;
+        }
+      }
+      .text-field-container {
+        margin-left: 20px;
       }
     }
-  }
-  .checkout-address-container {
-    padding: 15px 10px 20px 15px;
-    border-radius: 15px;
-    background-color: white;
-    .title {
-      margin-bottom: 20px;
-      font-weight: bolder;
-      .icon {
-        color: black;
-        font-weight: bold;
-        margin-right: 5px;
+    .order-container {
+      border-radius: 15px;
+      padding: 15px 15px 20px 15px;
+      background-color: white;
+      .title {
+        margin-bottom: 20px;
+        font-weight: bolder;
+        .icon {
+          color: black;
+          font-weight: bold;
+          margin-right: 5px;
+        }
       }
-    }
-    .text-field-container {
-      margin-left: 20px;
-    }
-  }
-  .order-container {
-    border-radius: 15px;
-    padding: 15px 15px 20px 15px;
-    background-color: white;
-    .title {
-      margin-bottom: 20px;
-      font-weight: bolder;
-      .icon {
-        color: black;
-        font-weight: bold;
-        margin-right: 5px;
+      .detail {
+        padding: 0px 5px 10px 5px;
+        border-style: dashed;
+        border-width: 0px 0px 1px 0px;
+        border-color: grey;
+        .tamtinh {
+          display: flex;
+          justify-content: space-between;
+          margin-bottom: 10px;
+        }
       }
-    }
-    .detail {
-      padding: 0px 5px 10px 5px;
-      border-style: dashed;
-      border-width: 0px 0px 1px 0px;
-      border-color: grey;
-      .tamtinh {
+      .total {
+        padding: 20px 5px 20px 5px;
         display: flex;
         justify-content: space-between;
-        margin-bottom: 10px;
+        border-style: solid;
+        border-width: 0px 0px 1px 0px;
+        border-color: grey;
+      }
+      .checkout-btn {
+        margin: 20px 0px 0px 10px;
+        padding: 12px 0px 0px 110px;
+        height: 50px;
+        width: 300px;
+        border-radius: 10px;
+        background-color: #f43688;
+        font-weight: bold;
+        color: white !important;
+        &:hover {
+          cursor: pointer;
+          background-color: #c32b6c;
+        }
       }
     }
-    .total {
-      padding: 20px 5px 20px 5px;
-      display: flex;
-      justify-content: space-between;
+    .infor {
+      padding: 15px 15px 15px 15px;
+      width: 350px;
       border-style: solid;
-      border-width: 0px 0px 1px 0px;
-      border-color: grey;
-    }
-    .checkout-btn {
-      margin: 20px 0px 0px 10px;
-      padding: 12px 0px 0px 110px;
-      height: 50px;
-      width: 300px;
+      border-width: 1px 1px 1px 1px;
+      border-color: #007344;
       border-radius: 10px;
-      background-color: #f43688;
-      font-weight: bold;
-      color: white !important;
-      &:hover {
-        cursor: pointer;
-        background-color: #c32b6c;
-      }
+      color: #008952;
+      background-color: #d8ffef;
     }
   }
-  .infor {
-    padding: 15px 15px 15px 15px;
-    width: 350px;
-    border-style: solid;
-    border-width: 1px 1px 1px 1px;
-    border-color: #007344;
-    border-radius: 10px;
-    color: #008952;
-    background-color: #d8ffef;
-  }
-}
 </style>
