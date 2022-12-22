@@ -56,8 +56,8 @@ export class HttpWrapper {
     };
   };
 
-  setAccessToken = (token, type = 'Bearer ') => {
-    this.$axios.defaults.headers.common['Authorization'] = `${type}${token}`;
+  setAccessToken = (token) => {
+    this.$axios.defaults.headers.common['Authorization'] = `${token}`;
   };
 
   async get(url, requestParams = {}, options = DEFAULT_REQ_OPTS) {

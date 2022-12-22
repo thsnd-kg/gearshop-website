@@ -10,13 +10,14 @@ export const performLogin = async ({ commit }, params) => {
     const username = email.slice(0, email.indexOf('@'));
     const response = await login(username, password);
     const { content } = response;
+    console.log(content);
     if (content) {
-      $http.setAccessToken(content);
+      $http.setAccessToken(content.accessToken);
 
       const profile = await getMe();
       localStorage.setItem(
         'auth',
-        JSON.stringify({ token: content, profile: profile.content })
+        JSON.stringify({ token: content.accessToken, profile: profile.content })
       );
 
       const data = {
