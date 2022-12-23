@@ -41,6 +41,18 @@
                     :rules="[isNumber, notEmpty, lenghtNumber]"
                   ></v-text-field>
                 </v-col>
+                <v-col cols="6" v-if="!isAuthendicated">
+                  <v-text-field
+                    class="text-field"
+                    label="Email"
+                    v-model="user.email"
+                    outlined
+                    clearable
+                    dense
+                    height="48px"
+                    :rules="[emailRule, notEmpty]"
+                  ></v-text-field>
+                </v-col>
               </v-row>
             </div>
           </v-col>
@@ -151,7 +163,7 @@
                 <div class="tamtinh">
                   <div>Khuyến mãi:</div>
                   <div>
-                    {{ items.discountPrice.toLocaleString() }}
+                    {{ items.discountPrice ? items.discountPrice : 0  }}
                   </div>
                 </div>
                 <div class="tamtinh">
@@ -166,7 +178,7 @@
                     items.discountPrice != undefined
                       ? (
                           items.totalPrice - items.discountPrice
-                        ).toLocaleString()
+                        )
                       : items.totalPrice.toLocaleString()
                   }}
                 </div>
@@ -180,9 +192,17 @@
                   ></v-radio>
                 </v-radio-group>
               </div>
-              <div class="checkout-btn" @click="handleClickCk">
+
+              <v-btn
+                block
+                x-large
+                depressed
+                :loading="isLoading"
+                class="white--text font-weight-bold rounded-lg"
+                color="#f43688"
+               @click="handleClickCk">
                 Đặt hàng<v-icon color="white">mdi-chevron-right</v-icon>
-              </div>
+              </v-btn>
             </div>
           </v-col>
           <v-col cols="12">
@@ -228,6 +248,7 @@
             href: ''
           }
         ],
+        isLoading: false,
         items: {},
         paymentStatus: 'unpaid',
         num: 0,
@@ -247,7 +268,9 @@
         stripeAPIToken:
           'pk_test_51LxTbYE6RLTRdT5kpH7sI1HcaonewHPgWJlOTGhXZ1odAXjebQtIlogwkeKPRMKg854nkxzyTHdlPjB2DfwF4hu700v2h8J7zz',
         stripe: '',
-        voucherId: ''
+        voucherId: '',
+
+        emailRule: v => !v || /^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,3})+$/.test(v) || 'Email không hợp lệ',
       };
     },
 
@@ -298,18 +321,12 @@
       },
 
       getFormatAddress() {
-        const province = this.currentProvince
-          ? `Province ${this.currentProvince.name}|`
-          : '';
-        const district = this.currentDistrict
-          ? `District ${this.currentDistrict.name}|`
-          : '';
-        const ward = this.currentWard ? `Ward ${this.currentWard.name}|` : '';
+        const province = this.currentProvince.name
+        const district = this.currentDistrict.name
+        const ward = this.currentWard .name
         const street = this.currentStreet
-          ? `Address ${this.currentStreet}|`
-          : '';
 
-        return province + district + ward + street;
+        return `${street}, ${ward}, ${district}, ${province}`;
       },
       async getProvince() {
         try {
@@ -366,8 +383,10 @@
             cart = JSON.parse(localStorage.getItem('cart'));
           }
           //check null and set cart
+
           if (cart != null) {
             this.items = cart;
+
           } else {
             this.$notify.warning('Bạn chưa có sản phẩm nào trong giỏ hàng');
           }
@@ -394,6 +413,7 @@
         this.num = total;
       },
       async handleClickCk() {
+
         if (this.isAuthendicated) {
           if (this.user.firstName == '' || this.user.firstName == null) {
             this.$notify.warning('Vui lòng điền tên người nhận!');
@@ -406,26 +426,35 @@
           if (this.items.orderDetails.length > 0) {
             const address = this.getFormatAddress();
             if (this.checkAddress()) {
+              this.isLoading = true;
+
               const response0 = await updateInfoCheckout({
                 deliveryAddress: address,
                 recipientName: this.user.firstName,
-                phoneNumber: this.user.phoneNo
+                phoneNumber: this.user.phoneNo,
+                email: this.user.email
               });
               if (response0.status !== 200) {
                 this.$notify.error('Lỗi! Vui lòng thử lại sau.');
+                this.isLoading = false;
               } else {
+
                 let response = {};
                 if (this.paymentStatus == 'paid') {
                   await this.checkOutStripe();
+                  this.isLoading = false;
                   return;
                 } else {
                   response = await fetchCheckout({ isPaid: false });
+                  this.isLoading = false;
                 }
                 if (response.status == 200) {
                   this.$notify.success('Đặt hàng thành công!');
                   this.$router.push({ path: '/my-orders' });
+                  this.isLoading = false;
                 } else {
                   this.$notify.error('Lỗi! Vui lòng thử lại sau.');
+                  this.isLoading = false;
                 }
               }
             }
@@ -452,7 +481,8 @@
                 orderDetail: this.items.orderDetails,
                 deliveryAddress: address,
                 recipientName: this.user.firstName,
-                phoneNumber: this.user.phoneNo
+                phoneNumber: this.user.phoneNo,
+                email: this.user.email
               });
               if (response.status == 200) {
                 this.$notify.success('Đặt hàng thành công!');
@@ -472,7 +502,7 @@
         return /[0-9]+/g.test(input) || 'Vui lòng nhập số';
       },
       lenghtNumber(input) {
-        if (input.length > 10) return 'Tối đa 10 kí tự';
+        if (input && input.length > 10) return 'Tối đa 10 kí tự';
         else return;
       },
       notEmpty(input) {

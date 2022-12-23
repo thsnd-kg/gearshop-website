@@ -1,24 +1,19 @@
-/** @format */
-
 import axios from 'axios';
 
 const DEFAULT_HEADERS = {
   'Content-Type': 'application/json'
 };
 
-const noIntercept = (resp) => resp;
-
 const DEFAULT_REQ_OPTS = {
   headers: {},
-  ignoreInterceptor: false,
-  withCredentials: false
+  ignoreInterceptor: false
 };
 
 const REQUEST_METHODS = {
-  GET: 'GET',
-  POST: 'POST',
-  PUT: 'PUT',
-  PATCH: 'PATCH',
+  GET:    'GET',
+  POST:   'POST',
+  PUT:    'PUT',
+  PATCH:  'PATCH',
   DELETE: 'DELETE'
 };
 
@@ -28,8 +23,8 @@ const METHODS_ALLOW_PAYLOAD = [
   REQUEST_METHODS.PATCH
 ];
 
-export class HttpWrapper {
-  #customHeaders;
+export class HttpWrapper  {
+  #customHeaders
 
   #errorMessages = {
     400: 'Request data went wrong',
@@ -37,7 +32,7 @@ export class HttpWrapper {
     403: 'Forbidden endpoint',
     404: 'Endpoint is not found',
     500: 'Something went wrong'
-  };
+  }
 
   constructor(options = {}) {
     const { baseURL = '/', responseType = 'json', headers = {} } = options;
@@ -50,78 +45,36 @@ export class HttpWrapper {
   }
 
   removeAccessToken = () => {
-    this.$axios.defaults.headers.common = {
-      ...DEFAULT_HEADERS,
-      ...this.#customHeaders
-    };
-  };
+    this.$axios.defaults.headers.common = { ...DEFAULT_HEADERS, ...this.#customHeaders };
+  }
 
   setAccessToken = (token) => {
     this.$axios.defaults.headers.common['Authorization'] = `${token}`;
-  };
+  }
 
   async get(url, requestParams = {}, options = DEFAULT_REQ_OPTS) {
-    return await this.sendRequest(
-      url,
-      REQUEST_METHODS.GET,
-      options,
-      requestParams
-    );
+    return await this.sendRequest(url, REQUEST_METHODS.GET, options, requestParams);
   }
 
   async post(url, requestParams = {}, options = DEFAULT_REQ_OPTS) {
-    return await this.sendRequest(
-      url,
-      REQUEST_METHODS.POST,
-      options,
-      requestParams
-    );
+    return await this.sendRequest(url, REQUEST_METHODS.POST, options, requestParams);
   }
 
   async put(url, requestParams = {}, options = DEFAULT_REQ_OPTS) {
-    return await this.sendRequest(
-      url,
-      REQUEST_METHODS.PUT,
-      options,
-      requestParams
-    );
+    return await this.sendRequest(url, REQUEST_METHODS.PUT, options, requestParams);
   }
 
   async delete(url, requestParams = {}, options = DEFAULT_REQ_OPTS) {
-    return await this.sendRequest(
-      url,
-      REQUEST_METHODS.DELETE,
-      options,
-      requestParams
-    );
+    return await this.sendRequest(url, REQUEST_METHODS.DELETE, options, requestParams);
   }
 
   async upload(url, form = {}, options = DEFAULT_REQ_OPTS) {
     const headers = {
-      ...(options.headers || {}),
+      ...options.headers || {},
       'Content-Type': 'multipart/form-data'
     };
-    return await this.sendRequest(
-      url,
-      REQUEST_METHODS.POST,
-      { ...options, headers },
-      form
-    );
+    return await this.sendRequest(url, REQUEST_METHODS.POST, { ...options, headers }, form);
   }
-
-  addRequestInterceptor = (successHandler, failHandler) => {
-    this.$axios.interceptors.request.use(
-      successHandler || noIntercept,
-      failHandler || noIntercept
-    );
-  };
-
-  addResponseInterceptor = (successHandler, failHandler) => {
-    this.$axios.interceptors.response.use(
-      successHandler || noIntercept,
-      failHandler || noIntercept
-    );
-  };
 
   sendRequest = async (
     url,
@@ -134,7 +87,7 @@ export class HttpWrapper {
     }
 
     const allOptions = { ...DEFAULT_REQ_OPTS, ...options };
-    const { headers, ignoreInterceptor, withCredentials } = allOptions;
+    const { headers, ignoreInterceptor } = allOptions;
 
     let params = {};
     let requestBody = {};
@@ -148,10 +101,9 @@ export class HttpWrapper {
       method,
       params,
       headers,
-      data: requestBody,
+      data:             requestBody,
       // transformRequest: [ this.#transformRequest ],
-      ignoreInterceptor,
-      withCredentials
+      ignoreInterceptor
     };
 
     return await this.#parseResponse(this.$axios.request(url, opts));
@@ -160,53 +112,25 @@ export class HttpWrapper {
   #parseResponse = async (requester) => {
     try {
       const resp = await Promise.resolve(requester);
-      const { data, isAxiosError, response } = resp;
-
+      const { data, isAxiosError } = resp;
       if (isAxiosError) {
-        const { data: errorData } = response;
         const { status } = resp.toJSON();
-
-        return { status, ...errorData, success: false };
+        return { status, success: false, message: this.#errorMessages[status] };
+      }
+      return { status: resp.status, ...data };
+    } catch (error) {
+      if (error.toString().includes("401")) {
+        return { status: 401, success: false, message: this.#errorMessages[401] };
       }
 
-      return { status: resp.status, success: true, ...data };
-    } catch (error) {
+      if (error.toString().includes("400")) {
+        return { status: 400, success: false, message: this.#errorMessages[400] };
+      }
       return { status: 500, success: false, message: this.#errorMessages[500] };
     }
-  };
-  // try {
-  //   const resp = await Promise.resolve(requester);
-  //   const { data, isAxiosError } = resp;
-  //   if (isAxiosError) {
-  //     const { status } = resp.toJSON();
-  //     return { status, success: false, message: this.#errorMessages[status] };
-  //   }
-  //   return { status: resp.status, ...data };
-  // } catch (error) {
-  //   if (error.toString().includes('401')) {
-  //     return {
-  //       status: 401,
-  //       success: false,
-  //       message: this.#errorMessages[401],
-  //     };
-  //   }
-
-  //   if (error.toString().includes('400')) {
-  //     return {
-  //       status: 400,
-  //       success: false,
-  //       message: this.#errorMessages[400],
-  //     };
-  //   }
-  //   return { status: 500, success: false, message: this.#errorMessages[500] };
-  //     }
-  //   };
+  }
 }
 
 export const $http = new HttpWrapper({
-  baseURL: process.env.VUE_APP_API_URL + '/api'
-});
-
-$http.addResponseInterceptor(noIntercept, (error) => {
-  return error;
+  baseURL:  process.env.VUE_APP_API_URL + '/api'
 });
