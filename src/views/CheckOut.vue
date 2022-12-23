@@ -163,7 +163,7 @@
                 <div class="tamtinh">
                   <div>Khuyến mãi:</div>
                   <div>
-                    {{ items.discountPrice ? items.discountPrice : 0  }}
+                    {{ items.discountPrice ? items.discountPrice.toLocaleString() : 0  }}
                   </div>
                 </div>
                 <div class="tamtinh">
