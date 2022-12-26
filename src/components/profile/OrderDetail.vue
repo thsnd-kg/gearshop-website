@@ -24,7 +24,7 @@
               </v-col>
               <v-col cols="7">
                 <strong>Địa chỉ: </strong>
-                {{ getAddress(order.deliveryAddress) }}
+                {{ order.deliveryAddress }}
               </v-col>
               <v-col cols="5">
                 <strong>Ngày tạo đơn: </strong>
@@ -148,26 +148,6 @@ export default {
         default:
           break;
       }
-    },
-    getAddress(address) {
-      if (address == null) return;
-      let province, district, ward, street;
-      const addressDetail = address.split('|');
-      addressDetail.forEach((item) => {
-        if (item.includes('Province')) {
-          province = item.substr(9, item.length);
-        }
-        if (item.includes('District')) {
-          district = item.substr(9, item.length);
-        }
-        if (item.includes('Ward')) {
-          ward = item.substr(5, item.length);
-        }
-        if (item.includes('Address')) {
-          street = item.substr(8, item.length);
-        }
-      });
-      return province + ', ' + district + ', ' + ward + ', ' + street;
     },
 
     close() {
